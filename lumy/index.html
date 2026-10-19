@@ -158,7 +158,7 @@
           <!-- BRAND -->
           <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-tr from-amber-400 to-emerald-500 rounded-xl flex items-center justify-center text-slate-900 shadow-md">
-              <i class="fa-solid fa-crow text-xl"></i>
+              <i class="fa-solid fa-boxes-stacked text-lg"></i>
             </div>
             <div>
               <span class="font-extrabold text-lg tracking-wide text-white block leading-none">LUMY</span>
@@ -238,7 +238,7 @@
             </span>
           </div>
           <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl ml-3 shrink-0">
-            <i class="fa-solid fa-kiwi-bird"></i>
+            <i class="fa-solid fa-feather"></i>
           </div>
         </div>
 
@@ -246,9 +246,9 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
           <div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Huevos Recolectados</p>
-            <h3 id="stat-daily-eggs" class="text-2xl font-extrabold text-slate-800 mt-1">10,890</h3>
+            <h3 id="stat-daily-eggs" class="text-2xl font-extrabold text-slate-800 mt-1">0</h3>
             <span id="stat-cartons-tag" class="text-[11px] text-amber-600 font-semibold flex items-center mt-1">
-              <i class="fa-solid fa-box text-[9px] mr-1"></i> ~363 Cartones (30 uds/cartón)
+              <i class="fa-solid fa-box text-[9px] mr-1"></i> ~0 Cartones (30 uds/cartón)
             </span>
           </div>
           <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center text-xl shrink-0">
@@ -260,13 +260,13 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
           <div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Huevos Rotos / Merma</p>
-            <h3 id="stat-broken-eggs" class="text-2xl font-extrabold text-rose-600 mt-1">42</h3>
+            <h3 id="stat-broken-eggs" class="text-2xl font-extrabold text-rose-600 mt-1">0</h3>
             <span class="text-[11px] text-rose-500 font-semibold flex items-center mt-1">
               <i class="fa-solid fa-triangle-exclamation text-[9px] mr-1"></i> Control de Pérdida
             </span>
           </div>
           <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center text-xl shrink-0">
-            <i class="fa-solid fa-egg"></i>
+            <i class="fa-solid fa-ban"></i>
           </div>
         </div>
 
@@ -274,7 +274,7 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
           <div>
             <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Alimento Suministrado</p>
-            <h3 id="stat-feed-consumed" class="text-2xl font-extrabold text-slate-800 mt-1">1,420 Kg</h3>
+            <h3 id="stat-feed-consumed" class="text-2xl font-extrabold text-slate-800 mt-1">0 Kg</h3>
             <span id="stat-feed-avg-tag" class="text-[11px] text-slate-500 font-medium flex items-center mt-1">
               Acumulado por Galpón
             </span>
@@ -350,7 +350,12 @@
                 <i class="fa-solid fa-list-check text-emerald-600"></i>
                 <span>Historial Reciente por Galpón</span>
               </h3>
-              <span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold">En Línea</span>
+              
+              <!-- BOTÓN PARA BORRAR HISTORIAL -->
+              <button onclick="clearHistoryTable()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>Borrar Historial</span>
+              </button>
             </div>
 
             <div class="overflow-x-auto mt-4">
@@ -366,21 +371,11 @@
                   </tr>
                 </thead>
                 <tbody id="records-table-body" class="text-sm divide-y divide-slate-100">
-                  <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón B</td>
-                    <td class="py-3 px-3 text-amber-600 font-bold">5,420</td>
-                    <td class="py-3 px-3 text-rose-600 font-semibold">22</td>
-                    <td class="py-3 px-3 text-slate-600">680 Kg</td>
-                    <td class="py-3 px-3 text-red-500 font-medium">1</td>
-                    <td class="py-3 px-3 text-xs text-slate-400">Hoy</td>
-                  </tr>
-                  <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón A</td>
-                    <td class="py-3 px-3 text-amber-600 font-bold">3,110</td>
-                    <td class="py-3 px-3 text-rose-600 font-semibold">12</td>
-                    <td class="py-3 px-3 text-slate-600">420 Kg</td>
-                    <td class="py-3 px-3 text-slate-400 font-medium">0</td>
-                    <td class="py-3 px-3 text-xs text-slate-400">Hoy</td>
+                  <!-- Tabla totalmente limpia al iniciar -->
+                  <tr id="empty-history-row">
+                    <td colspan="6" class="py-6 text-center text-slate-400 text-xs italic">
+                      No hay registros en el historial. Comienza agregando uno arriba.
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -554,7 +549,6 @@
         if (newShedName && newShedName.trim() !== "") {
           const formattedName = newShedName.trim();
           
-          // Crear nueva opción y colocarla antes de la opción de agregar
           const option = document.createElement('option');
           option.value = formattedName;
           option.text = formattedName;
@@ -563,15 +557,33 @@
           selectElement.insertBefore(option, addNewOption);
           selectElement.value = formattedName;
 
-          // Actualizar contador visual de galpones registrados (excluyendo la opción de agregar)
           const totalSheds = selectElement.options.length - 1;
           document.getElementById('stat-active-sheds-tag').innerHTML = `
             <i class="fa-solid fa-house-chimney text-[9px] mr-1"></i> ${totalSheds} Galpones Registrados
           `;
         } else {
-          // Si cancela, regresar al primer galpón por defecto
           selectElement.selectedIndex = 0;
         }
+      }
+    }
+
+    // Borrar el Historial de la Tabla y Reiniciar KPIs
+    function clearHistoryTable() {
+      if (confirm("¿Estás segura de que deseas borrar todo el historial de registros?")) {
+        const tableBody = document.getElementById('records-table-body');
+        tableBody.innerHTML = `
+          <tr id="empty-history-row">
+            <td colspan="6" class="py-6 text-center text-slate-400 text-xs italic">
+              No hay registros en el historial. Comienza agregando uno arriba.
+            </td>
+          </tr>
+        `;
+
+        // Reiniciar tarjetas KPI a 0
+        document.getElementById('stat-daily-eggs').innerText = "0";
+        document.getElementById('stat-cartons-tag').innerHTML = `<i class="fa-solid fa-box text-[9px] mr-1"></i> ~0 Cartones (30 uds/cartón)`;
+        document.getElementById('stat-broken-eggs').innerText = "0";
+        document.getElementById('stat-feed-consumed').innerText = "0 Kg";
       }
     }
 
@@ -584,6 +596,12 @@
       const brokenEggs = parseInt(document.getElementById('entry-broken-eggs').value) || 0;
       const feed = parseInt(document.getElementById('entry-feed').value) || 0;
       const mortality = parseInt(document.getElementById('entry-mortality').value) || 0;
+
+      // Quitar la fila de "vacío" si existe
+      const emptyRow = document.getElementById('empty-history-row');
+      if (emptyRow) {
+        emptyRow.remove();
+      }
 
       // Insertar en la tabla localmente
       const tableBody = document.getElementById('records-table-body');

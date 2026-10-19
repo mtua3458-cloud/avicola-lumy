@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumy - Gestión Avícola | Avícola Lumy</title>
+  <title>Lumy - Recolección de Huevos | Avícola Lumy</title>
   
   <!-- Prevención de error 404 de Favicon -->
   <link rel="icon" href="data:,">
@@ -57,7 +57,7 @@
           <i class="fa-solid font-bold fa-egg text-3xl"></i>
         </div>
         <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Avícola Lumy</h1>
-        <p class="text-sm font-medium text-emerald-600 mt-1">Módulo "Lumy" · Control de Producción</p>
+        <p class="text-sm font-medium text-emerald-600 mt-1">Módulo · Recolección de Huevos</p>
       </div>
 
       <!-- PESTAÑAS DE NAVEGACIÓN AUTH -->
@@ -79,7 +79,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
           <div class="relative">
             <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="email" id="login-email" name="email" required value="admin@lumy.com" placeholder="admin@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="email" id="login-email" required placeholder="admin@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
@@ -87,12 +87,12 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="password" id="login-password" name="password" required value="Admin123" placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
         <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
-          <span>Ingresar a Lumy</span>
+          <span>Ingresar al Sistema</span>
           <i class="fa-solid fa-right-to-bracket"></i>
         </button>
       </form>
@@ -103,7 +103,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
           <div class="relative">
             <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="email" id="reg-email" name="reg_email" required placeholder="nuevo@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="email" id="reg-email" required placeholder="nuevo@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
@@ -111,7 +111,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nueva Contraseña</label>
           <div class="relative">
             <i class="fa-solid fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="password" id="reg-password" name="reg_password" required placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
@@ -128,7 +128,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Registrado</label>
           <div class="relative">
             <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="email" id="forgot-email" name="forgot_email" required placeholder="tu-correo@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="email" id="forgot-email" required placeholder="tu-correo@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
@@ -158,11 +158,11 @@
           <!-- BRAND -->
           <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-tr from-amber-400 to-emerald-500 rounded-xl flex items-center justify-center text-slate-900 shadow-md">
-              <i class="fa-solid fa-crow text-xl"></i>
+              <i class="fa-solid fa-egg text-xl"></i>
             </div>
             <div>
               <span class="font-extrabold text-lg tracking-wide text-white block leading-none">LUMY</span>
-              <span class="text-[10px] text-emerald-200 tracking-wider uppercase">Sistema de Control Avícola</span>
+              <span class="text-[10px] text-emerald-200 tracking-wider uppercase">Recolección de Huevos</span>
             </div>
           </div>
 
@@ -189,7 +189,7 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h2 class="text-2xl font-bold text-slate-800">Panel General de Producción</h2>
-          <p class="text-sm text-slate-500">Monitoreo en tiempo real de galpones y aves ponedoras.</p>
+          <p class="text-sm text-slate-500">Monitoreo en tiempo real de recolección de huevos, cartones y cajas.</p>
         </div>
         <div class="inline-flex items-center space-x-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-sm text-slate-600">
           <i class="fa-regular fa-calendar-days text-emerald-600"></i>
@@ -198,29 +198,15 @@
       </div>
 
       <!-- METRICAS / CARDS KPI -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         
-        <!-- CARD 1: TOTAL AVES -->
+        <!-- CARD 1: PRODUCCIÓN DIARIA (UNIDADES) -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aves / Gallinas</p>
-            <h3 class="text-2xl font-extrabold text-slate-800 mt-1">12,450</h3>
-            <span class="text-[11px] text-emerald-600 font-semibold flex items-center mt-1">
-              <i class="fa-solid fa-arrow-up text-[9px] mr-1"></i> Galpón A & B Activos
-            </span>
-          </div>
-          <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
-            <i class="fa-solid fa-kiwi-bird"></i>
-          </div>
-        </div>
-
-        <!-- CARD 2: PRODUCCIÓN DIARIA -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Producción Hoy</p>
-            <h3 id="stat-daily-eggs" class="text-2xl font-extrabold text-slate-800 mt-1">10,890</h3>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Producción Hoy (Uds)</p>
+            <h3 id="stat-daily-eggs" class="text-2xl font-extrabold text-slate-800 mt-1">0</h3>
             <span class="text-[11px] text-amber-600 font-semibold flex items-center mt-1">
-              <i class="fa-solid fa-box text-[9px] mr-1"></i> ~363 Cartones
+              <i class="fa-solid fa-egg text-[9px] mr-1"></i> Huevos Recolectados
             </span>
           </div>
           <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center text-xl">
@@ -228,31 +214,31 @@
           </div>
         </div>
 
-        <!-- CARD 3: RENDIMIENTO POSTURA -->
+        <!-- CARD 2: CARTONES TOTALES -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">% De Postura</p>
-            <h3 class="text-2xl font-extrabold text-slate-800 mt-1">87.4%</h3>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cartones (30 uds c/u)</p>
+            <h3 id="stat-daily-cartons" class="text-2xl font-extrabold text-slate-800 mt-1">0</h3>
             <span class="text-[11px] text-emerald-600 font-semibold flex items-center mt-1">
-              <i class="fa-solid fa-circle-check text-[9px] mr-1"></i> Rango Óptimo
+              <i class="fa-solid fa-box text-[9px] mr-1"></i> Equivalente en Cartones
             </span>
           </div>
-          <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
-            <i class="fa-solid fa-chart-line"></i>
+          <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-box"></i>
           </div>
         </div>
 
-        <!-- CARD 4: ALIMENTO CONSUMIDO -->
+        <!-- CARD 3: CAJAS TOTALES -->
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Alimento Consumido</p>
-            <h3 id="stat-feed-consumed" class="text-2xl font-extrabold text-slate-800 mt-1">1,420 Kg</h3>
-            <span class="text-[11px] text-slate-500 font-medium flex items-center mt-1">
-              Promedio: 114g / ave
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cajas (12 cartones c/u)</p>
+            <h3 id="stat-daily-boxes" class="text-2xl font-extrabold text-slate-800 mt-1">0</h3>
+            <span class="text-[11px] text-blue-600 font-semibold flex items-center mt-1">
+              <i class="fa-solid fa-boxes-stacked text-[9px] mr-1"></i> Lotes de Exportación/Venta
             </span>
           </div>
-          <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-xl">
-            <i class="fa-solid fa-wheat-awn"></i>
+          <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-boxes-stacked"></i>
           </div>
         </div>
 
@@ -266,34 +252,37 @@
           <div class="border-b border-slate-100 pb-3">
             <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
               <i class="fa-solid fa-pen-to-square text-emerald-600"></i>
-              <span>Registro Diario de Lote</span>
+              <span>Registro de Recolección</span>
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Ingresa los datos correspondientes a la jornada.</p>
+            <p class="text-xs text-slate-400 mt-0.5">Ingresa el galpón y las unidades recolectadas.</p>
           </div>
 
           <form id="poultry-entry-form" onsubmit="handleNewEntry(event)" class="space-y-4">
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Galpón</label>
-              <select id="entry-shed" name="galpon" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                <option value="Galpón 1 - Aves Jóvenes">Galpón 1 - Aves Jóvenes</option>
-                <option value="Galpón 2 - Producción Alta">Galpón 2 - Producción Alta</option>
-                <option value="Galpón 3 - Recorredores">Galpón 3 - Recorredores</option>
+              <select id="entry-shed" onchange="checkCustomShed(this.value)" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none mb-2">
+                <option value="Galpón A">Galpón A</option>
+                <option value="Galpón B">Galpón B</option>
+                <option value="Galpón C">Galpón C</option>
+                <option value="custom">➕ Agregar Galpón Personalizado...</option>
               </select>
+              <!-- Input para galpón personalizado oculto por defecto -->
+              <input type="text" id="custom-shed-input" placeholder="Nombre del nuevo galpón" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none hidden">
             </div>
 
             <div>
               <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Huevos Recolectados (Unidades)</label>
-              <input type="number" id="entry-eggs" name="huevos_recolectados" required placeholder="Ej. 3500" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              <input type="number" id="entry-eggs" required min="1" placeholder="Ej. 360" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Alimento (Kg)</label>
-                <input type="number" id="entry-feed" name="alimento_kg" required placeholder="Ej. 450" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Huevos Rotos</label>
+                <input type="number" id="entry-broken" min="0" value="0" placeholder="Ej. 5" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
               </div>
               <div>
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Bajas / Bajas</label>
-                <input type="number" id="entry-mortality" name="bajas_aves" required placeholder="Ej. 2" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Precio Unit. / Caja ($)</label>
+                <input type="number" id="entry-price" step="0.01" min="0" value="0" placeholder="Ej. 30.00" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
               </div>
             </div>
 
@@ -304,43 +293,48 @@
           </form>
         </div>
 
-        <!-- TABLA DE REGISTROS RECIENTES (2 Columnas) -->
+        <!-- TABLA DE REGISTROS RECIENTES Y FILTROS (2 Columnas) -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
               <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
                 <i class="fa-solid fa-list-check text-emerald-600"></i>
-                <span>Historial Reciente de Recolección</span>
+                <span>Historial e Informes de Producción</span>
               </h3>
-              <span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold">Activo</span>
+              
+              <!-- FILTROS E IMPRESIÓN -->
+              <div class="flex items-center space-x-2">
+                <select id="filter-period" onchange="filterRecords(this.value)" class="py-1.5 px-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold focus:outline-none">
+                  <option value="all">Todo el Historial</option>
+                  <option value="day">Hoy</option>
+                  <option value="week">Esta Semana</option>
+                  <option value="month">Este Mes</option>
+                  <option value="year">Este Año</option>
+                </select>
+                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center space-x-1 shadow-sm">
+                  <i class="fa-solid fa-print"></i>
+                  <span>Imprimir</span>
+                </button>
+              </div>
             </div>
 
             <div class="overflow-x-auto mt-4">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-slate-200 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    <th class="py-2.5 px-3">Fecha</th>
                     <th class="py-2.5 px-3">Galpón</th>
                     <th class="py-2.5 px-3">Huevos (Uds)</th>
-                    <th class="py-2.5 px-3">Alimento (Kg)</th>
-                    <th class="py-2.5 px-3">Bajas</th>
-                    <th class="py-2.5 px-3">Estado</th>
+                    <th class="py-2.5 px-3">Cartones</th>
+                    <th class="py-2.5 px-3">Cajas</th>
+                    <th class="py-2.5 px-3">Rotos</th>
+                    <th class="py-2.5 px-3">Total ($)</th>
                   </tr>
                 </thead>
                 <tbody id="records-table-body" class="text-sm divide-y divide-slate-100">
-                  <!-- Filas dinámicas -->
-                  <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón 2 - Producción Alta</td>
-                    <td class="py-3 px-3 text-amber-600 font-bold">5,420</td>
-                    <td class="py-3 px-3 text-slate-600">680 Kg</td>
-                    <td class="py-3 px-3 text-red-500 font-medium">1</td>
-                    <td class="py-3 px-3"><span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-full font-bold">Completado</span></td>
-                  </tr>
-                  <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón 1 - Aves Jóvenes</td>
-                    <td class="py-3 px-3 text-amber-600 font-bold">3,110</td>
-                    <td class="py-3 px-3 text-slate-600">420 Kg</td>
-                    <td class="py-3 px-3 text-slate-400 font-medium">0</td>
-                    <td class="py-3 px-3"><span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-full font-bold">Completado</span></td>
+                  <!-- Filas dinámicas se insertan aquí -->
+                  <tr>
+                    <td colspan="7" class="py-4 text-center text-xs text-slate-400">No hay registros cargados aún.</td>
                   </tr>
                 </tbody>
               </table>
@@ -359,7 +353,7 @@
 
     <!-- PIE DE PÁGINA -->
     <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
-      <p>Módulo de Control "Lumy" &middot; Desarrollado para <strong>Avícola Lumy</strong> &copy; 2026</p>
+      <p>Módulo de Recolección de Huevos &middot; Desarrollado para <strong>Avícola Lumy</strong> &copy; 2026</p>
     </footer>
 
   </div>
@@ -375,6 +369,8 @@
 
     // Inicialización del cliente oficial de Supabase
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let localRecords = []; // Almacén local de registros para cálculos y filtros
 
     // Inicializar Fecha Actual
     document.addEventListener("DOMContentLoaded", () => {
@@ -392,17 +388,14 @@
       const btnRegister = document.getElementById('tab-btn-register');
       const btnForgot = document.getElementById('tab-btn-forgot');
 
-      // Ocultar todos los formularios
       loginForm.classList.add('hidden');
       registerForm.classList.add('hidden');
       forgotForm.classList.add('hidden');
 
-      // Resetear estilos de botones
       [btnLogin, btnRegister, btnForgot].forEach(btn => {
         btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
       });
 
-      // Mostrar el seleccionado y activar botón
       if (tab === 'login') {
         loginForm.classList.remove('hidden');
         btnLogin.className = "flex-1 py-2 text-center text-emerald-700 border-b-2 border-emerald-600 transition-colors font-bold";
@@ -415,16 +408,11 @@
       }
     }
 
-    // Iniciar Sesión con Supabase o Credencial Predeterminada
+    // Iniciar Sesión con Supabase
     async function handleLogin(event) {
       event.preventDefault();
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
-
-      if (email === "admin@lumy.com" && password === "Admin123") {
-        showApp("admin@lumy.com");
-        return;
-      }
 
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -501,41 +489,118 @@
       document.getElementById('auth-screen').classList.remove('hidden');
     }
 
-    // Agregar Nuevo Registro Diario de Granja
+    // Manejar selección de Galpón personalizado
+    function checkCustomShed(val) {
+      const customInput = document.getElementById('custom-shed-input');
+      if (val === 'custom') {
+        customInput.classList.remove('hidden');
+        customInput.required = true;
+        customInput.focus();
+      } else {
+        customInput.classList.add('hidden');
+        customInput.required = false;
+        customInput.value = '';
+      }
+    }
+
+    // Agregar Nuevo Registro Diario de Recolección
     function handleNewEntry(event) {
       event.preventDefault();
 
-      const shed = document.getElementById('entry-shed').value;
-      const eggs = parseInt(document.getElementById('entry-eggs').value);
-      const feed = parseInt(document.getElementById('entry-feed').value);
-      const mortality = parseInt(document.getElementById('entry-mortality').value);
+      let shedSelect = document.getElementById('entry-shed').value;
+      const customShedVal = document.getElementById('custom-shed-input').value.trim();
+      
+      const shed = (shedSelect === 'custom' && customShedVal !== '') ? customShedVal : shedSelect;
+      const eggs = parseInt(document.getElementById('entry-eggs').value) || 0;
+      const broken = parseInt(document.getElementById('entry-broken').value) || 0;
+      const pricePerBox = parseFloat(document.getElementById('entry-price').value) || 0;
 
-      // Insertar en la tabla localmente
-      const tableBody = document.getElementById('records-table-body');
-      const newRow = document.createElement('tr');
-      newRow.className = "hover:bg-slate-50/80 transition-colors animate-pulse";
+      // Lógica de conversión exacta: 30 huevos = 1 cartón | 12 cartones = 1 caja (360 huevos)
+      const cartons = (eggs / 30).toFixed(1);
+      const boxes = (eggs / 360).toFixed(2);
+      const totalPrice = (boxes * pricePerBox).toFixed(2);
 
-      newRow.innerHTML = `
-        <td class="py-3 px-3 font-semibold text-slate-700">${shed}</td>
-        <td class="py-3 px-3 text-amber-600 font-bold">${eggs.toLocaleString()}</td>
-        <td class="py-3 px-3 text-slate-600">${feed} Kg</td>
-        <td class="py-3 px-3 text-red-500 font-medium">${mortality}</td>
-        <td class="py-3 px-3"><span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-full font-bold">Nuevo</span></td>
-      `;
+      const newRecord = {
+        date: new Date().toLocaleDateString('es-ES'),
+        rawDate: new Date(),
+        shed: shed,
+        eggs: eggs,
+        cartons: cartons,
+        boxes: boxes,
+        broken: broken,
+        totalPrice: totalPrice
+      };
 
-      tableBody.insertBefore(newRow, tableBody.firstChild);
-
-      // Actualizar total de producción del día de forma dinámica
-      const currentEggsEl = document.getElementById('stat-daily-eggs');
-      let currentEggs = parseInt(currentEggsEl.innerText.replace(/,/g, ''));
-      currentEggsEl.innerText = (currentEggs + eggs).toLocaleString();
+      localRecords.unshift(newRecord);
+      renderTable(localRecords);
+      updateKPIs();
 
       // Limpiar formulario
       document.getElementById('poultry-entry-form').reset();
+      document.getElementById('custom-shed-input').classList.add('hidden');
+    }
 
-      setTimeout(() => {
-        newRow.classList.remove('animate-pulse');
-      }, 1000);
+    // Renderizar la tabla de registros
+    function renderTable(records) {
+      const tableBody = document.getElementById('records-table-body');
+      
+      if (records.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-xs text-slate-400">No hay registros en este periodo.</td></tr>`;
+        return;
+      }
+
+      tableBody.innerHTML = "";
+      records.forEach(rec => {
+        const row = document.createElement('tr');
+        row.className = "hover:bg-slate-50/80 transition-colors";
+        row.innerHTML = `
+          <td class="py-3 px-3 text-slate-500 text-xs">${rec.date}</td>
+          <td class="py-3 px-3 font-semibold text-slate-700">${rec.shed}</td>
+          <td class="py-3 px-3 text-amber-600 font-bold">${rec.eggs.toLocaleString()}</td>
+          <td class="py-3 px-3 text-slate-700">${rec.cartones} cartones</td>
+          <td class="py-3 px-3 text-blue-600 font-bold">${rec.boxes} cajas</td>
+          <td class="py-3 px-3 text-red-500 font-medium">${rec.broken}</td>
+          <td class="py-3 px-3 text-emerald-700 font-bold">$${rec.totalPrice}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Actualizar métricas generales (KPIs)
+    function updateKPIs() {
+      const totalEggs = localRecords.reduce((acc, curr) => acc + curr.eggs, 0);
+      const totalCartons = (totalEggs / 30).toFixed(1);
+      const totalBoxes = (totalEggs / 360).toFixed(2);
+
+      document.getElementById('stat-daily-eggs').innerText = totalEggs.toLocaleString();
+      document.getElementById('stat-daily-cartons').innerText = totalCartons;
+      document.getElementById('stat-daily-boxes').innerText = totalBoxes;
+    }
+
+    // Filtrar registros por período
+    function filterRecords(period) {
+      if (period === 'all') {
+        renderTable(localRecords);
+        return;
+      }
+
+      const now = new Date();
+      const filtered = localRecords.filter(rec => {
+        const recDate = new Date(rec.rawDate);
+        if (period === 'day') {
+          return recDate.toDateString() === now.toDateString();
+        } else if (period === 'week') {
+          const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return recDate >= oneWeekAgo;
+        } else if (period === 'month') {
+          return recDate.getMonth() === now.getMonth() && recDate.getFullYear() === now.getFullYear();
+        } else if (period === 'year') {
+          return recDate.getFullYear() === now.getFullYear();
+        }
+        return true;
+      });
+
+      renderTable(filtered);
     }
   </script>
 </body>

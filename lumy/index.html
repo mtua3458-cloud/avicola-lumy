@@ -1,64 +1,67 @@
+<!-- Cargar librería oficial de Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <!-- CABLEADO Y CONEXIÓN A SUPABASE -->
-  <script>
-    const SUPABASE_URL = "https://yufrelqaqyeslnnzzltir.supabase.co"; 
-    const SUPABASE_ANON_KEY = "sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC";
+<script>
+  const SUPABASE_URL = "https://yufrelqaqyeslnnzzltir.supabase.co"; 
+  const SUPABASE_ANON_KEY = "sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Cambiar entre Iniciar Sesión, Registrarse y Olvidé Clave
-    function switchAuthTab(tab) {
-      document.getElementById('login-form').classList.add('hidden');
-      document.getElementById('register-form').classList.add('hidden');
-      document.getElementById('forgot-form').classList.add('hidden');
+  // Cambiar entre Iniciar Sesión, Registrarse y Olvidé Clave
+  function switchAuthTab(tab) {
+    document.getElementById('login-form').classList.add('hidden');
+    document.getElementById('register-form').classList.add('hidden');
+    document.getElementById('forgot-form').classList.add('hidden');
 
-      if (tab === 'login') document.getElementById('login-form').classList.remove('hidden');
-      if (tab === 'register') document.getElementById('register-form').classList.remove('hidden');
-      if (tab === 'forgot') document.getElementById('forgot-form').classList.remove('hidden');
+    if (tab === 'login') document.getElementById('login-form').classList.remove('hidden');
+    if (tab === 'register') document.getElementById('register-form').classList.remove('hidden');
+    if (tab === 'forgot') document.getElementById('forgot-form').classList.remove('hidden');
+  }
+
+  // Iniciar Sesión
+  async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      alert("Error al entrar: " + error.message);
+    } else {
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('hidden');
+      document.getElementById('nav-user-name').innerText = data.user.email.split('@')[0];
     }
+  }
 
-    // Iniciar Sesión
-    async function handleLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
+  // Registrar Usuario
+  async function handleRegister(event) {
+    event.preventDefault();
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
 
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+    });
 
-      if (error) {
-        alert("Error al entrar: " + error.message);
-      } else {
-        document.getElementById('auth-screen').classList.add('hidden');
-        document.getElementById('app-screen').classList.remove('hidden');
-        document.getElementById('nav-user-name').innerText = data.user.email.split('@')[0];
-      }
+    if (error) {
+      alert("Error en registro: " + error.message);
+    } else {
+      alert("¡Registro exitoso! Ya puedes iniciar sesión.");
+      switchAuthTab('login');
     }
+  }
 
-    // Registrar Usuario
-    async function handleRegister(event) {
-      event.preventDefault();
-      const email = document.getElementById('reg-email').value;
-      const password = document.getElementById('reg-password').value;
-
-      const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-      });
-
-      if (error) {
-        alert("Error en registro: " + error.message);
-      } else {
-        alert("¡Registro exitoso! Ya puedes iniciar sesión.");
-        switchAuthTab('login');
-      }
-    }
-
-    // Cerrar Sesión
-    async function handleLogout() {
-      await supabaseClient.auth.signOut();
-      document.getElementById('app-screen').classList.add('hidden');
-      document.getElementById('auth-screen').classList.remove('hidden');
-    }
-  </script>
+  // Cerrar Sesión
+  async function handleLogout() {
+    await supabaseClient.auth.signOut();
+    document.getElementById('app-screen').classList.add('hidden');
+    document.getElementById('auth-screen').classList.remove('hidden');
+  }
+</script>

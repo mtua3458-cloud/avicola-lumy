@@ -129,3 +129,252 @@
                         <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo de Movimiento</label>
                         <select id="transType" required class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
                             <option value="entry">Entrada (Inventario)</option>
+                            <option value="sale">Venta (Salida)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Cantidad de Cajas</label>
+                        <input type="number" id="transQty" min="1" required placeholder="Ej: 10" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Precio por Caja ($)</label>
+                        <input type="number" step="0.01" id="transPrice" required placeholder="Ej: 45.00" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2 rounded-lg text-sm shadow transition">
+                            Guardar Registro
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TABLA DE HISTORIAL -->
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-md overflow-hidden">
+                <div class="p-4 bg-zinc-950/50 border-b border-zinc-800 flex justify-between items-center">
+                    <h3 class="text-md font-bold text-amber-400">Historial de Operaciones</h3>
+                    <button onclick="exportPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-zinc-950 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow transition">
+                        <span>📄</span> Exportar PDF
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider border-b border-zinc-800">
+                            <tr>
+                                <th class="p-3">Fecha y Hora</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3">Cajas</th>
+                                <th class="p-3">Precio/Caja</th>
+                                <th class="p-3">Total</th>
+                                <th class="p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable" class="divide-y divide-zinc-800/60 text-zinc-300">
+                            <!-- Se completa dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="bg-zinc-900 border-t border-zinc-800 py-4 text-center text-xs text-zinc-500">
+        &copy; 2026 Avícola Lumy. Todos los derechos reservados.
+    </footer>
+
+    <!-- CONEXIÓN REAL A TU SUPABASE -->
+    <script>
+        // Tus credenciales configuradas directamente
+        const SUPABASE_URL = 'https://yufrelggveslnnzzltjr.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC';
+        
+        let _supabase = null;
+        try {
+            const { createClient } = supabase;
+            _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (err) {
+            console.error('Error inicializando Supabase:', err);
+        }
+
+        function toggleRegisterModal(show) {
+            document.getElementById('registerModal').classList.toggle('hidden', !show);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                showDashboard();
+            } else {
+                alert('Ingrese usuario y contraseña.');
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Cuenta registrada correctamente. Ya puedes ingresar.');
+            toggleRegisterModal(false);
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            
+            if (_supabase) {
+                loadGlobalTransactions();
+                sincronizarEnTiempoReal();
+            }
+        }
+
+        function logout() {
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        async function loadGlobalTransactions() {
+            if (!_supabase) return;
+            const { data, error } = await _supabase
+                .from('transacciones')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) {
+                console.error('Error al cargar:', error.message);
+                return;
+            }
+            renderTransactions(data || []);
+        }
+
+        function sincronizarEnTiempoReal() {
+            if (!_supabase) return;
+            try {
+                _supabase
+                    .channel('public:transacciones')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'transacciones' }, () => {
+                        loadGlobalTransactions();
+                    })
+                    .subscribe();
+            } catch (e) {
+                console.error('Error en tiempo real:', e);
+            }
+        }
+
+        async function handleTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('transType').value;
+            const qty = parseFloat(document.getElementById('transQty').value) || 0;
+            const price = parseFloat(document.getElementById('transPrice').value) || 0;
+
+            const newRecord = {
+                type: type,
+                qty: qty,
+                price: price,
+                total: qty * price,
+                date: new Date().toLocaleString('es-VE')
+            };
+
+            if (!_supabase) {
+                alert('No hay conexión con la base de datos.');
+                return;
+            }
+
+            const { error } = await _supabase
+                .from('transacciones')
+                .insert([newRecord]);
+
+            if (error) {
+                alert('Error al guardar: ' + error.message);
+                console.error(error);
+                return;
+            }
+
+            document.getElementById('transQty').value = '';
+            document.getElementById('transPrice').value = '';
+            loadGlobalTransactions();
+        }
+
+        async function deleteTransaction(id) {
+            if (confirm('¿Estás segura de eliminar este registro?')) {
+                if (!_supabase) return;
+                const { error } = await _supabase
+                    .from('transacciones')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
+                    alert('No se pudo eliminar: ' + error.message);
+                    console.error(error);
+                    return;
+                }
+                loadGlobalTransactions();
+            }
+        }
+
+        function renderTransactions(list) {
+            const tbody = document.getElementById('historyTable');
+            tbody.innerHTML = '';
+
+            let totalStock = 0;
+            let totalSalesQty = 0;
+            let totalRevenue = 0;
+
+            if (!list || list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-zinc-500">No hay registros cargados aún.</td></tr>`;
+            } else {
+                list.forEach(item => {
+                    if (item.type === 'entry') {
+                        totalStock += item.qty;
+                    } else if (item.type === 'sale') {
+                        totalStock -= item.qty;
+                        totalSalesQty += item.qty;
+                        totalRevenue += item.total;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-zinc-800/40 transition";
+                    tr.innerHTML = `
+                        <td class="p-3 text-zinc-400">${item.date}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'entry' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
+                                ${item.type === 'entry' ? 'Entrada' : 'Venta'}
+                            </span>
+                        </td>
+                        <td class="p-3 font-semibold text-zinc-100">${item.qty}</td>
+                        <td class="p-3 text-zinc-300">$${item.price.toFixed(2)}</td>
+                        <td class="p-3 font-bold text-amber-400">$${item.total.toFixed(2)}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="deleteTransaction(${item.id})" title="Eliminar registro" class="bg-red-500/20 hover:bg-red-500/40 text-red-400 p-1.5 rounded-lg border border-red-500/30 transition">
+                                🗑️
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('statStock').textContent = Math.max(0, totalStock);
+            document.getElementById('statSales').textContent = totalSalesQty;
+            document.getElementById('statRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        }
+
+        function exportPDF() {
+            window.print();
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(function() {
+                console.log('Service Worker Registrado con Éxito');
+            }).catch(function(err) {
+                console.log('Error al registrar Service Worker:', err);
+            });
+        }
+    </script>
+</body>
+</html>

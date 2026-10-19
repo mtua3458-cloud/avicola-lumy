@@ -300,19 +300,14 @@
           </div>
 
           <form id="poultry-entry-form" onsubmit="handleNewEntry(event)" class="space-y-4">
-            <!-- SELECCIÓN Y CREACIÓN DE GALPÓN -->
+            <!-- MENÚ DESPLEGABLE DE GALPÓN CON OPCIÓN DE AGREGAR -->
             <div>
-              <div class="flex justify-between items-center mb-1">
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Galpón</label>
-                <button type="button" onclick="promptNewShed()" class="text-[11px] text-emerald-600 hover:text-emerald-800 font-semibold flex items-center space-x-1">
-                  <i class="fa-solid fa-plus-circle"></i>
-                  <span>Agregar Galpón</span>
-                </button>
-              </div>
-              <select id="entry-shed" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                <option value="Galpón 1">Galpón 1</option>
-                <option value="Galpón 2">Galpón 2</option>
-                <option value="Galpón 3">Galpón 3</option>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Seleccionar Galpón</label>
+              <select id="entry-shed" onchange="checkShedSelection(this)" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <option value="Galpón A">Galpón A</option>
+                <option value="Galpón B">Galpón B</option>
+                <option value="Galpón C">Galpón C</option>
+                <option value="add_new" class="font-bold text-emerald-600">+ Agregar Galpón...</option>
               </select>
             </div>
 
@@ -372,7 +367,7 @@
                 </thead>
                 <tbody id="records-table-body" class="text-sm divide-y divide-slate-100">
                   <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón 2</td>
+                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón B</td>
                     <td class="py-3 px-3 text-amber-600 font-bold">5,420</td>
                     <td class="py-3 px-3 text-rose-600 font-semibold">22</td>
                     <td class="py-3 px-3 text-slate-600">680 Kg</td>
@@ -380,7 +375,7 @@
                     <td class="py-3 px-3 text-xs text-slate-400">Hoy</td>
                   </tr>
                   <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón 1</td>
+                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón A</td>
                     <td class="py-3 px-3 text-amber-600 font-bold">3,110</td>
                     <td class="py-3 px-3 text-rose-600 font-semibold">12</td>
                     <td class="py-3 px-3 text-slate-600">420 Kg</td>
@@ -552,21 +547,31 @@
       }
     }
 
-    // Agregar Nuevo Galpón
-    function promptNewShed() {
-      const newShedName = prompt("Nombre del nuevo galpón (Ej. Galpón 4):");
-      if (newShedName && newShedName.trim() !== "") {
-        const select = document.getElementById('entry-shed');
-        const option = document.createElement('option');
-        option.value = newShedName.trim();
-        option.text = newShedName.trim();
-        select.appendChild(option);
-        select.value = newShedName.trim();
+    // Detectar si selecciona la opción de agregar galpón desde el menú
+    function checkShedSelection(selectElement) {
+      if (selectElement.value === 'add_new') {
+        const newShedName = prompt("Ingresa el nombre del nuevo galpón (Ej. Galpón D o Galpón 4):");
+        if (newShedName && newShedName.trim() !== "") {
+          const formattedName = newShedName.trim();
+          
+          // Crear nueva opción y colocarla antes de la opción de agregar
+          const option = document.createElement('option');
+          option.value = formattedName;
+          option.text = formattedName;
+          
+          const addNewOption = selectElement.querySelector('option[value="add_new"]');
+          selectElement.insertBefore(option, addNewOption);
+          selectElement.value = formattedName;
 
-        // Actualizar contador visual
-        document.getElementById('stat-active-sheds-tag').innerHTML = `
-          <i class="fa-solid fa-house-chimney text-[9px] mr-1"></i> ${select.options.length} Galpones Registrados
-        `;
+          // Actualizar contador visual de galpones registrados (excluyendo la opción de agregar)
+          const totalSheds = selectElement.options.length - 1;
+          document.getElementById('stat-active-sheds-tag').innerHTML = `
+            <i class="fa-solid fa-house-chimney text-[9px] mr-1"></i> ${totalSheds} Galpones Registrados
+          `;
+        } else {
+          // Si cancela, regresar al primer galpón por defecto
+          selectElement.selectedIndex = 0;
+        }
       }
     }
 

@@ -1,0 +1,37 @@
+{
+  "project": "Avícola Lumy",
+  "module": "Lumy - Recolección de Huevos",
+  "version": "1.0.0",
+  "tables": {
+    "recoleccion_huevos": {
+      "columns": {
+        "id": "uuid (primary key)",
+        "lote_o_galpon": "text",
+        "huevos_buenos": "integer",
+        "huevos_rotos": "integer",
+        "cartones_totales": "integer",
+        "observaciones": "text",
+        "fecha_recoleccion": "timestamp with time zone"
+      }
+    },
+    "tipos_huevos": {
+      "columns": {
+        "id": "uuid (primary key)",
+        "categoria": "text",
+        "peso_minimo": "text"
+      }
+    }
+  },
+  "configuracion_inicial": {
+    "categorias_huevos": [
+      "Clase A",
+      "Clase B",
+      "Jumbo",
+      "Mediano"
+    ],
+    "usuario_prueba": {
+      "email": "admin@lumy.com",
+      "role": "admin"
+    }
+  }
+}

@@ -1,17 +1,30 @@
 {
-  "background_color": "#d97706",
-  "dir": "ltr",
-  "display": "standalone",
-  "name": "avicolalumy",
-  "orientation": "any",
-  "scope": "/",
+  "name": "Avícola Lumy",
   "short_name": "Lumy",
+  "description": "Sistema de gestión y control exclusivo de cajas de huevos, inventario y ventas para Avícola Lumy.",
   "start_url": "/",
-  "theme_color": "#f8fafc",
-  "id": "https://avicolalumy.com",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f8fafc",
+  "theme_color": "#d97706",
+  "dir": "ltr",
+  "lang": "es",
   "categories": [
     "business"
   ],
-  "description": "Sistema de gestión y control exclusivo de cajas de huevos, inventario y ventas para Avícola Lumy.",
-  "lang": "es"
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3014/3014523.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3014/3014523.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }

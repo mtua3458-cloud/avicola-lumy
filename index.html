@@ -52,73 +52,27 @@
 
                 <form onsubmit="handleLogin(event)" class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Usuario / Correo</label>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Usuario</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm">👤</span>
-                            <input type="text" id="username" required placeholder="ejemplo@lumy.com" class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                            <input type="text" id="username" required value="admin@lumy.com" placeholder="Ingresa tu usuario" class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
                         </div>
                     </div>
                     <div>
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Contraseña</label>
-                            <a href="#" onclick="alert('Contacte al administrador para restablecer su clave.')" class="text-xs text-amber-600 hover:underline">¿Olvidaste tu contraseña?</a>
-                        </div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
                         <div class="relative">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-sm">🔒</span>
-                            <input type="password" id="password" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
+                            <input type="password" id="password" required value="123456" placeholder="••••••••" class="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 text-slate-800">
                         </div>
                     </div>
                     <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl shadow-md transition duration-200 mt-2 text-sm flex items-center justify-center gap-1">
                         Ingresar
                     </button>
                 </form>
-
-                <!-- SECCIÓN AGREGADA: REGISTRO Y USUARIO DEMO -->
-                <div class="mt-5 text-center text-xs text-slate-500 space-y-2 border-t border-slate-200 pt-4">
-                    <button onclick="fillDemo()" class="w-full bg-amber-100/80 hover:bg-amber-200/80 text-amber-900 py-2 px-3 rounded-xl border border-amber-300/60 transition font-medium">
-                        ¿Quieres probar rápido el sistema?<br><span class="text-amber-700 font-bold">Usar usuario demo (admin@lumy.com)</span>
-                    </button>
-                    <p class="pt-1">¿No tienes una cuenta? <a href="#" onclick="toggleRegisterModal(true)" class="text-amber-600 font-bold hover:underline">Regístrate gratis</a></p>
-                </div>
             </div>
         </section>
 
-        <!-- FORMULARIO / MODAL DE REGISTRAR USUARIO -->
-        <div id="registerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-amber-500/20">
-                <div class="bg-slate-900 text-white p-5 flex justify-between items-center border-b border-slate-800">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xl">👤</span>
-                        <h3 class="font-bold text-amber-400 text-md">Crear Nueva Cuenta</h3>
-                    </div>
-                    <button onclick="toggleRegisterModal(false)" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
-                </div>
-                <form onsubmit="handleRegister(event)" class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nombre Completo</label>
-                        <input type="text" id="regName" required placeholder="Ej: María Eugenia" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                        <input type="email" id="regEmail" required placeholder="correo@ejemplo.com" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
-                        <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 outline-none">
-                    </div>
-                    <div class="flex gap-2 pt-2">
-                        <button type="button" onclick="toggleRegisterModal(false)" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2.5 rounded-xl text-sm transition">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow-md transition">
-                            Registrarse
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- PANTALLA 2: DASHBOARD Y REGISTROS -->
+        <!-- PANTALLA 2: DASHBOARD Y REGISTROS (Protegida) -->
         <section id="dashboardScreen" class="hidden space-y-6 w-full">
             
             <!-- TARJETAS DE RESUMEN DE STOCK -->
@@ -175,7 +129,7 @@
                 </form>
             </div>
 
-            <!-- TABLA DE HISTORIAL -->
+            <!-- TABLA DE HISTORIAL DE OPERACIONES -->
             <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
                 <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
                     <h3 class="text-md font-bold text-amber-400">Historial de Operaciones</h3>
@@ -195,7 +149,7 @@
                             </tr>
                         </thead>
                         <tbody id="historyTable" class="divide-y divide-slate-100 text-slate-700">
-                            <!-- Se completa dinámicamente -->
+                            <!-- Se genera dinámicamente -->
                         </tbody>
                     </table>
                 </div>
@@ -210,41 +164,27 @@
         &copy; 2026 Avícola Lumy. Todos los derechos reservados.
     </footer>
 
-    <!-- LÓGICA DE INTERFAZ Y REGISTRO DE USUARIOS -->
+    <!-- LÓGICA DE INICIO Y SERVICE WORKER -->
     <script>
-      // Registro del Service Worker para PWA
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js').then(function() {
-          console.log('Service Worker Registrado con Éxito');
+          console.log('Service Worker Registrado');
         }).catch(function(err) {
-          console.log('Error al registrar Service Worker:', err);
+          console.log('Error en SW:', err);
         });
       }
 
-      // Abrir/Cerrar Modal de Registro
-      function toggleRegisterModal(show) {
-        const modal = document.getElementById('registerModal');
-        if (show) {
-          modal.classList.remove('hidden');
-        } else {
-          modal.classList.add('hidden');
-        }
-      }
-
-      // Rellenar Usuario Demo
-      function fillDemo() {
-        document.getElementById('username').value = 'admin@lumy.com';
-        document.getElementById('password').value = '123456';
-      }
-
-      // Manejo de Registro
-      function handleRegister(e) {
+      function handleLogin(e) {
         e.preventDefault();
-        const name = document.getElementById('regName').value;
-        const email = document.getElementById('regEmail').value;
-        alert('¡Usuario ' + name + ' (' + email + ') registrado exitosamente!');
-        toggleRegisterModal(false);
-        document.getElementById('username').value = email;
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboardScreen').classList.remove('hidden');
+        document.getElementById('logoutBtn').classList.remove('hidden');
+      }
+
+      function logout() {
+        document.getElementById('dashboardScreen').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.add('hidden');
+        document.getElementById('loginScreen').classList.remove('hidden');
       }
     </script>
 </body>

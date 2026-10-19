@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumy - Gestión Avícola | Avícola Lumy</title>
+  <title>Lumy - Galpones | Control de Producción</title>
   
   <!-- Prevención de error 404 de Favicon -->
   <link rel="icon" href="data:,">
@@ -56,8 +56,8 @@
         <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-emerald-600 to-amber-500 text-white rounded-2xl shadow-lg mb-4 transform hover:rotate-6 transition-transform">
           <i class="fa-solid font-bold fa-egg text-3xl"></i>
         </div>
-        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Avícola Lumy</h1>
-        <p class="text-sm font-medium text-emerald-600 mt-1">Módulo "Lumy" · Control de Producción</p>
+        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Lumy - Galpones</h1>
+        <p class="text-sm font-medium text-emerald-600 mt-1">Módulo de Control de Producción</p>
       </div>
 
       <!-- PESTAÑAS DE NAVEGACIÓN AUTH -->
@@ -92,7 +92,7 @@
         </div>
 
         <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
-          <span>Ingresar a Lumy</span>
+          <span>Ingresar al Sistema</span>
           <i class="fa-solid fa-right-to-bracket"></i>
         </button>
       </form>
@@ -161,7 +161,7 @@
               <i class="fa-solid fa-boxes-stacked text-lg"></i>
             </div>
             <div>
-              <span class="font-extrabold text-lg tracking-wide text-white block leading-none">LUMY</span>
+              <span class="font-extrabold text-lg tracking-wide text-white block leading-none">LUMY - GALPONES</span>
               <span class="text-[10px] text-emerald-200 tracking-wider uppercase">Sistema de Control Avícola</span>
             </div>
           </div>
@@ -188,7 +188,7 @@
       <!-- ENCABEZADO Y ACCIONES DE IMPRESIÓN -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-bold text-slate-800">Panel General de Producción</h2>
+          <h2 class="text-2xl font-bold text-slate-800">Panel General de Galpones</h2>
           <p class="text-sm text-slate-500">Monitoreo e ingreso por galpón en tiempo real.</p>
         </div>
         
@@ -394,7 +394,7 @@
 
     <!-- PIE DE PÁGINA -->
     <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
-      <p>Módulo de Control "Lumy" &middot; Desarrollado para <strong>Avícola Lumy</strong> &copy; 2026</p>
+      <p>Lumy - Galpones &middot; Desarrollado para <strong>Avícola Lumy</strong> &copy; 2026</p>
     </footer>
 
   </div>
@@ -676,7 +676,7 @@
       printWindow.document.write(`
         <html>
           <head>
-            <title>Reporte ${periodLabels[period]} - Avícola Lumy</title>
+            <title>Reporte ${periodLabels[period]} - Lumy Galpones</title>
             <style>
               body { font-family: sans-serif; padding: 20px; color: #1e293b; }
               h1 { color: #15803d; border-bottom: 2px solid #15803d; padding-bottom: 8px; }
@@ -688,7 +688,7 @@
             </style>
           </head>
           <body>
-            <h1>Avícola Lumy - Reporte ${periodLabels[period]}</h1>
+            <h1>Lumy - Galpones (Reporte ${periodLabels[period]})</h1>
             <p><strong>Fecha de generación:</strong> ${new Date().toLocaleDateString('es-ES')}</p>
             <div class="summary">
               <div class="card"><strong>Huevos Recolectados:</strong> ${totalEggs}</div>

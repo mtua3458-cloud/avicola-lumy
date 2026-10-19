@@ -79,7 +79,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
           <div class="relative">
             <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="email" id="login-email" required placeholder="admin@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="email" id="login-email" required value="admin@lumy.com" placeholder="admin@lumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
@@ -87,7 +87,7 @@
           <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+            <input type="password" id="login-password" required value="Admin123" placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
           </div>
         </div>
 
@@ -415,11 +415,17 @@
       }
     }
 
-    // Iniciar Sesión con Supabase
+    // Iniciar Sesión con Supabase o Usuario Predeterminado
     async function handleLogin(event) {
       event.preventDefault();
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
+
+      // Validación para Usuario Administrador Predeterminado
+      if (email === "admin@lumy.com" && password === "Admin123") {
+        showApp("admin@lumy.com");
+        return;
+      }
 
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({

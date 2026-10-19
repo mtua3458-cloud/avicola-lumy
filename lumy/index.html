@@ -1,345 +1,64 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avícola Lumy - Gestión de Cajas de Huevos</title>
-  
-  <!-- PWA MANIFEST & ICONO PREDETERMINADO DE HUEVITO -->
-  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Av%C3%ADcola%20Lumy%22%2C%22short_name%22%3A%22Lumy%22%2C%22start_url%22%3A%22%2Flumy%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%23047857%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf-8,%2C%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%23047857%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2256%25%22%20font-size%3D%22260%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E🥚%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%3E%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%23047857%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2256%25%22%20font-size%3D%22260%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3E🥚%3C%2Ftext%3E%3C%2Fsvg%3E">
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts: Plus Jakarta Sans -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
-  <!-- jsPDF and jsPDF-AutoTable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+<!-- CABLEADO Y CONEXIÓN A SUPABASE -->
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-          },
-          colors: {
-            amber: {
-              50: '#fffbeb',
-              100: '#fef3c7',
-              500: '#f59e0b',
-              600: '#d97706',
-              700: '#b45309',
-            },
-            emerald: {
-              600: '#059669',
-              700: '#047857',
-              800: '#065f46',
-            },
-            gold: {
-              400: '#facc15',
-              500: '#eab308',
-              600: '#ca8a04',
-            }
-          }
-        }
+    const SUPABASE_URL = "https://yufrelqaqyeslnnzzltir.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Cambiar entre Iniciar Sesión, Registrarse y Olvidé Clave
+    function switchAuthTab(tab) {
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('register-form').classList.add('hidden');
+      document.getElementById('forgot-form').classList.add('hidden');
+
+      if (tab === 'login') document.getElementById('login-form').classList.remove('hidden');
+      if (tab === 'register') document.getElementById('register-form').classList.remove('hidden');
+      if (tab === 'forgot') document.getElementById('forgot-form').classList.remove('hidden');
+    }
+
+    // Iniciar Sesión
+    async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        alert("Error al entrar: " + error.message);
+      } else {
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('app-screen').classList.remove('hidden');
+        document.getElementById('nav-user-name').innerText = data.user.email.split('@')[0];
       }
     }
+
+    // Registrar Usuario
+    async function handleRegister(event) {
+      event.preventDefault();
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        alert("Error en registro: " + error.message);
+      } else {
+        alert("¡Registro exitoso! Ya puedes iniciar sesión.");
+        switchAuthTab('login');
+      }
+    }
+
+    // Cerrar Sesión
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      document.getElementById('app-screen').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('hidden');
+    }
   </script>
-
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f8fafc;
-    }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-    .gradient-header {
-      background: linear-gradient(135deg, #065f46 0%, #047857 50%, #b45309 100%);
-    }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-    }
-  </style>
-</head>
-<body class="text-slate-800 min-h-screen flex flex-col justify-between">
-
-  <!-- NOTIFICATION TOAST CONTAINER -->
-  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm"></div>
-
-  <!-- AUTHENTICATION VIEW CONTAINER -->
-  <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-50 via-slate-100 to-emerald-50">
-    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-100">
-      
-      <!-- HEADER BRANDING -->
-      <div class="gradient-header p-8 text-center text-white relative">
-        <div class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner border border-white/20">
-          <i class="fa-solid fa-egg text-gold-400 text-4xl"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold tracking-tight">Avícola Lumy</h1>
-        <p class="text-amber-100 text-sm mt-1">Control Comercial & Inventario Exclusivo de Cajas</p>
-      </div>
-
-      <div class="p-8">
-        <!-- LOGIN FORM -->
-        <form id="login-form" class="space-y-5" onsubmit="handleLogin(event)">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-slate-800">Iniciar Sesión</h2>
-            <span class="text-xs bg-amber-100 text-amber-800 font-semibold px-2.5 py-1 rounded-full">Seguro</span>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Correo Electrónico</label>
-            <div class="relative">
-              <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-400"></i>
-              <input type="email" id="login-email" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:bg-white outline-none transition" placeholder="correo@ejemplo.com">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Contraseña</label>
-            <div class="relative">
-              <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-400"></i>
-              <input type="password" id="login-password" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:bg-white outline-none transition" placeholder="••••••••">
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between text-sm">
-            <label class="flex items-center text-slate-600 cursor-pointer">
-              <input type="checkbox" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 mr-2" checked>
-              Recordarme
-            </label>
-            <button type="button" onclick="switchAuthTab('forgot')" class="text-emerald-700 hover:underline font-medium">¿Olvidaste tu clave?</button>
-          </div>
-
-          <button type="submit" class="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl shadow-lg shadow-emerald-700/20 transition duration-200 flex items-center justify-center gap-2">
-            <i class="fa-solid fa-right-to-bracket"></i> Acceder a la Granja
-          </button>
-
-          <p class="text-center text-sm text-slate-600 pt-2">
-            ¿No tienes cuenta registrada? 
-            <button type="button" onclick="switchAuthTab('register')" class="text-emerald-700 font-bold hover:underline">Registrarse</button>
-          </p>
-        </form>
-
-        <!-- REGISTER FORM -->
-        <form id="register-form" class="space-y-4 hidden" onsubmit="handleRegister(event)">
-          <h2 class="text-xl font-bold text-slate-800">Crear Cuenta Comercial</h2>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Nombre Completo</label>
-            <input type="text" id="reg-name" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none" placeholder="Ej: Don Juan Pérez">
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Correo Electrónico</label>
-            <input type="email" id="reg-email" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none" placeholder="usuario@lume.com">
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Contraseña</label>
-            <input type="password" id="reg-password" minlength="6" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none" placeholder="Mínimo 6 caracteres">
-          </div>
-
-          <button type="submit" class="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-lg transition duration-200">
-            Registrarse en Avícola Lumy
-          </button>
-
-          <p class="text-center text-sm text-slate-600">
-            ¿Ya tienes una cuenta? 
-            <button type="button" onclick="switchAuthTab('login')" class="text-emerald-700 font-bold hover:underline">Iniciar Sesión</button>
-          </p>
-        </form>
-
-        <!-- FORGOT PASSWORD FORM -->
-        <form id="forgot-form" class="space-y-4 hidden" onsubmit="handleForgot(event)">
-          <h2 class="text-xl font-bold text-slate-800">Recuperación de Clave</h2>
-          <p class="text-xs text-slate-500">Ingresa tu correo registrado y te mostraremos una clave temporal de acceso.</p>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Correo Registrado</label>
-            <input type="email" id="forgot-email" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-600 outline-none" placeholder="correo@ejemplo.com">
-          </div>
-
-          <button type="submit" class="w-full py-3 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-lg transition">
-            Generar Clave Temporal
-          </button>
-
-          <p class="text-center text-sm text-slate-600 pt-2">
-            <button type="button" onclick="switchAuthTab('login')" class="text-emerald-700 font-bold hover:underline">← Volver al inicio</button>
-          </p>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN APP DASHBOARD -->
-  <div id="app-screen" class="hidden min-h-screen flex flex-col">
-    
-    <!-- NAVBAR -->
-    <header class="gradient-header text-white sticky top-0 z-30 shadow-md">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center border border-white/30">
-            <i class="fa-solid fa-egg text-gold-400 text-xl"></i>
-          </div>
-          <div>
-            <h1 class="text-xl font-extrabold tracking-tight leading-none">Avícola Lumy</h1>
-            <span class="text-xs text-amber-200 font-medium">Gestión Exclusiva por Cajas de Huevos</span>
-          </div>
-        </div>
-
-        <div class="flex items-center space-x-3">
-          <button onclick="openProfileModal()" class="flex items-center space-x-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl px-3 py-1.5 transition text-xs sm:text-sm">
-            <div class="w-7 h-7 rounded-full bg-gold-400 text-emerald-900 flex items-center justify-center font-bold">
-              <span id="nav-avatar">U</span>
-            </div>
-            <span id="nav-user-name" class="font-medium hidden sm:inline">Usuario</span>
-            <i class="fa-solid fa-gear text-xs text-amber-200 ml-1"></i>
-          </button>
-
-          <button onclick="handleLogout()" title="Cerrar Sesión" class="p-2 bg-red-500/20 hover:bg-red-500/40 text-red-100 rounded-xl border border-red-400/30 transition">
-            <i class="fa-solid fa-power-off"></i>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- MAIN BODY -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-      
-      <!-- TOP ACTION BAR & SUMMARY BANNER -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-        <div>
-          <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-boxes-stacked text-amber-600"></i> Panel de Control de Inventario
-          </h2>
-          <p class="text-sm text-slate-500 mt-0.5">Mapeo en tiempo real de entradas y ventas de cajas de huevos (Nube Supabase)</p>
-        </div>
-        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-          <button onclick="openTransactionModal('ENTRADA')" class="flex-1 sm:flex-initial px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-plus-circle"></i> Entrada de Cajas (+ Stock)
-          </button>
-          <button onclick="openTransactionModal('SALIDA')" class="flex-1 sm:flex-initial px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-cash-register"></i> Registrar Venta (- Stock)
-          </button>
-          <button onclick="openReportModal()" class="w-full sm:w-auto px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-file-pdf text-red-400"></i> Exportar Reporte PDF
-          </button>
-        </div>
-      </div>
-
-      <!-- KPI METRICS GRID -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Stock Actual Disponible</p>
-            <h3 id="kpi-stock" class="text-3xl font-extrabold text-slate-800 mt-1">0</h3>
-            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block mt-1">Cajas en Almacén</span>
-          </div>
-          <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-700 text-2xl shadow-inner">
-            <i class="fa-solid fa-box-archive"></i>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Entradas de Hoy</p>
-            <h3 id="kpi-entradas-hoy" class="text-3xl font-extrabold text-emerald-700 mt-1">+0</h3>
-            <span class="text-xs font-semibold text-slate-500 inline-block mt-1">Cajas ingresadas hoy</span>
-          </div>
-          <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-700 text-2xl shadow-inner">
-            <i class="fa-solid fa-arrow-down-to-bracket"></i>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Ventas / Salidas Hoy</p>
-            <h3 id="kpi-salidas-hoy" class="text-3xl font-extrabold text-amber-700 mt-1">-0</h3>
-            <span class="text-xs font-semibold text-slate-500 inline-block mt-1">Cajas despachadas hoy</span>
-          </div>
-          <div class="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-700 text-2xl shadow-inner">
-            <i class="fa-solid fa-truck-ramp-box"></i>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Recaudado Hoy ($)</p>
-            <h3 id="kpi-recaudado-hoy" class="text-3xl font-extrabold text-slate-800 mt-1">$0.00</h3>
-            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block mt-1">Ingreso bruto por ventas</span>
-          </div>
-          <div class="w-14 h-14 bg-gold-400/20 rounded-2xl flex items-center justify-center text-gold-600 text-2xl shadow-inner">
-            <i class="fa-solid fa-sack-dollar"></i>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- TABLE & INVENTORY CONTROL SECTION -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        
-        <div class="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/50 flex flex-col md:flex-row gap-3 items-center justify-between">
-          <div class="flex items-center gap-2 w-full md:w-auto">
-            <span class="text-xs font-bold uppercase text-slate-500 whitespace-nowrap"><i class="fa-solid fa-filter"></i> Filtrar:</span>
-            <div class="flex bg-slate-200 p-1 rounded-xl w-full md:w-auto">
-              <button onclick="setFilter('TODAS')" id="filter-btn-TODAS" class="filter-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-white shadow text-slate-800 transition">Todas</button>
-              <button onclick="setFilter('ENTRADA')" id="filter-btn-ENTRADA" class="filter-btn px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-800 transition">Entradas (+)</button>
-              <button onclick="setFilter('SALIDA')" id="filter-btn-SALIDA" class="filter-btn px-3 py-1.5 text-xs font-bold text-slate-600 hover:text-slate-800 transition">Ventas (-)</button>
-            </div>
-          </div>
-
-          <div class="relative w-full md:w-72">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-            <input type="text" id="search-input" onkeyup="renderTable()" placeholder="Buscar cliente, nota o fecha..." class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-600 outline-none">
-          </div>
-        </div>
-
-        <div class="overflow-x-auto custom-scrollbar">
-          <table class="w-full text-left text-xs sm:text-sm">
-            <thead class="bg-slate-100 text-slate-600 uppercase text-[11px] font-bold tracking-wider">
-              <tr>
-                <th class="py-3.5 px-4">Fecha / Hora</th>
-                <th class="py-3.5 px-4">Tipo Movimiento</th>
-                <th class="py-3.5 px-4 text-center">Cajas</th>
-                <th class="py-3.5 px-4 text-right">Precio/Caja</th>
-                <th class="py-3.5 px-4 text-right">Monto Total</th>
-                <th class="py-3.5 px-4">Cliente / Detalle Nota</th>
-                <th class="py-3.5 px-4 text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="inventory-tbody" class="divide-y divide-slate-200">
-              <!-- Dynamically populated rows -->
-            </tbody>
-          </table>
-        </div>
-
-        <div id="empty-state" class="p-12 text-center hidden">
-          <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-2xl">
-            <i class="fa-solid fa-box-open"></i>
-          </div>
-          <h4 class="font-bold text-slate-700">Sin registros de cajas</h4>
-          <p class="text-xs text-slate-500 mt-1">No hay movimientos registrados para el filtro seleccionado.</p>
-        </div>
-      </div>
-    </main>
-  </div>
-</body>
-</html>

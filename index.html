@@ -20,17 +20,17 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 400px;
+            max-width: 420px;
             width: 90%;
         }
         h1 {
             color: #333;
             margin-bottom: 10px;
-            font-size: 24px;
+            font-size: 26px;
         }
         p {
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-size: 14px;
         }
         .btn {
@@ -45,12 +45,16 @@
             transition: transform 0.2s, box-shadow 0.2s;
             box-sizing: border-box;
         }
-        .btn-ventas {
-            background-color: #2b6cb0;
+        .btn-galpones {
+            background-color: #15803d; /* Verde Esmeralda / Galpones */
             color: white;
         }
-        .btn-lumy {
-            background-color: #d69e2e;
+        .btn-huevos {
+            background-color: #d97706; /* Ámbar / Huevos */
+            color: white;
+        }
+        .btn-ventas {
+            background-color: #2b6cb0; /* Azul / Ventas */
             color: white;
         }
         .btn:hover {
@@ -63,10 +67,11 @@
 
     <div class="card-container">
         <h1>Avícola Lumy</h1>
-        <p>Selecciona la aplicación a la que deseas ingresar:</p>
+        <p>Selecciona el módulo al que deseas ingresar:</p>
         
+        <a href="./galpones/" class="btn btn-galpones">🏡 Módulo - Galpones</a>
+        <a href="./huevos/" class="btn btn-huevos">🥚 Recolección de Huevos</a>
         <a href="./ventas/" class="btn btn-ventas">🛒 Módulo de Ventas</a>
-        <a href="./lumy/" class="btn btn-lumy">🥚 Sistema Lumy (Cajas)</a>
     </div>
 
 </body>

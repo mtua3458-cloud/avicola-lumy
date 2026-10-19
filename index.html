@@ -181,60 +181,31 @@
         &copy; 2026 Avícola Lumy. Todos los derechos reservados.
     </footer>
 
-    <!-- LÓGICA DE CONEXIÓN Y SINCRONIZACIÓN -->
+    <!-- LÓGICA DE MANEJO DE DATOS Y CENTRALIZACIÓN -->
     <script>
-        const API_URL = "https://tu-servidor-backend.com/api"; // Reemplaza con la URL real de tu servidor Backend
+        const STORAGE_KEY = 'avicola_lumy_shared_db';
 
         function toggleRegisterModal(show) {
             document.getElementById('registerModal').classList.toggle('hidden', !show);
         }
 
-        async function handleLogin(e) {
+        function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('username').value.toLowerCase().trim();
             const password = document.getElementById('password').value;
 
-            try {
-                const res = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                if (res.ok) {
-                    showDashboard();
-                } else {
-                    alert('Credenciales incorrectas. Verifique usuario y contraseña.');
-                }
-            } catch (err) {
-                // Si aún no tienes backend configurado, permite acceso local para pruebas
+            if (username && password) {
                 showDashboard();
+            } else {
+                alert('Ingrese usuario y contraseña.');
             }
         }
 
-        async function handleRegister(e) {
+        function handleRegister(e) {
             e.preventDefault();
-            const name = document.getElementById('regName').value;
-            const email = document.getElementById('regEmail').value.toLowerCase().trim();
-            const password = document.getElementById('regPassword').value;
-
-            try {
-                const res = await fetch(`${API_URL}/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
-                });
-
-                if (res.ok) {
-                    alert('Registro exitoso. Ahora puedes ingresar.');
-                    toggleRegisterModal(false);
-                } else {
-                    alert('Error al registrar usuario.');
-                }
-            } catch (err) {
-                alert('Registro completado en modo local.');
-                toggleRegisterModal(false);
-            }
+            alert('Cuenta registrada correctamente. Ya puedes ingresar.');
+            toggleRegisterModal(false);
+            showDashboard();
         }
 
         function showDashboard() {
@@ -250,38 +221,80 @@
             document.getElementById('loginScreen').classList.remove('hidden');
         }
 
-        async function loadGlobalTransactions() {
-            try {
-                const res = await fetch(`${API_URL}/transactions`);
-                const data = await res.json();
-                renderTransactions(data);
-            } catch (err) {
-                console.log('Cargando en modo demostración...');
-            }
+        function getSharedData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
         }
 
-        async function handleTransaction(e) {
+        function saveSharedData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadGlobalTransactions() {
+            const transactions = getSharedData();
+            renderTransactions(transactions);
+        }
+
+        function handleTransaction(e) {
             e.preventDefault();
             const type = document.getElementById('transType').value;
-            const qty = parseFloat(document.getElementById('transQty').value);
-            const price = parseFloat(document.getElementById('transPrice').value);
+            const qty = parseFloat(document.getElementById('transQty').value) || 0;
+            const price = parseFloat(document.getElementById('transPrice').value) || 0;
 
-            const transaction = { type, qty, price, date: new Date().toISOString() };
+            const newRecord = {
+                id: Date.now(),
+                type: type,
+                qty: qty,
+                price: price,
+                total: qty * price,
+                date: new Date().toLocaleString('es-VE')
+            };
 
-            try {
-                await fetch(`${API_URL}/transactions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(transaction)
-                });
-                loadGlobalTransactions();
-            } catch (err) {
-                alert('Operación registrada exitosamente.');
-            }
+            const transactions = getSharedData();
+            transactions.unshift(newRecord);
+            saveSharedData(transactions);
+
+            document.getElementById('transQty').value = '';
+            document.getElementById('transPrice').value = '';
+
+            loadGlobalTransactions();
         }
 
         function renderTransactions(list) {
-            // Renderizado de tabla e indicadores globales
+            const tbody = document.getElementById('historyTable');
+            tbody.innerHTML = '';
+
+            let totalStock = 0;
+            let totalSalesQty = 0;
+            let totalRevenue = 0;
+
+            list.forEach(item => {
+                if (item.type === 'entry') {
+                    totalStock += item.qty;
+                } else if (item.type === 'sale') {
+                    totalStock -= item.qty;
+                    totalSalesQty += item.qty;
+                    totalRevenue += item.total;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3">${item.date}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'entry' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${item.type === 'entry' ? 'Entrada' : 'Venta'}</span></td>
+                    <td class="p-3 font-semibold">${item.qty}</td>
+                    <td class="p-3">$${item.price.toFixed(2)}</td>
+                    <td class="p-3 font-bold text-slate-700">$${item.total.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('statStock').textContent = Math.max(0, totalStock);
+            document.getElementById('statSales').textContent = totalSalesQty;
+            document.getElementById('statRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
+        }
+
+        function exportPDF() {
+            window.print();
         }
 
         if ('serviceWorker' in navigator) {

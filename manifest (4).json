@@ -1,0 +1,17 @@
+{
+  "background_color": "#d97706",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "avicolalumy",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Lumy",
+  "start_url": "/",
+  "theme_color": "#f8fafc",
+  "id": "https://avicolalumy.com",
+  "categories": [
+    "business"
+  ],
+  "description": "Sistema de gestión y control exclusivo de cajas de huevos, inventario y ventas para Avícola Lumy.",
+  "lang": "es"
+}

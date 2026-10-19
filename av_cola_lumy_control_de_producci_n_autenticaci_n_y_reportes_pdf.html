@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avícola Lumy - Gestión Avícola y Autenticación de Usuarios</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- jsPDF & AutoTable for PDF Exporting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <!-- SweetAlert2 for notifications and modals -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- AUTHENTICATION CONTAINER (LOGIN / REGISTER / FORGOT PASSWORD) -->
+    <div id="authScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-amber-600 via-amber-500 to-yellow-600">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-white/20">
+            <!-- Header Banner -->
+            <div class="p-8 text-center bg-slate-900 text-white relative">
+                <div class="inline-flex p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30 mb-3">
+                    <i data-lucide="egg" class="w-10 h-10 text-amber-400"></i>
+                </div>
+                <h1 class="text-3xl font-extrabold tracking-tight">Avícola Lumy</h1>
+                <p class="text-xs text-amber-300 font-medium mt-1">Sistema Integral de Contabilidad e Inventario</p>
+            </div>
+
+            <div class="p-6 sm:p-8">
+
+                <!-- 1. FORMULARIO DE INICIO DE SESIÓN -->
+                <form id="loginForm" class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-bold text-slate-800">Iniciar Sesión</h2>
+                        <p class="text-xs text-slate-500">Ingrese sus credenciales para acceder a su granja</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo Electrónico</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                            <input type="email" id="loginEmail" required placeholder="ejemplo@lumy.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-slate-600 uppercase">Contraseña</label>
+                            <button type="button" onclick="showAuthView('forgot')" class="text-[11px] font-bold text-amber-600 hover:underline">¿Olvidaste tu contraseña?</button>
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
+                            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-amber-600/30 transition flex items-center justify-center gap-2">
+                        <i data-lucide="log-in" class="w-4 h-4"></i> Iniciar Sesión
+                    </button>
+
+                    <!-- Acceso Demostración Rápida -->
+                    <div class="pt-3 border-t border-slate-100 text-center">
+                        <p class="text-[11px] text-slate-400 mb-2">¿Quieres probar rápido el sistema?</p>
+                        <button type="button" onclick="fillDemoCredentials()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-3 py-1.5 rounded-lg border border-slate-200 transition">
+                            Usar usuario demo (admin@lumy.com)
+                        </button>
+                    </div>
+
+                    <div class="text-center pt-2">
+                        <p class="text-xs text-slate-600">¿No tienes una cuenta? <button type="button" onclick="showAuthView('register')" class="font-bold text-amber-600 hover:underline">Regístrate gratis</button></p>
+                    </div>
+                </form>
+
+                <!-- 2. FORMULARIO DE REGISTRO -->
+                <form id="registerForm" class="space-y-4 hidden">
+                    <div class="text-center mb-4">
+                        <h2 class="text-xl font-bold text-slate-800">Crear Nueva Cuenta</h2>
+                        <p class="text-xs text-slate-500">Registre su granja en Avícola Lumy</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nombre Completo</label>
+                        <input type="text" id="regName" required placeholder="Ej. Juan Pérez" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nombre de la Granja / Empresa</label>
+                        <input type="text" id="regFarm" required placeholder="Ej. Granja San José" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo Electrónico</label>
+                        <input type="email" id="regEmail" required placeholder="correo@ejemplo.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Contraseña</label>
+                            <input type="password" id="regPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Confirmar</label>
+                            <input type="password" id="regConfirmPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Crear Cuenta
+                    </button>
+
+                    <div class="text-center pt-2">
+                        <p class="text-xs text-slate-600">¿Ya tienes cuenta? <button type="button" onclick="showAuthView('login')" class="font-bold text-amber-600 hover:underline">Iniciar Sesión</button></p>
+                    </div>
+                </form>
+
+                <!-- 3. RECUPERACIÓN DE CONTRASEÑA -->
+                <div id="forgotPasswordContainer" class="space-y-4 hidden">
+                    <!-- Paso 1: Solicitar Código -->
+                    <form id="requestTokenForm" class="space-y-4">
+                        <div class="text-center mb-4">
+                            <h2 class="text-xl font-bold text-slate-800">Recuperar Contraseña</h2>
+                            <p class="text-xs text-slate-500">Ingrese su correo para generar un código de verificación</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Correo Registrado</label>
+                            <input type="email" id="forgotEmail" required placeholder="correo@ejemplo.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                            <i data-lucide="key" class="w-4 h-4"></i> Solicitar Código
+                        </button>
+                    </form>
+
+                    <!-- Paso 2: Restablecer con Código -->
+                    <form id="resetPasswordForm" class="space-y-4 hidden">
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                            <p class="text-xs text-amber-800 font-semibold">Código de verificación enviado:</p>
+                            <p id="generatedCodeDisplay" class="text-xl font-extrabold text-amber-700 tracking-widest my-1">123456</p>
+                            <p class="text-[10px] text-amber-600">(Simulación en pantalla para su comodidad)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Ingresar Código de 6 dígitos</label>
+                            <input type="text" id="resetTokenInput" required maxlength="6" placeholder="000000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center text-base tracking-widest font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nueva Contraseña</label>
+                            <input type="password" id="resetNewPassword" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        </div>
+
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i> Actualizar Contraseña
+                        </button>
+                    </form>
+
+                    <div class="text-center pt-2">
+                        <button type="button" onclick="showAuthView('login')" class="text-xs font-bold text-slate-500 hover:text-slate-800">← Volver al Inicio de Sesión</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- APP MAIN CONTENT (DASHBOARD & INVENTORY SYSTEM) -->
+    <div id="mainApp" class="hidden flex-col min-h-screen">
+
+        <!-- Top Navigation Bar -->
+        <header class="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-600 text-white shadow-lg sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+                <!-- Brand Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-inner flex items-center justify-center">
+                        <i data-lucide="egg" class="w-7 h-7 text-amber-100 fill-amber-200"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-extrabold tracking-tight leading-none text-white flex items-center gap-2">
+                            Avícola Lumy
+                        </h1>
+                        <p class="text-[11px] text-amber-100/90 font-medium mt-0.5" id="headerFarmName">Granja Activa</p>
+                    </div>
+                </div>
+
+                <!-- User Profile & Navigation -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="openPdfModal()" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-emerald-500/30">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Reporte PDF</span>
+                    </button>
+
+                    <button onclick="openProfileModal()" class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold backdrop-blur-sm transition flex items-center gap-2 border border-white/10">
+                        <i data-lucide="user" class="w-4 h-4"></i>
+                        <span id="headerUserName" class="hidden md:inline font-bold">Usuario</span>
+                    </button>
+
+                    <button onclick="logoutUser()" title="Cerrar Sesión" class="p-2 bg-amber-800/60 hover:bg-rose-700/80 rounded-xl text-white transition border border-amber-400/20">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
+
+            <!-- KPIs Summary -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Huevos (Stock)</p>
+                        <p class="text-2xl font-extrabold text-slate-800 mt-1" id="kpiTotalHuevos">0</p>
+                        <p class="text-xs text-slate-400 mt-1" id="kpiHuevosSub">0 cartones equivalentes</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i data-lucide="egg" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Cartones (30u)</p>
+                        <p class="text-2xl font-extrabold text-amber-600 mt-1" id="kpiTotalCartones">0</p>
+                        <p class="text-xs text-slate-400 mt-1">1 Cartón = 30 Huevos</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i data-lucide="grid" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Cajas (360u)</p>
+                        <p class="text-2xl font-extrabold text-emerald-600 mt-1" id="kpiTotalCajas">0</p>
+                        <p class="text-xs text-slate-400 mt-1" id="kpiCajasSub">0 Cajas completas</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i data-lucide="package" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Vendido (Hoy)</p>
+                        <p class="text-2xl font-extrabold text-indigo-600 mt-1" id="kpiVendidoHoy">0 Cajas</p>
+                        <p class="text-xs text-slate-400 mt-1" id="kpiVendidoHoySub">0 huevos hoy</p>
+                    </div>
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form & Galpones Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Registro Form -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-5 h-5 text-amber-600"></i>
+                                Registro de Recolección
+                            </h2>
+                            <span class="text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full font-semibold border border-amber-200">Ingreso Diario</span>
+                        </div>
+
+                        <form id="prodForm" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Galpón de Origen</label>
+                                <select id="inputGalpon" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                                    <option value="Galpón A">Galpón A</option>
+                                    <option value="Galpón B">Galpón B</option>
+                                    <option value="Galpón C">Galpón C</option>
+                                    <option value="Galpón D">Galpón D</option>
+                                    <option value="OTRO">+ Agregar Nuevo Galpón...</option>
+                                </select>
+                                <input type="text" id="inputGalponCustom" placeholder="Nombre del nuevo Galpón" class="hidden mt-2 w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Fecha de Ingreso</label>
+                                <input type="date" id="inputFecha" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Cantidad de Huevos (Unidades)</label>
+                                <input type="number" id="inputUnidades" min="1" placeholder="Ej. 1800" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-base font-extrabold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            </div>
+
+                            <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3.5 space-y-2">
+                                <p class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+                                    <i data-lucide="calculator" class="w-4 h-4 text-amber-600"></i> Conversión Automática
+                                </p>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div class="bg-white p-2 rounded-lg border border-amber-200/60">
+                                        <span class="text-slate-500 block font-medium">Cartones (30u):</span>
+                                        <span class="text-base font-bold text-amber-700" id="calcCartones">0</span>
+                                        <span class="text-[10px] text-slate-400 block" id="calcCartonesSobran">+0 sueltos</span>
+                                    </div>
+                                    <div class="bg-white p-2 rounded-lg border border-amber-200/60">
+                                        <span class="text-slate-500 block font-medium">Cajas (360u):</span>
+                                        <span class="text-base font-bold text-emerald-700" id="calcCajas">0</span>
+                                        <span class="text-[10px] text-slate-400 block" id="calcCajasDetalle">0c, 0cart, 0u</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                Agregar al Inventario
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Stock por Galpón -->
+                <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="home" class="w-5 h-5 text-amber-600"></i>
+                            Inventario por Galpón
+                        </h2>
+                        <span class="text-xs text-slate-500 font-medium">Stock Activo</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-grow custom-scrollbar overflow-y-auto max-h-[390px] p-1" id="galponesGrid">
+                        <!-- Carga dinámica -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Inventario General -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="layers" class="w-5 h-5 text-amber-600"></i>
+                            Inventario General por Lote
+                        </h2>
+                        <p class="text-xs text-slate-500">Supervise lotes, filtre por estado y registre salidas</p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="openPdfModal()" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2.5 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
+                            Exportar PDF
+                        </button>
+                        <button onclick="openSaleModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                            Registrar Venta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200/70">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Filtrar Galpón</label>
+                        <select id="filterGalpon" onchange="renderApp()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="TODOS">Todos los Galpones</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Estado Lote</label>
+                        <select id="filterEstado" onchange="renderApp()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="TODOS">Todos los Estados</option>
+                            <option value="DISPONIBLE">Disponible</option>
+                            <option value="PARCIAL">Venta Parcial</option>
+                            <option value="VENDIDO">Vendido</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Desde Fecha</label>
+                        <input type="date" id="filterFechaDesde" onchange="renderApp()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Hasta Fecha</label>
+                        <input type="date" id="filterFechaHasta" onchange="renderApp()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Tabla Inventario -->
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-slate-50">
+                                <th class="py-3 px-3">Fecha</th>
+                                <th class="py-3 px-3">Galpón</th>
+                                <th class="py-3 px-3">Producción Inicial</th>
+                                <th class="py-3 px-3">Conversión Cajas</th>
+                                <th class="py-3 px-3">Stock Disponible</th>
+                                <th class="py-3 px-3">Estado</th>
+                                <th class="py-3 px-3 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaInventario" class="divide-y divide-slate-100 text-xs">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Historial Ventas -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <i data-lucide="receipt" class="w-5 h-5 text-emerald-600"></i>
+                        Historial de Ventas / Salidas
+                    </h2>
+                    <span class="text-xs text-slate-500 font-medium" id="salesCount">0 Registros</span>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider bg-slate-50">
+                                <th class="py-2.5 px-3">Fecha Venta</th>
+                                <th class="py-2.5 px-3">Galpón</th>
+                                <th class="py-2.5 px-3">Huevos Vendidos</th>
+                                <th class="py-2.5 px-3">Formato</th>
+                                <th class="py-2.5 px-3">Monto ($)</th>
+                                <th class="py-2.5 px-3">Cliente</th>
+                                <th class="py-2.5 px-3 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaVentas" class="divide-y divide-slate-100 text-xs text-slate-700">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL DE EXPORTACIÓN PDF -->
+    <div id="modalPdf" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-5">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 bg-amber-100 text-amber-700 rounded-xl">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Exportar Reporte Contable PDF</h3>
+                        <p class="text-xs text-slate-500">Avícola Lumy</p>
+                    </div>
+                </div>
+                <button onclick="closePdfModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form id="pdfForm" onsubmit="generatePDF(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Periodo del Reporte</label>
+                    <select id="pdfPeriod" onchange="togglePdfCustomDates()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <option value="HOY">Día Actual (Hoy)</option>
+                        <option value="SEMANA" selected>Esta Semana (Últimos 7 días)</option>
+                        <option value="MES">Este Mes (Últimos 30 días)</option>
+                        <option value="ANIO">Este Año (Año actual)</option>
+                        <option value="CUSTOM">Rango de Fechas Personalizado</option>
+                    </select>
+                </div>
+
+                <div id="pdfCustomDateContainer" class="grid grid-cols-2 gap-3 hidden">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Fecha Inicial</label>
+                        <input type="date" id="pdfStartDate" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Fecha Final</label>
+                        <input type="date" id="pdfEndDate" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Filtrar Galpón</label>
+                    <select id="pdfGalponFilter" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <option value="TODOS">Todos los Galpones</option>
+                    </select>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
+                    <p class="font-bold text-amber-900">Resumen del Informe</p>
+                    <p class="text-slate-600" id="pdfPreviewText">Calculando métricas para el reporte...</p>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closePdfModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">Cancelar</button>
+                    <button type="submit" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                        <i data-lucide="download" class="w-4 h-4"></i> Descargar PDF
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE VENTAS -->
+    <div id="modalVenta" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 text-emerald-600"></i>
+                    Registrar Venta
+                </h3>
+                <button onclick="closeSaleModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form id="saleForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Seleccionar Lote / Galpón</label>
+                    <select id="saleSelectLote" required onchange="updateModalAvailable()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </select>
+                    <p class="text-[11px] text-emerald-700 font-semibold mt-1" id="saleAvailableText">Disponible: 0 huevos</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Formato de Venta</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center">
+                            <input type="radio" name="saleUnitType" value="cajas" checked onchange="calculateSaleEggs()" class="accent-emerald-600 mb-1">
+                            <span class="text-xs font-bold">Cajas</span>
+                            <span class="text-[10px] text-slate-400">(360 u.)</span>
+                        </label>
+                        <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center">
+                            <input type="radio" name="saleUnitType" value="cartones" onchange="calculateSaleEggs()" class="accent-emerald-600 mb-1">
+                            <span class="text-xs font-bold">Cartones</span>
+                            <span class="text-[10px] text-slate-400">(30 u.)</span>
+                        </label>
+                        <label class="border border-slate-200 rounded-xl p-2.5 text-center cursor-pointer hover:bg-slate-50 flex flex-col items-center">
+                            <input type="radio" name="saleUnitType" value="unidades" onchange="calculateSaleEggs()" class="accent-emerald-600 mb-1">
+                            <span class="text-xs font-bold">Unidades</span>
+                            <span class="text-[10px] text-slate-400">(Piezas)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Cantidad a Vender</label>
+                        <input type="number" id="saleQuantity" min="1" required oninput="calculateSaleEggs()" placeholder="Ej. 2" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-extrabold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Precio Unitario ($)</label>
+                        <input type="number" id="saleUnitPrice" step="0.01" min="0" placeholder="Ej. 35.00" oninput="calculateSaleEggs()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-extrabold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500">Total equivalente:</span>
+                        <span class="font-extrabold text-slate-800" id="saleTotalHuevosText">0 huevos</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-200">
+                        <span class="text-slate-500">Monto Total Estimado:</span>
+                        <span class="font-extrabold text-emerald-700 text-sm" id="saleTotalAmountText">$0.00</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Cliente / Observación</label>
+                    <input type="text" id="saleClient" placeholder="Ej. Venta Mayorista" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeSaleModal()" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">Cancelar</button>
+                    <button type="submit" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">Confirmar Venta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PERFIL DE USUARIO Y CAMBIO DE CLAVE -->
+    <div id="modalPerfil" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <i data-lucide="user-check" class="w-5 h-5 text-amber-600"></i>
+                    Perfil de Usuario
+                </h3>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs space-y-1">
+                <p><span class="font-bold text-slate-600">Nombre:</span> <span id="profName"></span></p>
+                <p><span class="font-bold text-slate-600">Granja:</span> <span id="profFarm"></span></p>
+                <p><span class="font-bold text-slate-600">Correo:</span> <span id="profEmail"></span></p>
+            </div>
+
+            <form id="changePasswordForm" onsubmit="changePassword(event)" class="space-y-3 pt-2">
+                <h4 class="font-bold text-xs text-slate-700 uppercase tracking-wider">Cambiar Contraseña</h4>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Contraseña Actual</label>
+                    <input type="password" id="currPass" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Nueva Contraseña</label>
+                    <input type="password" id="newPass" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm">
+                    Actualizar Contraseña
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE LA APLICACIÓN -->
+    <script>
+        // Constantes de Equivalencia
+        const HUEVOS_POR_CARTON = 30;
+        const CARTONES_POR_CAJA = 12;
+        const HUEVOS_POR_CAJA = 360;
+
+        // Keys LocalStorage
+        const USERS_STORAGE_KEY = 'avicola_lumy_users';
+        const SESSION_STORAGE_KEY = 'avicola_lumy_active_session';
+
+        // Estado Global
+        let users = [];
+        let currentUser = null;
+        let inventory = [];
+        let sales = [];
+        let generatedResetToken = null;
+        let resetEmail = null;
+
+        // Datos Iniciales Demo
+        const demoUser = {
+            id: 'USR-DEMO-01',
+            name: 'Administrador Lumy',
+            farmName: 'Granja Avícola Lumy Principal',
+            email: 'admin@lumy.com',
+            password: '123456'
+        };
+
+        const demoInventory = [
+            { id: "LOT-01", galpon: "Galpón A", fecha: getFormattedDate(0), totalHuevos: 2160, huevosDisponibles: 2160, estado: "DISPONIBLE" },
+            { id: "LOT-02", galpon: "Galpón B", fecha: getFormattedDate(-1), totalHuevos: 1800, huevosDisponibles: 1080, estado: "PARCIAL" },
+            { id: "LOT-03", galpon: "Galpón C", fecha: getFormattedDate(-2), totalHuevos: 1440, huevosDisponibles: 0, estado: "VENDIDO" }
+        ];
+
+        const demoSales = [
+            { id: "SALE-01", loteId: "LOT-02", galpon: "Galpón B", fecha: getFormattedDate(-1), cantidadHuevos: 720, formato: "2 CAJAS", monto: 70.00, cliente: "Distribuidora San Juan" }
+        ];
+
+        // Inicialización
+        window.onload = function() {
+            initUsersStorage();
+            checkActiveSession();
+            setupEventListeners();
+            lucide.createIcons();
+        };
+
+        function getFormattedDate(offsetDays = 0) {
+            const d = new Date();
+            d.setDate(d.getDate() + offsetDays);
+            return d.toISOString().split('T')[0];
+        }
+
+        // ================= SISTEMA DE USUARIOS Y AUTENTICACIÓN =================
+        function initUsersStorage() {
+            const storedUsers = localStorage.getItem(USERS_STORAGE_KEY);
+            if (storedUsers) {
+                try {
+                    users = JSON.parse(storedUsers);
+                } catch (e) {
+                    users = [demoUser];
+                    saveUsers();
+                }
+            } else {
+                users = [demoUser];
+                saveUsers();
+                // Inicializar datos para el usuario demo
+                localStorage.setItem(`avicola_data_${demoUser.id}`, JSON.stringify({
+                    inventory: demoInventory,
+                    sales: demoSales
+                }));
+            }
+        }
+
+        function saveUsers() {
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+        }
+
+        function checkActiveSession() {
+            const activeUserId = localStorage.getItem(SESSION_STORAGE_KEY);
+            if (activeUserId) {
+                const user = users.find(u => u.id === activeUserId);
+                if (user) {
+                    loginSuccess(user);
+                    return;
+                }
+            }
+            showAuthScreen();
+        }
+
+        function showAuthScreen() {
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            showAuthView('login');
+        }
+
+        function showAuthView(viewName) {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('forgotPasswordContainer').classList.add('hidden');
+
+            if (viewName === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+            } else if (viewName === 'register') {
+                document.getElementById('registerForm').classList.remove('hidden');
+            } else if (viewName === 'forgot') {
+                document.getElementById('forgotPasswordContainer').classList.remove('hidden');
+                document.getElementById('requestTokenForm').classList.remove('hidden');
+                document.getElementById('resetPasswordForm').classList.add('hidden');
+            }
+            lucide.createIcons();
+        }
+
+        function fillDemoCredentials() {
+            document.getElementById('loginEmail').value = 'admin@lumy.com';
+            document.getElementById('loginPassword').value = '123456';
+        }
+
+        function setupEventListeners() {
+            // Login
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+                const pass = document.getElementById('loginPassword').value;
+
+                const user = users.find(u => u.email.toLowerCase() === email && u.password === pass);
+                if (user) {
+                    localStorage.setItem(SESSION_STORAGE_KEY, user.id);
+                    loginSuccess(user);
+                    Swal.fire({ icon: 'success', title: 'Bienvenido', text: `Hola, ${user.name}`, timer: 1500, showConfirmButton: false });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Acceso Denegado', text: 'Correo o contraseña incorrectos' });
+                }
+            });
+
+            // Registro
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('regName').value.trim();
+                const farm = document.getElementById('regFarm').value.trim();
+                const email = document.getElementById('regEmail').value.trim().toLowerCase();
+                const pass = document.getElementById('regPassword').value;
+                const confirmPass = document.getElementById('regConfirmPassword').value;
+
+                if (pass !== confirmPass) {
+                    Swal.fire({ icon: 'warning', title: 'Error', text: 'Las contraseñas no coinciden' });
+                    return;
+                }
+
+                if (users.some(u => u.email.toLowerCase() === email)) {
+                    Swal.fire({ icon: 'error', title: 'Correo Registrado', text: 'Este correo ya tiene una cuenta' });
+                    return;
+                }
+
+                const newUser = {
+                    id: 'USR-' + Date.now().toString().slice(-6),
+                    name,
+                    farmName: farm,
+                    email,
+                    password: pass
+                };
+
+                users.push(newUser);
+                saveUsers();
+
+                // Crear storage vacío para el usuario
+                localStorage.setItem(`avicola_data_${newUser.id}`, JSON.stringify({ inventory: [], sales: [] }));
+
+                localStorage.setItem(SESSION_STORAGE_KEY, newUser.id);
+                loginSuccess(newUser);
+                Swal.fire({ icon: 'success', title: 'Cuenta Creada', text: 'Bienvenido a Avícola Lumy', timer: 1500, showConfirmButton: false });
+            });
+
+            // Solicitud de Código de Recuperación
+            document.getElementById('requestTokenForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('forgotEmail').value.trim().toLowerCase();
+                const user = users.find(u => u.email.toLowerCase() === email);
+
+                if (!user) {
+                    Swal.fire({ icon: 'error', title: 'No Encontrado', text: 'No existe usuario registrado con este correo' });
+                    return;
+                }
+
+                resetEmail = email;
+                generatedResetToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+                document.getElementById('generatedCodeDisplay').innerText = generatedResetToken;
+                document.getElementById('requestTokenForm').classList.add('hidden');
+                document.getElementById('resetPasswordForm').classList.remove('hidden');
+            });
+
+            // Restablecer Contraseña
+            document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const inputToken = document.getElementById('resetTokenInput').value.trim();
+                const newPass = document.getElementById('resetNewPassword').value;
+
+                if (inputToken !== generatedResetToken) {
+                    Swal.fire({ icon: 'error', title: 'Código Incorrecto', text: 'El código ingresado no coincide' });
+                    return;
+                }
+
+                const user = users.find(u => u.email.toLowerCase() === resetEmail);
+                if (user) {
+                    user.password = newPass;
+                    saveUsers();
+                    Swal.fire({ icon: 'success', title: 'Contraseña Actualizada', text: 'Ya puede iniciar sesión con su nueva clave' });
+                    showAuthView('login');
+                }
+            });
+
+            // Formulario Producción
+            document.getElementById('inputUnidades').addEventListener('input', updateRealtimeCalculator);
+            document.getElementById('prodForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addRecoleccion();
+            });
+
+            // Formulario Ventas
+            document.getElementById('saleForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                processSale();
+            });
+
+            document.getElementById('inputGalpon').addEventListener('change', function(e) {
+                const customInput = document.getElementById('inputGalponCustom');
+                if (e.target.value === 'OTRO') {
+                    customInput.classList.remove('hidden');
+                    customInput.required = true;
+                } else {
+                    customInput.classList.add('hidden');
+                    customInput.required = false;
+                }
+            });
+        }
+
+        function loginSuccess(user) {
+            currentUser = user;
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('flex');
+
+            document.getElementById('headerUserName').innerText = user.name;
+            document.getElementById('headerFarmName').innerText = user.farmName;
+
+            loadUserData();
+            setDefaultFecha();
+            renderApp();
+        }
+
+        function logoutUser() {
+            Swal.fire({
+                title: '¿Cerrar Sesión?',
+                text: "Saldrás del sistema de gestión de Avícola Lumy",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d97706',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Sí, Salir',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.removeItem(SESSION_STORAGE_KEY);
+                    currentUser = null;
+                    inventory = [];
+                    sales = [];
+                    showAuthScreen();
+                }
+            });
+        }
+
+        // ================= PERFIL Y CAMBIO DE CLAVE =================
+        function openProfileModal() {
+            if (!currentUser) return;
+            document.getElementById('profName').innerText = currentUser.name;
+            document.getElementById('profFarm').innerText = currentUser.farmName;
+            document.getElementById('profEmail').innerText = currentUser.email;
+            document.getElementById('modalPerfil').classList.remove('hidden');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('modalPerfil').classList.add('hidden');
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        function changePassword(e) {
+            e.preventDefault();
+            const curr = document.getElementById('currPass').value;
+            const newP = document.getElementById('newPass').value;
+
+            if (curr !== currentUser.password) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'La contraseña actual es incorrecta' });
+                return;
+            }
+
+            currentUser.password = newP;
+            saveUsers();
+            closeProfileModal();
+            Swal.fire({ icon: 'success', title: 'Éxito', text: 'Contraseña actualizada correctamente' });
+        }
+
+        // ================= PERSISTENCIA DE DATOS DE USUARIO =================
+        function getUserStorageKey() {
+            return `avicola_data_${currentUser.id}`;
+        }
+
+        function loadUserData() {
+            const data = localStorage.getItem(getUserStorageKey());
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    inventory = parsed.inventory || [];
+                    sales = parsed.sales || [];
+                } catch (e) {
+                    inventory = [];
+                    sales = [];
+                }
+            } else {
+                inventory = [];
+                sales = [];
+            }
+        }
+
+        function saveUserData() {
+            if (!currentUser) return;
+            const payload = {
+                updatedAt: new Date().toISOString(),
+                inventory,
+                sales
+            };
+            localStorage.setItem(getUserStorageKey(), JSON.stringify(payload));
+        }
+
+        // ================= LÓGICA DE PRODUCCIÓN E INVENTARIO =================
+        function setDefaultFecha() {
+            document.getElementById('inputFecha').value = getFormattedDate(0);
+            document.getElementById('pdfStartDate').value = getFormattedDate(-7);
+            document.getElementById('pdfEndDate').value = getFormattedDate(0);
+        }
+
+        function formatEggBreakdown(totalHuevos) {
+            const cajas = Math.floor(totalHuevos / HUEVOS_POR_CAJA);
+            const restoHuevosCaja = totalHuevos % HUEVOS_POR_CAJA;
+
+            const cartonesTotales = Math.floor(totalHuevos / HUEVOS_POR_CARTON);
+            const huevosSueltosTotales = totalHuevos % HUEVOS_POR_CARTON;
+
+            const cartonesSueltosCaja = Math.floor(restoHuevosCaja / HUEVOS_POR_CARTON);
+            const huevosSueltosFinales = restoHuevosCaja % HUEVOS_POR_CARTON;
+
+            return {
+                totalHuevos,
+                cartonesTotales,
+                huevosSueltosTotales,
+                cajas,
+                cartonesSueltosCaja,
+                huevosSueltosFinales
+            };
+        }
+
+        function updateRealtimeCalculator() {
+            const val = parseInt(document.getElementById('inputUnidades').value) || 0;
+            const b = formatEggBreakdown(val);
+
+            document.getElementById('calcCartones').innerText = b.cartonesTotales;
+            document.getElementById('calcCartonesSobran').innerText = `+${b.huevosSueltosTotales} sueltos`;
+            document.getElementById('calcCajas').innerText = b.cajas;
+            document.getElementById('calcCajasDetalle').innerText = `${b.cajas}c, ${b.cartonesSueltosCaja}cart, ${b.huevosSueltosFinales}u`;
+        }
+
+        function addRecoleccion() {
+            let galponSelect = document.getElementById('inputGalpon').value;
+            if (galponSelect === 'OTRO') {
+                galponSelect = document.getElementById('inputGalponCustom').value.trim() || 'Galpón Auxiliar';
+            }
+
+            const fecha = document.getElementById('inputFecha').value;
+            const unidades = parseInt(document.getElementById('inputUnidades').value);
+
+            if (!unidades || unidades <= 0) {
+                Swal.fire({ icon: 'warning', title: 'Atención', text: 'Ingrese una cantidad válida' });
+                return;
+            }
+
+            const newLot = {
+                id: 'LOT-' + Date.now().toString().slice(-5),
+                galpon: galponSelect,
+                fecha: fecha,
+                totalHuevos: unidades,
+                huevosDisponibles: unidades,
+                estado: "DISPONIBLE"
+            };
+
+            inventory.unshift(newLot);
+            saveUserData();
+            renderApp();
+
+            document.getElementById('prodForm').reset();
+            setDefaultFecha();
+            document.getElementById('inputGalponCustom').classList.add('hidden');
+            updateRealtimeCalculator();
+
+            Swal.fire({ icon: 'success', title: 'Lote Guardado', text: `${unidades} huevos en ${galponSelect}`, timer: 1500, showConfirmButton: false });
+        }
+
+        function toggleQuickStatus(loteId) {
+            const item = inventory.find(i => i.id === loteId);
+            if (!item) return;
+
+            if (item.estado === 'DISPONIBLE') {
+                item.estado = 'VENDIDO';
+                item.huevosDisponibles = 0;
+            } else {
+                item.estado = 'DISPONIBLE';
+                item.huevosDisponibles = item.totalHuevos;
+            }
+
+            saveUserData();
+            renderApp();
+        }
+
+        function deleteLote(loteId) {
+            Swal.fire({
+                title: '¿Eliminar Lote?',
+                text: "Se borrará este registro de producción",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                confirmButtonText: 'Sí, borrar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    inventory = inventory.filter(i => i.id !== loteId);
+                    saveUserData();
+                    renderApp();
+                }
+            });
+        }
+
+        // ================= MODAL VENTAS =================
+        function openSaleModal(preselectLoteId = null) {
+            const select = document.getElementById('saleSelectLote');
+            select.innerHTML = '';
+
+            const availableLots = inventory.filter(i => i.huevosDisponibles > 0);
+
+            if (availableLots.length === 0) {
+                Swal.fire({ icon: 'info', title: 'Sin Stock', text: 'No hay huevos disponibles para vender' });
+                return;
+            }
+
+            availableLots.forEach(lote => {
+                const b = formatEggBreakdown(lote.huevosDisponibles);
+                const opt = document.createElement('option');
+                opt.value = lote.id;
+                opt.innerText = `${lote.galpon} (${lote.fecha}) - Stock: ${b.cajas} Cajas (${lote.huevosDisponibles} u.)`;
+                if (preselectLoteId && lote.id === preselectLoteId) opt.selected = true;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('modalVenta').classList.remove('hidden');
+            updateModalAvailable();
+            calculateSaleEggs();
+        }
+
+        function closeSaleModal() {
+            document.getElementById('modalVenta').classList.add('hidden');
+            document.getElementById('saleForm').reset();
+        }
+
+        function updateModalAvailable() {
+            const loteId = document.getElementById('saleSelectLote').value;
+            const lote = inventory.find(i => i.id === loteId);
+            if (lote) {
+                const b = formatEggBreakdown(lote.huevosDisponibles);
+                document.getElementById('saleAvailableText').innerText = `Disponible: ${lote.huevosDisponibles} huevos (${b.cajas} Cajas, ${b.cartonesSueltosCaja} Cartones, ${b.huevosSueltosFinales} Unidades)`;
+            }
+        }
+
+        function calculateSaleEggs() {
+            const qty = parseInt(document.getElementById('saleQuantity').value) || 0;
+            const unitPrice = parseFloat(document.getElementById('saleUnitPrice').value) || 0;
+            const unitType = document.querySelector('input[name="saleUnitType"]:checked').value;
+
+            let totalHuevos = 0;
+            if (unitType === 'cajas') totalHuevos = qty * HUEVOS_POR_CAJA;
+            else if (unitType === 'cartones') totalHuevos = qty * HUEVOS_POR_CARTON;
+            else totalHuevos = qty;
+
+            const totalAmount = qty * unitPrice;
+
+            document.getElementById('saleTotalHuevosText').innerText = `${totalHuevos.toLocaleString()} huevos equivalentes`;
+            document.getElementById('saleTotalAmountText').innerText = `$${totalAmount.toFixed(2)}`;
+            return { totalHuevos, totalAmount };
+        }
+
+        function processSale() {
+            const loteId = document.getElementById('saleSelectLote').value;
+            const lote = inventory.find(i => i.id === loteId);
+            const qtyInput = parseInt(document.getElementById('saleQuantity').value);
+            const unitType = document.querySelector('input[name="saleUnitType"]:checked').value;
+            const cliente = document.getElementById('saleClient').value.trim() || 'Venta Mostrador';
+
+            if (!lote) return;
+
+            const { totalHuevos: huevosAVender, totalAmount: montoTotal } = calculateSaleEggs();
+
+            if (huevosAVender <= 0 || huevosAVender > lote.huevosDisponibles) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Cantidad excede el disponible' });
+                return;
+            }
+
+            lote.huevosDisponibles -= huevosAVender;
+            lote.estado = (lote.huevosDisponibles === 0) ? "VENDIDO" : "PARCIAL";
+
+            const newSale = {
+                id: 'SALE-' + Date.now().toString().slice(-5),
+                loteId: lote.id,
+                galpon: lote.galpon,
+                fecha: getFormattedDate(0),
+                cantidadHuevos: huevosAVender,
+                formato: `${qtyInput} ${unitType.toUpperCase()}`,
+                monto: montoTotal,
+                cliente: cliente
+            };
+
+            sales.unshift(newSale);
+            saveUserData();
+            renderApp();
+            closeSaleModal();
+            Swal.fire({ icon: 'success', title: 'Venta Registrada', timer: 1500, showConfirmButton: false });
+        }
+
+        function deleteSale(saleId) {
+            Swal.fire({
+                title: '¿Anular Venta?',
+                text: "El stock volverá al lote de origen",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                confirmButtonText: 'Anular Venta'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const idx = sales.findIndex(s => s.id === saleId);
+                    if (idx !== -1) {
+                        const sale = sales[idx];
+                        const lote = inventory.find(i => i.id === sale.loteId);
+                        if (lote) {
+                            lote.huevosDisponibles += sale.cantidadHuevos;
+                            lote.estado = (lote.huevosDisponibles >= lote.totalHuevos) ? "DISPONIBLE" : "PARCIAL";
+                        }
+                        sales.splice(idx, 1);
+                        saveUserData();
+                        renderApp();
+                    }
+                }
+            });
+        }
+
+        // ================= REPORTE PDF =================
+        function openPdfModal() {
+            const galponSelect = document.getElementById('pdfGalponFilter');
+            const uniqueGalpones = [...new Set(inventory.map(i => i.galpon))];
+            
+            galponSelect.innerHTML = '<option value="TODOS">Todos los Galpones</option>';
+            uniqueGalpones.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.innerText = g;
+                galponSelect.appendChild(opt);
+            });
+
+            document.getElementById('modalPdf').classList.remove('hidden');
+            togglePdfCustomDates();
+            updatePdfPreview();
+        }
+
+        function closePdfModal() {
+            document.getElementById('modalPdf').classList.add('hidden');
+        }
+
+        function togglePdfCustomDates() {
+            const period = document.getElementById('pdfPeriod').value;
+            const customContainer = document.getElementById('pdfCustomDateContainer');
+            if (period === 'CUSTOM') customContainer.classList.remove('hidden');
+            else customContainer.classList.add('hidden');
+            updatePdfPreview();
+        }
+
+        function getPeriodDateRange() {
+            const period = document.getElementById('pdfPeriod').value;
+            const now = new Date();
+            let startDate, endDate = getFormattedDate(0);
+
+            if (period === 'HOY') startDate = getFormattedDate(0);
+            else if (period === 'SEMANA') startDate = getFormattedDate(-7);
+            else if (period === 'MES') startDate = getFormattedDate(-30);
+            else if (period === 'ANIO') startDate = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0];
+            else if (period === 'CUSTOM') {
+                startDate = document.getElementById('pdfStartDate').value || getFormattedDate(-30);
+                endDate = document.getElementById('pdfEndDate').value || getFormattedDate(0);
+            }
+            return { startDate, endDate };
+        }
+
+        function getFilteredDataForPdf() {
+            const { startDate, endDate } = getPeriodDateRange();
+            const galponFilter = document.getElementById('pdfGalponFilter').value;
+
+            const filteredInventory = inventory.filter(item => {
+                return (item.fecha >= startDate && item.fecha <= endDate) && 
+                       (galponFilter === 'TODOS' || item.galpon === galponFilter);
+            });
+
+            const filteredSales = sales.filter(item => {
+                return (item.fecha >= startDate && item.fecha <= endDate) && 
+                       (galponFilter === 'TODOS' || item.galpon === galponFilter);
+            });
+
+            return { filteredInventory, filteredSales, startDate, endDate, galponFilter };
+        }
+
+        function updatePdfPreview() {
+            const { filteredInventory, filteredSales, startDate, endDate } = getFilteredDataForPdf();
+            const totalProd = filteredInventory.reduce((acc, curr) => acc + curr.totalHuevos, 0);
+            const totalVend = filteredSales.reduce((acc, curr) => acc + curr.cantidadHuevos, 0);
+            const totalMonto = filteredSales.reduce((acc, curr) => acc + (curr.monto || 0), 0);
+
+            document.getElementById('pdfPreviewText').innerHTML = `
+                Rango: <strong>${startDate}</strong> a <strong>${endDate}</strong><br>
+                Producción: <strong>${totalProd.toLocaleString()} u.</strong> | Ventas: <strong>${totalVend.toLocaleString()} u.</strong><br>
+                Total Recaudado: <strong class="text-emerald-700">$${totalMonto.toFixed(2)}</strong>
+            `;
+        }
+
+        function generatePDF(e) {
+            e.preventDefault();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            const { filteredInventory, filteredSales, startDate, endDate, galponFilter } = getFilteredDataForPdf();
+
+            // Encabezado
+            doc.setFillColor(217, 119, 6);
+            doc.rect(0, 0, 210, 26, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(18);
+            doc.text('AVÍCOLA LUMY', 14, 14);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Granja: ${currentUser.farmName} | Generado por: ${currentUser.name}`, 14, 20);
+
+            let yPos = 34;
+
+            // Tabla 1: Inventario
+            doc.setTextColor(30, 41, 59);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text('1. Lotes de Producción e Inventario', 14, yPos);
+            yPos += 4;
+
+            const invData = filteredInventory.map(item => {
+                const b = formatEggBreakdown(item.totalHuevos);
+                return [item.fecha, item.galpon, `${item.totalHuevos.toLocaleString()} u.`, `${b.cajas} Cajas`, `${item.huevosDisponibles.toLocaleString()} u.`, item.estado];
+            });
+
+            doc.autoTable({
+                startY: yPos,
+                head: [['Fecha', 'Galpón', 'Producción', 'Conversión', 'Disponible', 'Estado']],
+                body: invData.length > 0 ? invData : [['-', '-', 'Sin registros', '-', '-', '-']],
+                theme: 'striped',
+                headStyles: { fillColor: [217, 119, 6] },
+                margin: { left: 14, right: 14 }
+            });
+
+            yPos = doc.lastAutoTable.finalY + 10;
+
+            // Tabla 2: Ventas
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.text('2. Historial de Ventas', 14, yPos);
+            yPos += 4;
+
+            const salesData = filteredSales.map(s => [s.fecha, s.galpon, `${s.cantidadHuevos.toLocaleString()} u.`, s.formato, `$${(s.monto || 0).toFixed(2)}`, s.cliente]);
+
+            doc.autoTable({
+                startY: yPos,
+                head: [['Fecha Venta', 'Galpón', 'Huevos Vendidos', 'Formato', 'Monto ($)', 'Cliente']],
+                body: salesData.length > 0 ? salesData : [['-', '-', 'Sin ventas', '-', '-', '-']],
+                theme: 'striped',
+                headStyles: { fillColor: [5, 150, 105] },
+                margin: { left: 14, right: 14 }
+            });
+
+            doc.save(`Reporte_Lumy_${getFormattedDate(0)}.pdf`);
+            closePdfModal();
+        }
+
+        // ================= RENDERIZADO GENERAL =================
+        function renderApp() {
+            renderKPIs();
+            renderGalponesSummary();
+            renderFilterSelects();
+            renderInventoryTable();
+            renderSalesTable();
+            lucide.createIcons();
+        }
+
+        function renderKPIs() {
+            const totalHuevosDisponibles = inventory.reduce((acc, curr) => acc + curr.huevosDisponibles, 0);
+            const b = formatEggBreakdown(totalHuevosDisponibles);
+
+            document.getElementById('kpiTotalHuevos').innerText = totalHuevosDisponibles.toLocaleString();
+            document.getElementById('kpiHuevosSub').innerText = `${b.cartonesTotales} cartones equivalentes`;
+            document.getElementById('kpiTotalCartones').innerText = b.cartonesTotales.toLocaleString();
+            document.getElementById('kpiTotalCajas').innerText = b.cajas.toLocaleString();
+            document.getElementById('kpiCajasSub').innerText = `${b.cajas} Cajas + ${b.cartonesSueltosCaja} Cart.`;
+
+            const hoy = getFormattedDate(0);
+            const ventasHoy = sales.filter(s => s.fecha === hoy);
+            const totalHuevosVendidosHoy = ventasHoy.reduce((acc, curr) => acc + curr.cantidadHuevos, 0);
+            const bVentas = formatEggBreakdown(totalHuevosVendidosHoy);
+
+            document.getElementById('kpiVendidoHoy').innerText = `${bVentas.cajas} Cajas / ${bVentas.cartonesTotales} Cart.`;
+            document.getElementById('kpiVendidoHoySub').innerText = `${totalHuevosVendidosHoy.toLocaleString()} huevos hoy`;
+        }
+
+        function renderGalponesSummary() {
+            const container = document.getElementById('galponesGrid');
+            container.innerHTML = '';
+
+            const galpones = {};
+            inventory.forEach(item => {
+                if (!galpones[item.galpon]) galpones[item.galpon] = { disponibleHuevos: 0, lotesCount: 0 };
+                galpones[item.galpon].disponibleHuevos += item.huevosDisponibles;
+                galpones[item.galpon].lotesCount++;
+            });
+
+            const keys = Object.keys(galpones);
+            if (keys.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 col-span-2 py-4 text-center">No hay galpones registrados.</p>';
+                return;
+            }
+
+            keys.forEach(gName => {
+                const data = galpones[gName];
+                const b = formatEggBreakdown(data.disponibleHuevos);
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-xs";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-slate-800 text-xs">${gName}</span>
+                        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">${data.lotesCount} Lotes</span>
+                    </div>
+                    <p class="text-sm font-extrabold text-emerald-700">${b.cajas} Cajas</p>
+                    <p class="text-[11px] text-slate-500">${b.cartonesTotales} Cartones (${data.disponibleHuevos.toLocaleString()} u.)</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderFilterSelects() {
+            const galponSelect = document.getElementById('filterGalpon');
+            const currentValue = galponSelect.value;
+            const uniqueGalpones = [...new Set(inventory.map(i => i.galpon))];
+
+            galponSelect.innerHTML = '<option value="TODOS">Todos los Galpones</option>';
+            uniqueGalpones.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.innerText = g;
+                if (g === currentValue) opt.selected = true;
+                galponSelect.appendChild(opt);
+            });
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('tablaInventario');
+            tbody.innerHTML = '';
+
+            const fGalpon = document.getElementById('filterGalpon').value;
+            const fEstado = document.getElementById('filterEstado').value;
+            const fDesde = document.getElementById('filterFechaDesde').value;
+            const fHasta = document.getElementById('filterFechaHasta').value;
+
+            let filtered = inventory.filter(item => {
+                if (fGalpon !== 'TODOS' && item.galpon !== fGalpon) return false;
+                if (fEstado !== 'TODOS' && item.estado !== fEstado) return false;
+                if (fDesde && item.fecha < fDesde) return false;
+                if (fHasta && item.fecha > fHasta) return false;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">Sin registros.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                const bTotal = formatEggBreakdown(item.totalHuevos);
+                const bDisp = formatEggBreakdown(item.huevosDisponibles);
+
+                let badgeClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                if (item.estado === 'VENDIDO') badgeClass = "bg-slate-100 text-slate-600 border border-slate-200";
+                else if (item.estado === 'PARCIAL') badgeClass = "bg-amber-100 text-amber-800 border border-amber-200";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-medium text-slate-700">${item.fecha}</td>
+                    <td class="py-3 px-3 font-bold text-slate-900">${item.galpon}</td>
+                    <td class="py-3 px-3 font-bold text-slate-800">${item.totalHuevos.toLocaleString()} u.</td>
+                    <td class="py-3 px-3 font-bold text-slate-700">${bTotal.cajas} Cajas</td>
+                    <td class="py-3 px-3 font-bold text-emerald-700">${item.huevosDisponibles.toLocaleString()} u. (${bDisp.cajas} Cajas)</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">${item.estado}</span></td>
+                    <td class="py-3 px-3 text-right space-x-1">
+                        ${item.huevosDisponibles > 0 ? `
+                            <button onclick="openSaleModal('${item.id}')" title="Vender" class="p-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded">
+                                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                        <button onclick="toggleQuickStatus('${item.id}')" title="Cambiar Estado" class="p-1 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteLote('${item.id}')" title="Eliminar" class="p-1 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderSalesTable() {
+            const tbody = document.getElementById('tablaVentas');
+            tbody.innerHTML = '';
+            document.getElementById('salesCount').innerText = `${sales.length} Registro(s)`;
+
+            if (sales.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-400">Sin ventas registradas.</td></tr>`;
+                return;
+            }
+
+            sales.slice(0, 15).forEach(sale => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3">${sale.fecha}</td>
+                    <td class="py-2.5 px-3 font-bold">${sale.galpon}</td>
+                    <td class="py-2.5 px-3 font-extrabold text-emerald-700">${sale.cantidadHuevos.toLocaleString()} u.</td>
+                    <td class="py-2.5 px-3 font-bold">${sale.formato}</td>
+                    <td class="py-2.5 px-3 font-extrabold text-slate-900">$${(sale.monto || 0).toFixed(2)}</td>
+                    <td class="py-2.5 px-3 text-slate-600">${sale.cliente}</td>
+                    <td class="py-2.5 px-3 text-right">
+                        <button onclick="deleteSale('${sale.id}')" title="Anular" class="text-rose-500 hover:text-rose-700 p-1">
+                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>

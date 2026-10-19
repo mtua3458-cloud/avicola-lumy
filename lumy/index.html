@@ -1,67 +1,537 @@
-<!-- Cargar librería oficial de Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lumy - Gestión Avícola | Avícola Lumy</title>
+  
+  <!-- Prevención de error 404 de Favicon -->
+  <link rel="icon" href="data:,">
 
-<!-- CABLEADO Y CONEXIÓN A SUPABASE -->
-<script>
-  const SUPABASE_URL = "https://yufrelqaqyeslnnzzltir.supabase.co"; 
-  const SUPABASE_ANON_KEY = "sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC";
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome CDN para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <!-- Librería Oficial de Supabase v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  // Cambiar entre Iniciar Sesión, Registrarse y Olvidé Clave
-  function switchAuthTab(tab) {
-    document.getElementById('login-form').classList.add('hidden');
-    document.getElementById('register-form').classList.add('hidden');
-    document.getElementById('forgot-form').classList.add('hidden');
+  <!-- Configuración personalizada de Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            avicola: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-    if (tab === 'login') document.getElementById('login-form').classList.remove('hidden');
-    if (tab === 'register') document.getElementById('register-form').classList.remove('hidden');
-    if (tab === 'forgot') document.getElementById('forgot-form').classList.remove('hidden');
-  }
+  <!-- ========================================== -->
+  <!-- 1. PANTALLA DE AUTENTICACIÓN (auth-screen) -->
+  <!-- ========================================== -->
+  <div id="auth-screen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-emerald-900 via-avicola-800 to-slate-900">
+    <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-emerald-100/20">
+      
+      <!-- LOGO Y TÍTULO -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-emerald-600 to-amber-500 text-white rounded-2xl shadow-lg mb-4 transform hover:rotate-6 transition-transform">
+          <i class="fa-solid font-bold fa-egg text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Avícola Lumy</h1>
+        <p class="text-sm font-medium text-emerald-600 mt-1">Módulo "Lumy" · Control de Producción</p>
+      </div>
 
-  // Iniciar Sesión
-  async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+      <!-- PESTAÑAS DE NAVEGACIÓN AUTH -->
+      <div class="flex border-b border-slate-200 mb-6 text-sm font-semibold">
+        <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-center text-emerald-700 border-b-2 border-emerald-600 transition-colors">
+          Iniciar Sesión
+        </button>
+        <button id="tab-btn-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors">
+          Registrarse
+        </button>
+        <button id="tab-btn-forgot" onclick="switchAuthTab('forgot')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors">
+          Recuperar
+        </button>
+      </div>
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password,
+      <!-- FORMULARIO: INICIAR SESIÓN -->
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="email" id="login-email" required placeholder="admin@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+          <span>Ingresar a Lumy</span>
+          <i class="fa-solid fa-right-to-bracket"></i>
+        </button>
+      </form>
+
+      <!-- FORMULARIO: REGISTRO -->
+      <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="email" id="reg-email" required placeholder="nuevo@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nueva Contraseña</label>
+          <div class="relative">
+            <i class="fa-solid fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="password" id="reg-password" required placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+          <span>Crear Cuenta</span>
+          <i class="fa-solid fa-user-plus"></i>
+        </button>
+      </form>
+
+      <!-- FORMULARIO: RECUPERAR CLAVE -->
+      <form id="forgot-form" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
+        <p class="text-xs text-slate-500 mb-2">Ingresa tu correo y te enviaremos las instrucciones para restablecer tu acceso.</p>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Registrado</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="email" id="forgot-email" required placeholder="tu-correo@avicolalumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all text-sm">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+          <span>Enviar Instrucciones</span>
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+
+      <div class="mt-8 pt-4 border-t border-slate-100 text-center">
+        <p class="text-xs text-slate-400">Avícola Lumy &copy; Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 2. PANTALLA PRINCIPAL / DASHBOARD (app-screen) -->
+  <!-- ========================================== -->
+  <div id="app-screen" class="hidden min-h-screen flex-col bg-slate-100">
+    
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+    <nav class="bg-gradient-to-r from-emerald-900 to-emerald-800 text-white shadow-md border-b border-emerald-700 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          
+          <!-- BRAND -->
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-tr from-amber-400 to-emerald-500 rounded-xl flex items-center justify-center text-slate-900 shadow-md">
+              <i class="fa-solid fa-crow text-xl"></i>
+            </div>
+            <div>
+              <span class="font-extrabold text-lg tracking-wide text-white block leading-none">LUMY</span>
+              <span class="text-[10px] text-emerald-200 tracking-wider uppercase">Sistema de Control Avícola</span>
+            </div>
+          </div>
+
+          <!-- USUARIO Y SALIR -->
+          <div class="flex items-center space-x-4">
+            <div class="hidden sm:flex items-center space-x-2 bg-emerald-950/40 px-3 py-1.5 rounded-full border border-emerald-700/50">
+              <i class="fa-solid fa-circle-user text-amber-400 text-sm"></i>
+              <span id="nav-user-name" class="text-xs font-semibold text-emerald-100">Usuario</span>
+            </div>
+            <button onclick="handleLogout()" class="bg-red-500/20 hover:bg-red-600 text-red-100 hover:text-white border border-red-500/30 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1">
+              <i class="fa-solid fa-power-off"></i>
+              <span class="hidden sm:inline">Cerrar Sesión</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENIDO DEL DASHBOARD -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+      
+      <!-- ENCABEZADO Y FECHA -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-slate-800">Panel General de Producción</h2>
+          <p class="text-sm text-slate-500">Monitoreo en tiempo real de galpones y aves ponedoras.</p>
+        </div>
+        <div class="inline-flex items-center space-x-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 text-sm text-slate-600">
+          <i class="fa-regular fa-calendar-days text-emerald-600"></i>
+          <span id="current-date-display" class="font-medium">Cargando fecha...</span>
+        </div>
+      </div>
+
+      <!-- METRICAS / CARDS KPI -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+        <!-- CARD 1: TOTAL AVES -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Aves / Gallinas</p>
+            <h3 class="text-2xl font-extrabold text-slate-800 mt-1">12,450</h3>
+            <span class="text-[11px] text-emerald-600 font-semibold flex items-center mt-1">
+              <i class="fa-solid fa-arrow-up text-[9px] mr-1"></i> Galpón A & B Activos
+            </span>
+          </div>
+          <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-kiwi-bird"></i>
+          </div>
+        </div>
+
+        <!-- CARD 2: PRODUCCIÓN DIARIA -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Producción Hoy</p>
+            <h3 id="stat-daily-eggs" class="text-2xl font-extrabold text-slate-800 mt-1">10,890</h3>
+            <span class="text-[11px] text-amber-600 font-semibold flex items-center mt-1">
+              <i class="fa-solid fa-box text-[9px] mr-1"></i> ~363 Cartones
+            </span>
+          </div>
+          <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-egg"></i>
+          </div>
+        </div>
+
+        <!-- CARD 3: RENDIMIENTO POSTURA -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">% De Postura</p>
+            <h3 class="text-2xl font-extrabold text-slate-800 mt-1">87.4%</h3>
+            <span class="text-[11px] text-emerald-600 font-semibold flex items-center mt-1">
+              <i class="fa-solid fa-circle-check text-[9px] mr-1"></i> Rango Óptimo
+            </span>
+          </div>
+          <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+        </div>
+
+        <!-- CARD 4: ALIMENTO CONSUMIDO -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/80 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Alimento Consumido</p>
+            <h3 id="stat-feed-consumed" class="text-2xl font-extrabold text-slate-800 mt-1">1,420 Kg</h3>
+            <span class="text-[11px] text-slate-500 font-medium flex items-center mt-1">
+              Promedio: 114g / ave
+            </span>
+          </div>
+          <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-wheat-awn"></i>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECCIÓN PRINCIPAL: FORMULARIO + TABLA -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- FORMULARIO DE REGISTRO DIARIO (1 Columna) -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-1 space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+              <i class="fa-solid fa-pen-to-square text-emerald-600"></i>
+              <span>Registro Diario de Lote</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Ingresa los datos correspondientes a la jornada.</p>
+          </div>
+
+          <form id="poultry-entry-form" onsubmit="handleNewEntry(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Galpón</label>
+              <select id="entry-shed" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <option value="Galpón 1 - Aves Jóvenes">Galpón 1 - Aves Jóvenes</option>
+                <option value="Galpón 2 - Producción Alta">Galpón 2 - Producción Alta</option>
+                <option value="Galpón 3 - Recorredores">Galpón 3 - Recorredores</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Huevos Recolectados (Unidades)</label>
+              <input type="number" id="entry-eggs" required placeholder="Ej. 3500" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Alimento (Kg)</label>
+                <input type="number" id="entry-feed" required placeholder="Ej. 450" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Bajas / Bajas</label>
+                <input type="number" id="entry-mortality" required placeholder="Ej. 2" class="w-full py-2 px-3 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              </div>
+            </div>
+
+            <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all text-sm flex items-center justify-center space-x-2">
+              <i class="fa-solid fa-plus"></i>
+              <span>Guardar Registro</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- TABLA DE REGISTROS RECIENTES (2 Columnas) -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 lg:col-span-2 space-y-4 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 class="font-bold text-slate-800 text-base flex items-center space-x-2">
+                <i class="fa-solid fa-list-check text-emerald-600"></i>
+                <span>Historial Reciente de Recolección</span>
+              </h3>
+              <span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold">Activo</span>
+            </div>
+
+            <div class="overflow-x-auto mt-4">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
+                    <th class="py-2.5 px-3">Galpón</th>
+                    <th class="py-2.5 px-3">Huevos (Uds)</th>
+                    <th class="py-2.5 px-3">Alimento (Kg)</th>
+                    <th class="py-2.5 px-3">Bajas</th>
+                    <th class="py-2.5 px-3">Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="records-table-body" class="text-sm divide-y divide-slate-100">
+                  <!-- Filas dinámicas -->
+                  <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón 2 - Producción Alta</td>
+                    <td class="py-3 px-3 text-amber-600 font-bold">5,420</td>
+                    <td class="py-3 px-3 text-slate-600">680 Kg</td>
+                    <td class="py-3 px-3 text-red-500 font-medium">1</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-full font-bold">Completado</span></td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-3 px-3 font-semibold text-slate-700">Galpón 1 - Aves Jóvenes</td>
+                    <td class="py-3 px-3 text-amber-600 font-bold">3,110</td>
+                    <td class="py-3 px-3 text-slate-600">420 Kg</td>
+                    <td class="py-3 px-3 text-slate-400 font-medium">0</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-full font-bold">Completado</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+            <span>Sincronizado con Supabase Cloud</span>
+            <i class="fa-solid fa-cloud-check text-emerald-500"></i>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+      <p>Módulo de Control "Lumy" &middot; Desarrollado para <strong>Avícola Lumy</strong> &copy; 2026</p>
+    </footer>
+
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- 3. CABLEADO Y CONEXIÓN A SUPABASE (JS)    -->
+  <!-- ========================================== -->
+  <script>
+    // Configuración oficial de Supabase
+    const SUPABASE_URL = "https://yufrelqaqyeslnnzzltir.supabase.co"; 
+    const SUPABASE_ANON_KEY = "sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC";
+
+    // Inicialización del cliente oficial de Supabase
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Inicializar Fecha Actual
+    document.addEventListener("DOMContentLoaded", () => {
+      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('current-date-display').innerText = new Date().toLocaleDateString('es-ES', dateOptions);
     });
 
-    if (error) {
-      alert("Error al entrar: " + error.message);
-    } else {
+    // Cambiar entre Pestañas de Autenticación (Login / Register / Forgot)
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('login-form');
+      const registerForm = document.getElementById('register-form');
+      const forgotForm = document.getElementById('forgot-form');
+
+      const btnLogin = document.getElementById('tab-btn-login');
+      const btnRegister = document.getElementById('tab-btn-register');
+      const btnForgot = document.getElementById('tab-btn-forgot');
+
+      // Ocultar todos los formularios
+      loginForm.classList.add('hidden');
+      registerForm.classList.add('hidden');
+      forgotForm.classList.add('hidden');
+
+      // Resetear estilos de botones
+      [btnLogin, btnRegister, btnForgot].forEach(btn => {
+        btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
+      });
+
+      // Mostrar el seleccionado y activar botón
+      if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        btnLogin.className = "flex-1 py-2 text-center text-emerald-700 border-b-2 border-emerald-600 transition-colors font-bold";
+      } else if (tab === 'register') {
+        registerForm.classList.remove('hidden');
+        btnRegister.className = "flex-1 py-2 text-center text-amber-600 border-b-2 border-amber-500 transition-colors font-bold";
+      } else if (tab === 'forgot') {
+        forgotForm.classList.remove('hidden');
+        btnForgot.className = "flex-1 py-2 text-center text-slate-700 border-b-2 border-slate-700 transition-colors font-bold";
+      }
+    }
+
+    // Iniciar Sesión con Supabase
+    async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password,
+        });
+
+        if (error) {
+          alert("Error al entrar: " + error.message);
+        } else {
+          showApp(data.user.email);
+        }
+      } catch (err) {
+        console.error("Error inesperado:", err);
+        alert("Ocurrió un error al intentar iniciar sesión.");
+      }
+    }
+
+    // Registrar Usuario con Supabase
+    async function handleRegister(event) {
+      event.preventDefault();
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email: email,
+          password: password,
+        });
+
+        if (error) {
+          alert("Error en registro: " + error.message);
+        } else {
+          alert("¡Registro exitoso! Ya puedes iniciar sesión con tus credenciales.");
+          switchAuthTab('login');
+        }
+      } catch (err) {
+        console.error("Error inesperado:", err);
+        alert("Ocurrió un error al registrar el usuario.");
+      }
+    }
+
+    // Recuperar Contraseña
+    async function handleForgotPassword(event) {
+      event.preventDefault();
+      const email = document.getElementById('forgot-email').value;
+
+      try {
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        if (error) {
+          alert("Error: " + error.message);
+        } else {
+          alert("Te hemos enviado un correo para restablecer tu contraseña.");
+          switchAuthTab('login');
+        }
+      } catch (err) {
+        alert("Ocurrió un problema enviando la solicitud.");
+      }
+    }
+
+    // Mostrar Pantalla Principal
+    function showApp(userEmail) {
       document.getElementById('auth-screen').classList.add('hidden');
       document.getElementById('app-screen').classList.remove('hidden');
-      document.getElementById('nav-user-name').innerText = data.user.email.split('@')[0];
+      document.getElementById('app-screen').classList.add('flex');
+      document.getElementById('nav-user-name').innerText = userEmail.split('@')[0];
     }
-  }
 
-  // Registrar Usuario
-  async function handleRegister(event) {
-    event.preventDefault();
-    const email = document.getElementById('reg-email').value;
-    const password = document.getElementById('reg-password').value;
-
-    const { data, error } = await supabaseClient.auth.signUp({
-      email: email,
-      password: password,
-    });
-
-    if (error) {
-      alert("Error en registro: " + error.message);
-    } else {
-      alert("¡Registro exitoso! Ya puedes iniciar sesión.");
-      switchAuthTab('login');
+    // Cerrar Sesión con Supabase
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      document.getElementById('app-screen').classList.add('hidden');
+      document.getElementById('app-screen').classList.remove('flex');
+      document.getElementById('auth-screen').classList.remove('hidden');
     }
-  }
 
-  // Cerrar Sesión
-  async function handleLogout() {
-    await supabaseClient.auth.signOut();
-    document.getElementById('app-screen').classList.add('hidden');
-    document.getElementById('auth-screen').classList.remove('hidden');
-  }
-</script>
+    // Agregar Nuevo Registro Diario de Granja
+    function handleNewEntry(event) {
+      event.preventDefault();
+
+      const shed = document.getElementById('entry-shed').value;
+      const eggs = parseInt(document.getElementById('entry-eggs').value);
+      const feed = parseInt(document.getElementById('entry-feed').value);
+      const mortality = parseInt(document.getElementById('entry-mortality').value);
+
+      // Insertar en la tabla localmente
+      const tableBody = document.getElementById('records-table-body');
+      const newRow = document.createElement('tr');
+      newRow.className = "hover:bg-slate-50/80 transition-colors animate-pulse";
+
+      newRow.innerHTML = `
+        <td class="py-3 px-3 font-semibold text-slate-700">${shed}</td>
+        <td class="py-3 px-3 text-amber-600 font-bold">${eggs.toLocaleString()}</td>
+        <td class="py-3 px-3 text-slate-600">${feed} Kg</td>
+        <td class="py-3 px-3 text-red-500 font-medium">${mortality}</td>
+        <td class="py-3 px-3"><span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-700 rounded-full font-bold">Nuevo</span></td>
+      `;
+
+      tableBody.insertBefore(newRow, tableBody.firstChild);
+
+      // Actualizar total de producción del día de forma dinámica
+      const currentEggsEl = document.getElementById('stat-daily-eggs');
+      let currentEggs = parseInt(currentEggsEl.innerText.replace(/,/g, ''));
+      currentEggsEl.innerText = (currentEggs + eggs).toLocaleString();
+
+      // Limpiar formulario
+      document.getElementById('poultry-entry-form').reset();
+
+      setTimeout(() => {
+        newRow.classList.remove('animate-pulse');
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

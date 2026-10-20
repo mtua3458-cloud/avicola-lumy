@@ -1,0 +1,50 @@
+{
+  "empresa": {
+    "nombre": "Granja Avícola Lumy",
+    "propietario": "María Eugenia Tua",
+    "ubicacion": "Lara State, Venezuela",
+    "ano": 2026
+  },
+  "supabase": {
+    "url": "https://yufrelqaqyeslnnzzltir.supabase.co",
+    "anonKey": "sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC",
+    "tablas": {
+      "recoleccionHuevos": "recolección huevo",
+      "crianzaPollitas": "crianza_pollitas",
+      "galpones": "galpones",
+      "ventas": "ventas"
+    }
+  },
+  "modulos": {
+    "galpones": {
+      "nombre": "Módulo de Galpones",
+      "colorTema": "verde"
+    },
+    "recoleccionHuevos": {
+      "nombre": "Módulo de Recolección de Huevos",
+      "colorTema": "anaranjado seco Caterpillar",
+      "clasificaciones": [
+        "Tipo A (Estándar)",
+        "Jumbo / Extra Grande",
+        "Pequeño / Cero (Gallinas nuevas)",
+        "Deformados (Falla de cáscara)",
+        "Rotos / Descarte"
+      ],
+      "unidadesPorCarton": 30,
+      "cartonesPorCaja": 12
+    },
+    "crianzaPollitas": {
+      "nombre": "Módulo de Crianza de Pollitas (Levante)",
+      "colorTema": "morado elegante y negro",
+      "icono": "pollita bebé"
+    },
+    "ventas": {
+      "nombre": "Módulo de Ventas",
+      "colorTema": "azul oscuro"
+    }
+  },
+  "catalogosPredeterminados": {
+    "galpones": ["Galpón A", "Galpón B", "Galpón C"],
+    "lotesLevante": ["Lote 1", "Lote 2", "Lote 3"]
+  }
+}

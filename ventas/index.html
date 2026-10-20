@@ -7,158 +7,312 @@
     
     <!-- Enlace al archivo Manifest para PWA -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#09090b">
+    <meta name="theme-color" content="#0f172a">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3014/3014523.png">
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Configuración personalizada de Tailwind con tonos Azul Oscuro -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#0b1120',
+                        },
+                        lumyBlue: {
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased justify-between">
 
-    <!-- CABECERA PRINCIPAL -->
-    <header class="bg-zinc-900 border-b border-amber-500/25 shadow-lg">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-amber-500 p-2 rounded-lg text-zinc-950 font-bold text-xl shadow">
-                    🥚
+    <!-- ========================================== -->
+    <!-- 1. PANTALLA DE AUTENTICACIÓN (LOGIN ESTILO AZUL) -->
+    <!-- ========================================== -->
+    <section id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 w-full">
+        <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-blue-100/20 text-slate-800">
+            
+            <!-- LOGO Y TÍTULO -->
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-amber-500 text-white rounded-2xl shadow-lg mb-3 transform hover:scale-105 transition-transform">
+                    <span class="text-3xl">🥚</span>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide text-amber-400">Avícola Lumy</h1>
-                    <p class="text-xs text-zinc-400">Control & Registro de Cajas de Huevos</p>
-                </div>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Lumy - Cajas</h1>
+                <p class="text-xs font-semibold text-blue-600 mt-0.5">Módulo de Control de Cajas y Créditos</p>
             </div>
-            <button id="logoutBtn" onclick="logout()" class="hidden bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 text-xs px-3 py-1.5 rounded-lg transition">
-                Cerrar Sesión
-            </button>
-        </div>
-    </header>
 
-    <!-- CONTENEDOR PRINCIPAL -->
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full">
+            <!-- PESTAÑAS DE NAVEGACIÓN -->
+            <div class="flex border-b border-slate-200 mb-6 text-sm font-semibold">
+                <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors">
+                    Iniciar Sesión
+                </button>
+                <button id="tab-btn-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors">
+                    Registrarse
+                </button>
+                <button id="tab-btn-forgot" onclick="switchAuthTab('forgot')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors">
+                    Recuperar
+                </button>
+            </div>
 
-        <!-- PANTALLA 1: LOGIN -->
-        <section id="loginScreen" class="max-w-md mx-auto bg-zinc-900 p-6 rounded-2xl shadow-xl border border-zinc-800">
-            <h2 class="text-lg font-bold text-amber-400 mb-4 text-center">Acceso al Sistema</h2>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
+            <!-- FORMULARIO: INICIAR SESIÓN -->
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Usuario / Correo</label>
-                    <input type="email" id="username" required placeholder="admin@lumy.com" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" id="username" required placeholder="admin@lumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
+                    </div>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-semibold text-zinc-400 mb-1">Contraseña</label>
-                    <input type="password" id="password" required placeholder="••••••••" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="password" id="password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
+                    </div>
                 </div>
-                <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2.5 rounded-lg text-sm shadow transition">
-                    Ingresar
+
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+                    <span>Ingresar al Sistema</span>
+                    <i class="fa-solid fa-right-to-bracket"></i>
                 </button>
             </form>
-            <div class="mt-4 text-center">
-                <p class="text-xs text-zinc-400">¿No tienes una cuenta? <button onclick="toggleRegisterModal(true)" class="text-amber-400 font-semibold hover:underline">Regístrate gratis</button></p>
-            </div>
-        </section>
 
-        <!-- MODAL: CREAR NUEVA CUENTA -->
-        <div id="registerModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
-                <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
-                    <h3 class="text-md font-bold text-amber-400">Crear Nueva Cuenta</h3>
-                    <button onclick="toggleRegisterModal(false)" class="text-zinc-500 hover:text-zinc-300 font-bold text-lg">&times;</button>
+            <!-- FORMULARIO: REGISTRARSE -->
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nombre Completo</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="regName" required placeholder="Ej: Maria Perez" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
+                    </div>
                 </div>
-                <form onsubmit="handleRegister(event)" class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Nombre Completo</label>
-                        <input type="text" id="regName" required placeholder="Ej: Nombre y Apellido" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" id="regEmail" required placeholder="nuevo@lumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Correo Electrónico</label>
-                        <input type="email" id="regEmail" required placeholder="correo@ejemplo.com" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nueva Contraseña</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="password" id="regPassword" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Contraseña</label>
-                        <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+                    <span>Crear Cuenta</span>
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+
+            <!-- FORMULARIO: RECUPERAR -->
+            <form id="forgot-form" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
+                <p class="text-xs text-slate-500 mb-2">Ingresa tu correo y te enviaremos las instrucciones para restablecer tu contraseña.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Registrado</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" id="forgotEmail" required placeholder="tu-correo@lumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
                     </div>
-                    <div class="flex gap-2 pt-2">
-                        <button type="button" onclick="toggleRegisterModal(false)" class="w-1/2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-lg text-sm transition">
-                            Cancelar
-                        </button>
-                        <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2 rounded-lg text-sm shadow transition">
-                            Registrarse
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <button type="submit" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+                    <span>Enviar Instrucciones</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-4 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-400">Avícola Lumy &copy; Todos los derechos reservados.</p>
             </div>
         </div>
+    </section>
 
-        <!-- PANTALLA 2: DASHBOARD Y REGISTROS (Protegida) -->
-        <section id="dashboardScreen" class="hidden space-y-6">
-            
-            <!-- TARJETAS DE RESUMEN DE STOCK -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between shadow-sm">
-                    <div>
-                        <p class="text-xs font-semibold text-zinc-400">Cajas Disponibles</p>
-                        <h3 id="statStock" class="text-2xl font-bold text-amber-400">0</h3>
+
+    <!-- ========================================== -->
+    <!-- 2. PANTALLA PRINCIPAL / DASHBOARD          -->
+    <!-- ========================================== -->
+    <div id="dashboardScreen" class="hidden min-h-screen flex-col bg-slate-950 w-full">
+        
+        <!-- CABECERA PRINCIPAL -->
+        <header class="bg-slate-900 border-b border-blue-500/30 shadow-lg sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xl shadow-md flex items-center justify-center w-10 h-10">
+                        🥚
                     </div>
-                    <span class="text-2xl">📦</span>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-wide text-blue-400 leading-none">Avícola Lumy</h1>
+                        <p class="text-xs text-slate-400 mt-0.5">Control & Registro de Cajas de Huevos</p>
+                    </div>
                 </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between shadow-sm">
+                <button id="logoutBtn" onclick="logout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white border border-red-500/30 text-xs px-3 py-1.5 rounded-xl transition font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- CONTENEDOR PRINCIPAL -->
+        <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full space-y-6">
+
+            <!-- TARJETAS DE RESUMEN DE STOCK Y CRÉDITOS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
                     <div>
-                        <p class="text-xs font-semibold text-zinc-400">Ventas Realizadas</p>
-                        <h3 id="statSales" class="text-2xl font-bold text-emerald-400">0</h3>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cajas Disponibles</p>
+                        <h3 id="statStock" class="text-2xl font-black text-amber-400 mt-1">0</h3>
                     </div>
-                    <span class="text-2xl">💰</span>
+                    <div class="w-10 h-10 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl">📦</div>
                 </div>
-                <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex items-center justify-between shadow-sm">
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
                     <div>
-                        <p class="text-xs font-semibold text-zinc-400">Total Recaudado</p>
-                        <h3 id="statRevenue" class="text-2xl font-bold text-zinc-200">$0.00</h3>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ventas de Contado</p>
+                        <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
                     </div>
-                    <span class="text-2xl">📊</span>
+                    <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl">💰</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Recaudado</p>
+                        <h3 id="statRevenue" class="text-2xl font-black text-blue-400 mt-1">$0.00</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl">📊</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Créditos Activos</p>
+                        <h3 id="statCreditsPending" class="text-2xl font-black text-amber-500 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-xl">⏳</div>
                 </div>
             </div>
 
-            <!-- FORMULARIO DE REGISTRO -->
-            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-md">
-                <h3 class="text-md font-bold text-amber-400 mb-4 flex items-center gap-2">
-                    <span>📝</span> Registrar Operación de Cajas
-                </h3>
-                <form onsubmit="handleTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Tipo de Movimiento</label>
-                        <select id="transType" required class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
-                            <option value="entry">Entrada (Inventario)</option>
-                            <option value="sale">Venta (Salida)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Cantidad de Cajas</label>
-                        <input type="number" id="transQty" min="1" required placeholder="Ej: 10" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-1">Precio por Caja ($)</label>
-                        <input type="number" step="0.01" id="transPrice" required placeholder="Ej: 45.00" class="w-full px-3 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-zinc-100 focus:ring-2 focus:ring-amber-500 outline-none">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-zinc-950 font-bold py-2 rounded-lg text-sm shadow transition">
-                            Guardar Registro
+            <!-- SECCIÓN DUAL: REGISTRO DE MOVIMIENTOS Y CRÉDITOS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- FORMULARIO 1: MOVIMIENTO GENERAL DE CAJA -->
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                    <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Entrada de Registro / Venta Contado</span>
+                    </h3>
+                    <form onsubmit="handleTransaction(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Tipo de Movimiento</label>
+                            <select id="transType" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="entry">📥 Entrada (Agregar Inventario)</option>
+                                <option value="sale">💵 Venta de Contado (Salida)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1">Cantidad Cajas</label>
+                                <input type="number" id="transQty" min="1" required placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1">Precio / Caja ($)</label>
+                                <input type="number" step="0.01" id="transPrice" required placeholder="Ej: 45.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center justify-center space-x-2 mt-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Guardar Registro</span>
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+
+                <!-- FORMULARIO 2: REGISTRO DE VENTA A CRÉDITO (5 DÍAS) -->
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Nueva Venta a Crédito (Plazo 5 Días)</span>
+                    </h3>
+                    <form onsubmit="handleCreditSale(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nombre del Cliente</label>
+                            <input type="text" id="creditClient" required placeholder="Ej: Distribuidora El Sol" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1">Cantidad Cajas</label>
+                                <input type="number" id="creditQty" min="1" required placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 mb-1">Precio / Caja ($)</label>
+                                <input type="number" step="0.01" id="creditPrice" required placeholder="Ej: 45.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-amber-600/30 transition flex items-center justify-center space-x-2 mt-2">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            <span>Registrar Crédito (5 Días)</span>
+                        </button>
+                    </form>
+                </div>
+
             </div>
 
-            <!-- TABLA DE HISTORIAL -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-md overflow-hidden">
-                <div class="p-4 bg-zinc-950/50 border-b border-zinc-800 flex justify-between items-center">
-                    <h3 class="text-md font-bold text-amber-400">Historial de Operaciones</h3>
-                    <button onclick="exportPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-zinc-950 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 shadow transition">
-                        <span>📄</span> Exportar PDF
+            <!-- SECCIÓN: TABLA DE VENTAS A CRÉDITO Y CONTEO REGRESIVO -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden space-y-2">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800 flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>Créditos Pendientes y Conteo Regresivo</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Cliente</th>
+                                <th class="p-3">Cajas</th>
+                                <th class="p-3">Monto Total</th>
+                                <th class="p-3">Vencimiento</th>
+                                <th class="p-3">Tiempo Restante</th>
+                                <th class="p-3 text-center">Estado / Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditsTable" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- Se completa dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABLA DE HISTORIAL DE OPERACIONES GENERALES -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800 flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Historial de Operaciones Generales</span>
+                    </h3>
+                    <button onclick="exportPDF()" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow transition">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>Exportar Informe</span>
                     </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-zinc-950 text-zinc-400 uppercase tracking-wider border-b border-zinc-800">
+                        <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
                             <tr>
                                 <th class="p-3">Fecha y Hora</th>
                                 <th class="p-3">Tipo</th>
@@ -168,25 +322,28 @@
                                 <th class="p-3 text-center">Acción</th>
                             </tr>
                         </thead>
-                        <tbody id="historyTable" class="divide-y divide-zinc-800/60 text-zinc-300">
+                        <tbody id="historyTable" class="divide-y divide-slate-800/60 text-slate-300">
                             <!-- Se completa dinámicamente -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-        </section>
+        </main>
 
-    </main>
+        <!-- PIE DE PÁGINA -->
+        <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
+            &copy; 2026 Avícola Lumy. Todos los derechos reservados.
+        </footer>
 
-    <!-- PIE DE PÁGINA -->
-    <footer class="bg-zinc-900 border-t border-zinc-800 py-4 text-center text-xs text-zinc-500">
-        &copy; 2026 Avícola Lumy. Todos los derechos reservados.
-    </footer>
+    </div>
 
-    <!-- CONEXIÓN REAL A TU SUPABASE -->
+
+    <!-- ========================================== -->
+    <!-- 3. LÓGICA Y CABLEADO DE DATOS (JS)         -->
+    <!-- ========================================== -->
     <script>
-        // Tus credenciales configuradas directamente
+        // Configuración de Supabase
         const SUPABASE_URL = 'https://yufrelggveslnnzzltjr.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC';
         
@@ -198,46 +355,223 @@
             console.error('Error inicializando Supabase:', err);
         }
 
-        function toggleRegisterModal(show) {
-            document.getElementById('registerModal').classList.toggle('hidden', !show);
+        // Almacenes Locales para estado rápido e interfaz
+        let localCredits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+
+        // Cambiar entre Pestañas de Autenticación
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-form');
+
+            const btnLogin = document.getElementById('tab-btn-login');
+            const btnRegister = document.getElementById('tab-btn-register');
+            const btnForgot = document.getElementById('tab-btn-forgot');
+
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            [btnLogin, btnRegister, btnForgot].forEach(btn => {
+                btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
+            });
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                btnLogin.className = "flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors font-bold";
+            } else if (tab === 'register') {
+                registerForm.classList.remove('hidden');
+                btnRegister.className = "flex-1 py-2 text-center text-amber-600 border-b-2 border-amber-500 transition-colors font-bold";
+            } else if (tab === 'forgot') {
+                forgotForm.classList.remove('hidden');
+                btnForgot.className = "flex-1 py-2 text-center text-slate-800 border-b-2 border-slate-700 transition-colors font-bold";
+            }
         }
 
         function handleLogin(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (username && password) {
-                showDashboard();
-            } else {
-                alert('Ingrese usuario y contraseña.');
-            }
+            showDashboard();
         }
 
         function handleRegister(e) {
             e.preventDefault();
-            alert('Cuenta registrada correctamente. Ya puedes ingresar.');
-            toggleRegisterModal(false);
-            showDashboard();
+            alert('¡Cuenta registrada con éxito! Ya puedes ingresar.');
+            switchAuthTab('login');
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            alert('Instrucciones enviadas a tu correo electrónico.');
+            switchAuthTab('login');
         }
 
         function showDashboard() {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboardScreen').classList.remove('hidden');
-            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('dashboardScreen').classList.add('flex');
             
             if (_supabase) {
                 loadGlobalTransactions();
                 sincronizarEnTiempoReal();
             }
+            renderCredits();
+            startCountdownTimer();
         }
 
         function logout() {
             document.getElementById('dashboardScreen').classList.add('hidden');
-            document.getElementById('logoutBtn').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('flex');
             document.getElementById('loginScreen').classList.remove('hidden');
         }
 
+        // Operaciones Generales (Entradas / Ventas Contado)
+        async function handleTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('transType').value;
+            const qty = parseFloat(document.getElementById('transQty').value) || 0;
+            const price = parseFloat(document.getElementById('transPrice').value) || 0;
+
+            const newRecord = {
+                type: type,
+                qty: qty,
+                price: price,
+                total: qty * price,
+                date: new Date().toLocaleString('es-VE')
+            };
+
+            if (_supabase) {
+                const { error } = await _supabase.from('transacciones').insert([newRecord]);
+                if (error) console.error("Error al guardar en Supabase:", error.message);
+            }
+
+            document.getElementById('transQty').value = '';
+            document.getElementById('transPrice').value = '';
+            loadGlobalTransactions();
+        }
+
+        // Módulo de Ventas a Crédito (5 Días)
+        function handleCreditSale(e) {
+            e.preventDefault();
+            const client = document.getElementById('creditClient').value.trim();
+            const qty = parseFloat(document.getElementById('creditQty').value) || 0;
+            const price = parseFloat(document.getElementById('creditPrice').value) || 0;
+
+            const now = new Date();
+            const dueDate = new Date(now.getTime() + (5 * 24 * 60 * 60 * 1000)); // +5 días exactos
+
+            const creditEntry = {
+                id: Date.now(),
+                client: client,
+                qty: qty,
+                price: price,
+                total: qty * price,
+                createdAt: now.toISOString(),
+                dueDate: dueDate.toISOString(),
+                status: 'pending' // pending | paid
+            };
+
+            localCredits.unshift(creditEntry);
+            saveCredits();
+            renderCredits();
+
+            // Descontar inventario como venta
+            if (_supabase) {
+                _supabase.from('transacciones').insert([{
+                    type: 'sale',
+                    qty: qty,
+                    price: price,
+                    total: qty * price,
+                    date: `Crédito: ${client} (${new Date().toLocaleDateString('es-VE')})`
+                }]).then(() => loadGlobalTransactions());
+            }
+
+            document.getElementById('creditClient').value = '';
+            document.getElementById('creditQty').value = '';
+            document.getElementById('creditPrice').value = '';
+        }
+
+        function saveCredits() {
+            localStorage.setItem('lumy_credits', JSON.stringify(localCredits));
+        }
+
+        function markCreditPaid(id) {
+            localCredits = localCredits.filter(c => c.id !== id);
+            saveCredits();
+            renderCredits();
+        }
+
+        // Renderizado de la Tabla de Créditos
+        function renderCredits() {
+            const tbody = document.getElementById('creditsTable');
+            tbody.innerHTML = '';
+
+            const pendingCredits = localCredits.filter(c => c.status === 'pending');
+            document.getElementById('statCreditsPending').textContent = pendingCredits.length;
+
+            if (pendingCredits.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No hay créditos activos en este momento.</td></tr>`;
+                return;
+            }
+
+            pendingCredits.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition";
+
+                const dueDateFormatted = new Date(c.dueDate).toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-100">${c.client}</td>
+                    <td class="p-3 text-slate-300">${c.qty} cajas</td>
+                    <td class="p-3 font-bold text-amber-400">$${c.total.toFixed(2)}</td>
+                    <td class="p-3 text-slate-400">${dueDateFormatted}</td>
+                    <td class="p-3 font-mono font-bold" id="timer-${c.id}">Cargando...</td>
+                    <td class="p-3 text-center">
+                        <button onclick="markCreditPaid(${c.id})" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-2.5 py-1 rounded-lg border border-emerald-500/30 transition text-[11px] font-bold">
+                            Marcar Pagado
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateTimers();
+        }
+
+        // Conteo Regresivo en Tiempo Real con Alertas
+        function startCountdownTimer() {
+            setInterval(updateTimers, 1000);
+        }
+
+        function updateTimers() {
+            localCredits.forEach(c => {
+                const timerElem = document.getElementById(`timer-${c.id}`);
+                if (!timerElem) return;
+
+                const now = new Date().getTime();
+                const due = new Date(c.dueDate).getTime();
+                const diff = due - now;
+
+                if (diff <= 0) {
+                    timerElem.innerHTML = `<span class="text-red-500 animate-pulse">🔴 VENCIDO</span>`;
+                } else {
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    let colorClass = "text-emerald-400";
+                    if (days < 1) {
+                        colorClass = "text-red-400 animate-pulse";
+                    } else if (days < 2) {
+                        colorClass = "text-amber-400";
+                    }
+
+                    timerElem.innerHTML = `<span class="${colorClass}">${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
+                }
+            });
+        }
+
+        // Cargar Historial General
         async function loadGlobalTransactions() {
             if (!_supabase) return;
             const { data, error } = await _supabase
@@ -266,57 +600,6 @@
             }
         }
 
-        async function handleTransaction(e) {
-            e.preventDefault();
-            const type = document.getElementById('transType').value;
-            const qty = parseFloat(document.getElementById('transQty').value) || 0;
-            const price = parseFloat(document.getElementById('transPrice').value) || 0;
-
-            const newRecord = {
-                type: type,
-                qty: qty,
-                price: price,
-                total: qty * price,
-                date: new Date().toLocaleString('es-VE')
-            };
-
-            if (!_supabase) {
-                alert('No hay conexión con la base de datos.');
-                return;
-            }
-
-            const { error } = await _supabase
-                .from('transacciones')
-                .insert([newRecord]);
-
-            if (error) {
-                alert('Error al guardar: ' + error.message);
-                console.error(error);
-                return;
-            }
-
-            document.getElementById('transQty').value = '';
-            document.getElementById('transPrice').value = '';
-            loadGlobalTransactions();
-        }
-
-        async function deleteTransaction(id) {
-            if (confirm('¿Estás segura de eliminar este registro?')) {
-                if (!_supabase) return;
-                const { error } = await _supabase
-                    .from('transacciones')
-                    .delete()
-                    .eq('id', id);
-
-                if (error) {
-                    alert('No se pudo eliminar: ' + error.message);
-                    console.error(error);
-                    return;
-                }
-                loadGlobalTransactions();
-            }
-        }
-
         function renderTransactions(list) {
             const tbody = document.getElementById('historyTable');
             tbody.innerHTML = '';
@@ -326,7 +609,7 @@
             let totalRevenue = 0;
 
             if (!list || list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-zinc-500">No hay registros cargados aún.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No hay registros cargados aún.</td></tr>`;
             } else {
                 list.forEach(item => {
                     if (item.type === 'entry') {
@@ -338,19 +621,19 @@
                     }
 
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-zinc-800/40 transition";
+                    tr.className = "hover:bg-slate-800/40 transition";
                     tr.innerHTML = `
-                        <td class="p-3 text-zinc-400">${item.date}</td>
+                        <td class="p-3 text-slate-400">${item.date}</td>
                         <td class="p-3">
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'entry' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'}">
                                 ${item.type === 'entry' ? 'Entrada' : 'Venta'}
                             </span>
                         </td>
-                        <td class="p-3 font-semibold text-zinc-100">${item.qty}</td>
-                        <td class="p-3 text-zinc-300">$${item.price.toFixed(2)}</td>
-                        <td class="p-3 font-bold text-amber-400">$${item.total.toFixed(2)}</td>
+                        <td class="p-3 font-semibold text-slate-100">${item.qty}</td>
+                        <td class="p-3 text-slate-300">$${item.price.toFixed(2)}</td>
+                        <td class="p-3 font-bold text-blue-400">$${item.total.toFixed(2)}</td>
                         <td class="p-3 text-center">
-                            <button onclick="deleteTransaction(${item.id})" title="Eliminar registro" class="bg-red-500/20 hover:bg-red-500/40 text-red-400 p-1.5 rounded-lg border border-red-500/30 transition">
+                            <button onclick="deleteTransaction(${item.id})" title="Eliminar registro" class="bg-red-500/20 hover:bg-red-500/40 text-red-400 p-1 rounded-lg border border-red-500/30 transition">
                                 🗑️
                             </button>
                         </td>
@@ -364,16 +647,17 @@
             document.getElementById('statRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
         }
 
-        function exportPDF() {
-            window.print();
+        async function deleteTransaction(id) {
+            if (confirm('¿Estás segura de eliminar este registro?')) {
+                if (!_supabase) return;
+                const { error } = await _supabase.from('transacciones').delete().eq('id', id);
+                if (error) alert('No se pudo eliminar: ' + error.message);
+                loadGlobalTransactions();
+            }
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').then(function() {
-                console.log('Service Worker Registrado con Éxito');
-            }).catch(function(err) {
-                console.log('Error al registrar Service Worker:', err);
-            });
+        function exportPDF() {
+            window.print();
         }
     </script>
 </body>

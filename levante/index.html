@@ -184,25 +184,37 @@
     <!-- CONTENIDO DEL DASHBOARD -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
       
-      <!-- ENCABEZADO Y FECHA -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <!-- ENCABEZADO Y BOTÓN SUPERIOR DE FIN DE LOTE / HISTORIAL -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-slate-900 p-5 rounded-2xl border border-levantePurple-500/30 shadow-md">
         <div>
-          <h2 class="text-2xl font-bold text-white">Control de Crianza e Inversión por Lotes</h2>
-          <p class="text-sm text-slate-400">Gestión de lotes activos, control diario, botón de cierre y archivo histórico.</p>
+          <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+            <i class="fa-solid fa-feather text-levantePurple-400"></i>
+            <span>Panel de Control &middot; Crianza y Levante</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Gestión de lotes por fecha, registro diario y cierre por inicio de postura.</p>
         </div>
-        <div class="flex items-center gap-3">
-          <button onclick="toggleHistoryModal(true)" class="bg-slate-900 hover:bg-slate-800 text-levantePurple-400 border border-levantePurple-500/30 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 shadow-sm">
-            <i class="fa-solid fa-box-archive"></i>
-            <span>Ver Historial de Lotes Terminados</span>
-          </button>
-          <div class="hidden sm:inline-flex items-center space-x-2 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800 text-sm text-slate-300">
-            <i class="fa-regular fa-calendar-days text-levantePurple-400"></i>
-            <span id="current-date-display" class="font-medium">Cargando fecha...</span>
+        
+        <!-- ACCESOS RÁPIDOS SUPERIORES -->
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- BOTÓN RÁPIDO FIN DE LOTE DESDE LA BARRA SUPERIOR -->
+          <div class="flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            <select id="quick-close-lot-select" class="bg-transparent text-xs text-levantePurple-300 font-bold focus:outline-none cursor-pointer">
+              <option value="">-- Lotes Activos --</option>
+            </select>
+            <button onclick="quickCloseLot()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center space-x-1" title="Dar por terminado el lote al iniciar postura">
+              <i class="fa-solid fa-flag-checkered"></i>
+              <span>Fin de Lote</span>
+            </button>
           </div>
+
+          <button onclick="toggleHistoryModal(true)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-sm">
+            <i class="fa-solid fa-box-archive text-levantePurple-400"></i>
+            <span>Historial Archivo</span>
+          </button>
         </div>
       </div>
 
-      <!-- METRICAS / CARDS KPI (SOLO LOTES ACTIVOS) -->
+      <!-- METRICAS / CARDS KPI -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         <!-- CARD 1: TOTAL POLLITAS VIVAS -->
@@ -263,7 +275,7 @@
 
       </div>
 
-      <!-- SECCIÓN DE FORMULARIOS Y TABLAS SEPARADAS -->
+      <!-- SECCIÓN DE FORMULARIOS Y TABLAS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <!-- COLUMNA IZQUIERDA: FORMULARIOS -->
@@ -277,7 +289,7 @@
                   <i class="fa-solid fa-folder-plus"></i>
                   <span>1. Apertura de Lote (Única vez)</span>
                 </h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">Nombre según fecha de entrada (Ej. Lote-2026-10).</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Nombre según fecha (Ej. Lote-2026-10).</p>
               </div>
             </div>
 
@@ -385,7 +397,7 @@
               </div>
             </div>
 
-            <!-- TABLA 1: LOTES ACTIVOS CON BOTÓN FIN DE LOTE -->
+            <!-- TABLA 1: LOTES ACTIVOS -->
             <div class="mt-2 space-y-2">
               <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -630,15 +642,25 @@
     }
 
     function updateLotSelectOptions() {
-      const select = document.getElementById('daily-lot-select');
-      select.innerHTML = `<option value="">-- Seleccione un Lote Activo --</option>`;
-      // Solo mostrar lotes activos en el desplegable diario
+      const selectDaily = document.getElementById('daily-lot-select');
+      const selectQuickClose = document.getElementById('quick-close-lot-select');
+      
+      selectDaily.innerHTML = `<option value="">-- Seleccione un Lote Activo --</option>`;
+      selectQuickClose.innerHTML = `<option value="">-- Seleccionar Lote para Fin --</option>`;
+
       const activeLots = lotsList.filter(l => l.status !== 'cerrado');
       activeLots.forEach(lot => {
-        const opt = document.createElement('option');
-        opt.value = lot.lotName;
-        opt.textContent = `${lot.lotName} (Ini: ${lot.initialBirds})`;
-        select.appendChild(opt);
+        // Para formulario diario
+        const opt1 = document.createElement('option');
+        opt1.value = lot.lotName;
+        opt1.textContent = `${lot.lotName} (Ini: ${lot.initialBirds})`;
+        selectDaily.appendChild(opt1);
+
+        // Para selector rápido superior de Fin de Lote
+        const opt2 = document.createElement('option');
+        opt2.value = lot.id;
+        opt2.textContent = `${lot.lotName}`;
+        selectQuickClose.appendChild(opt2);
       });
     }
 
@@ -709,9 +731,9 @@
       renderAll();
     }
 
-    // FINALIZAR LOTE (BOTÓN FIN DE LOTE)
+    // FINALIZAR LOTE (DESDE LA TABLA O DESDE LA BARRA SUPERIOR)
     async function closeLot(id, lotName) {
-      if (!confirm(`¿Estás segura de dar por FINALIJADO el lote "${lotName}"? Pasará al historial y se retirará de la pantalla principal.`)) return;
+      if (!confirm(`¿Estás segura de dar por TERMINADO el lote "${lotName}" (Inicio de Postura)? Pasará al archivo histórico.`)) return;
 
       if (supabaseClient) {
         const { error } = await supabaseClient.from('crianza_lotes').update({ status: 'cerrado' }).eq('id', id);
@@ -721,12 +743,25 @@
         }
       }
 
-      // Actualizar localmente
       const lot = lotsList.find(l => l.id === id);
       if (lot) lot.status = 'cerrado';
 
       updateLotSelectOptions();
       renderAll();
+    }
+
+    // Cierre rápido desde el selector superior
+    function quickCloseLot() {
+      const select = document.getElementById('quick-close-lot-select');
+      const lotId = parseInt(select.value);
+      if (!lotId) {
+        alert("Por favor, selecciona un lote activo en el menú superior.");
+        return;
+      }
+      const lot = lotsList.find(l => l.id === lotId);
+      if (lot) {
+        closeLot(lot.id, lot.lotName);
+      }
     }
 
     // Eliminar Registro Diario
@@ -745,7 +780,6 @@
       const lotsTbody = document.getElementById('lots-table-body');
       const dailyTbody = document.getElementById('daily-table-body');
 
-      // Filtrar solo los activos para la pantalla principal
       const activeLots = lotsList.filter(l => l.status !== 'cerrado');
 
       if (activeLots.length === 0) {
@@ -772,7 +806,7 @@
             <td class="py-2.5 px-2 text-red-400 font-medium">${totalDeaths}</td>
             <td class="py-2.5 px-2 text-levantePurple-400 font-bold">$${totalInvestment.toFixed(2)}</td>
             <td class="py-2.5 px-2 text-center space-x-1">
-              <button onclick="closeLot(${lot.id}, '${lot.lotName}')" class="bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 px-2 py-1 rounded-lg text-[10px] font-bold transition-all" title="Dar por terminado el lote">
+              <button onclick="closeLot(${lot.id}, '${lot.lotName}')" class="bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/30 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all" title="Dar por terminado el lote">
                 Fin de Lote
               </button>
             </td>
@@ -837,7 +871,7 @@
           <td class="py-2.5 px-2 text-emerald-400 font-bold">${finalBirds}</td>
           <td class="py-2.5 px-2 text-levantePurple-400 font-bold">$${totalInvestment.toFixed(2)}</td>
           <td class="py-2.5 px-2 text-center">
-            <span class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full text-[10px] font-bold border border-slate-700">Completado</span>
+            <span class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full text-[10px] font-bold border border-slate-700">Completado (Postura)</span>
           </td>
         `;
         historyTbody.appendChild(row);
@@ -861,7 +895,6 @@
         totalInvestmentAll += Number(lot.lotPrice || 0) + feedCost + other;
       });
 
-      // Sumar alimento solo de lotes activos
       const activeLotNames = activeLots.map(l => l.lotName);
       const activeDaily = dailyList.filter(d => activeLotNames.includes(d.lotName));
       totalFeedKgAll = activeDaily.reduce((sum, d) => sum + Number(d.feedKg || 0), 0);

@@ -22,27 +22,6 @@
       }
     }
   </script>
-
-  <!-- ESTILOS EXCLUSIVOS PARA IMPRESIÓN (TABLA Y MEMBRETE PROFESIONAL) -->
-  <style>
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printable-report-section, #printable-report-section * {
-        visibility: visible;
-      }
-      #printable-report-section {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 15px;
-        background: white !important;
-        color: black !important;
-      }
-    }
-  </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
@@ -320,76 +299,6 @@
       </div>
 
     </main>
-
-    <!-- SECCIÓN DE IMPRESIÓN CON TABLAS PROFESIONALES Y MEMBRETE LUMY -->
-    <div id="printable-report-section" class="hidden">
-      <!-- MEMBRETE OFICIAL -->
-      <div style="text-align: center; border-bottom: 2px solid #166534; padding-bottom: 12px; margin-bottom: 20px;">
-        <h1 style="font-size: 22px; font-weight: bold; color: #166534; margin: 0;">GRANJA AVÍCOLA LUMY</h1>
-        <p style="font-size: 13px; font-weight: bold; color: #334155; margin: 4px 0; text-transform: uppercase;">SISTEMA DE CONTROL AVÍCOLA - INFORME DE GESTIÓN</p>
-        <p id="print-report-title" style="font-size: 12px; font-weight: bold; color: #d97706; margin: 2px 0;"></p>
-        <p id="print-report-date" style="font-size: 11px; color: #64748b; margin: 0;"></p>
-      </div>
-
-      <!-- TABLA 1: RESUMEN DE CONSUMO Y GASTOS DE ALIMENTO -->
-      <div style="margin-bottom: 20px;">
-        <h3 style="font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 6px; text-transform: uppercase;">1. Consumo y Costo de Alimento</h3>
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #cbd5e1;">
-          <thead>
-            <tr style="background: #f1f5f9; color: #334155;">
-              <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Concepto de Alimento</th>
-              <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">Cantidad / Sacos</th>
-              <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: right;">Costo Total ($)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="border: 1px solid #cbd5e1; padding: 8px;">Alimento Consumido por las Aves</td>
-              <td id="print-val-consumption" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-weight: bold;">0 Sacos</td>
-              <td style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; color: #64748b;">N/A (Consumo interno)</td>
-            </tr>
-            <tr style="background: #fafafa;">
-              <td style="border: 1px solid #cbd5e1; padding: 8px;">Inversión / Compras de Alimento</td>
-              <td id="print-val-feed-purchased-sacks" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; font-weight: bold;">0 Sacos</td>
-              <td id="print-val-feed-cost" style="border: 1px solid #cbd5e1; padding: 8px; text-align: right; font-weight: bold; color: #d97706;">$0.00</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- TABLA 2: DESGLOSE DE GASTOS VARIOS -->
-      <div style="margin-bottom: 20px;">
-        <h3 style="font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 6px; text-transform: uppercase;">2. Desglose de Gastos Varios y Operativos</h3>
-        <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #cbd5e1;">
-          <thead>
-            <tr style="background: #f1f5f9; color: #334155;">
-              <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Descripción / Concepto del Gasto</th>
-              <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: left;">Fecha</th>
-              <th style="border: 1px solid #cbd5e1; padding: 8px; text-align: right;">Monto ($)</th>
-            </tr>
-          </thead>
-          <tbody id="print-expenses-tbody">
-            <tr><td colspan="3" style="border: 1px solid #cbd5e1; padding: 10px; text-align: center; color: #666;">Sin gastos varios registrados en este período.</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- TABLA 3: TOTAL GENERAL -->
-      <div style="margin-top: 15px;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px; border: 2px solid #166534;">
-          <tr style="background: #f0fdf4;">
-            <td style="padding: 10px; font-weight: bold; color: #166534;">TOTAL GENERAL DE INVERSIÓN Y GASTOS DEL PERÍODO:</td>
-            <td id="print-val-total-general" style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px; color: #e11d48;">$0.00</td>
-          </tr>
-        </table>
-      </div>
-
-      <!-- PIE DE PÁGINA IMPRESO -->
-      <div style="margin-top: 50px; text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px;">
-        <p>Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Control de Producción</p>
-      </div>
-    </div>
-
   </div>
 
   <script>
@@ -581,7 +490,7 @@
       });
     }
 
-    // IMPRESIÓN CON TABLAS FORMALES Y MEMBRETE
+    // IMPRESIÓN LIMPIA Y PROFESIONAL ABRIENDO VENTANA DEDICADA
     function printReport(type) {
       let titleText = "INFORME GENERAL DE PRODUCCIÓN Y GASTOS";
       let totalExpenseVal = 0;
@@ -603,31 +512,113 @@
         totalExpenseVal = yearExpenses;
       }
 
-      document.getElementById('print-report-title').innerText = titleText;
-      document.getElementById('print-report-date').innerText = "Fecha de emisión: " + new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      document.getElementById('print-val-consumption').innerText = `${totalFeedConsumed} Sacos`;
-      document.getElementById('print-val-feed-purchased-sacks').innerText = `${totalFeedPurchasedSacks} Sacos`;
-      document.getElementById('print-val-feed-cost').innerText = `$${totalFeedCostSpent.toFixed(2)}`;
-      document.getElementById('print-val-total-general').innerText = `$${totalExpenseVal.toFixed(2)}`;
+      const totalBirds = document.getElementById('stat-total-birds').innerText;
+      const stockFeed = document.getElementById('stat-feed-stock').innerText;
+      const currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-      const printTbody = document.getElementById('print-expenses-tbody');
-      printTbody.innerHTML = '';
-
+      // Generar filas de la tabla de gastos para imprimir
+      let expensesRowsHtml = '';
       if (expensesList.length === 0) {
-        printTbody.innerHTML = `<tr><td colspan="3" style="border: 1px solid #cbd5e1; padding: 10px; text-align: center; color: #666;">Sin gastos varios registrados.</td></tr>`;
+        expensesRowsHtml = `<tr><td colspan="3" style="border: 1px solid #cbd5e1; padding: 10px; text-align: center; color: #666;">Sin gastos varios registrados.</td></tr>`;
       } else {
         expensesList.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.concept}</td>
-            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; color: #64748b;">${item.date}</td>
-            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #e11d48;">$${item.amount.toFixed(2)}</td>
+          expensesRowsHtml += `
+            <tr>
+              <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.concept}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 6px 8px; color: #64748b;">${item.date}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #e11d48;">$${item.amount.toFixed(2)}</td>
+            </tr>
           `;
-          printTbody.appendChild(tr);
         });
       }
 
-      window.print();
+      // Crear una ventana emergente limpia solo para imprimir con tablas formales
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>${titleText}</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #1e293b; padding: 20px; margin: 0; }
+            .header { text-align: center; border-bottom: 2px solid #166534; padding-bottom: 12px; margin-bottom: 20px; }
+            h1 { font-size: 22px; font-weight: bold; color: #166534; margin: 0; }
+            h2 { font-size: 13px; font-weight: bold; color: #334155; margin: 4px 0; text-transform: uppercase; }
+            h3 { font-size: 12px; font-weight: bold; color: #d97706; margin: 2px 0; }
+            p { font-size: 11px; color: #64748b; margin: 0; }
+            .section-title { font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 6px; text-transform: uppercase; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+            th { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
+            td { border: 1px solid #cbd5e1; padding: 8px; }
+            .total-box { width: 100%; border-collapse: collapse; font-size: 13px; border: 2px solid #166534; margin-top: 15px; }
+            .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>GRANJA AVÍCOLA LUMY</h1>
+            <h2>SISTEMA DE CONTROL AVÍCOLA - INFORME DE GESTIÓN</h2>
+            <h3>${titleText}</h3>
+            <p>Fecha de emisión: ${currentDate}</p>
+          </div>
+
+          <div class="section-title">1. Consumo y Costo de Alimento</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Concepto de Alimento</th>
+                <th style="text-align: center;">Cantidad / Sacos</th>
+                <th style="text-align: right;">Costo Total ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Alimento Consumido por las Aves</td>
+                <td style="text-align: center; font-weight: bold;">${totalFeedConsumed} Sacos</td>
+                <td style="text-align: right; color: #64748b;">N/A</td>
+              </tr>
+              <tr style="background: #fafafa;">
+                <td>Inversión / Compras de Alimento</td>
+                <td style="text-align: center; font-weight: bold;">${totalFeedPurchasedSacks} Sacos</td>
+                <td style="text-align: right; font-weight: bold; color: #d97706;">$${totalFeedCostSpent.toFixed(2)}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="section-title">2. Desglose de Gastos Varios y Operativos</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Descripción / Concepto del Gasto</th>
+                <th>Fecha</th>
+                <th style="text-align: right;">Monto ($)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${expensesRowsHtml}
+            </tbody>
+          </table>
+
+          <table class="total-box">
+            <tr style="background: #f0fdf4;">
+              <td style="padding: 10px; font-weight: bold; color: #166534;">TOTAL GENERAL DE INVERSIÓN Y GASTOS DEL PERÍODO:</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px; color: #e11d48;">$${totalExpenseVal.toFixed(2)}</td>
+            </tr>
+          </table>
+
+          <div class="footer">
+            <p>Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Control de Producción</p>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 250);
     }
 
     function updateFeedDaysAlert() {

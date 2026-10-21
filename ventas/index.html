@@ -5,34 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avícola Lumy - Gestión de Cajas y Ventas</title>
     
-    <!-- Enlace al archivo Manifest para PWA -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3014/3014523.png">
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome CDN para Iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Configuración personalizada de Tailwind con tonos Azul Oscuro -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        navy: {
-                            800: '#1e293b',
-                            900: '#0f172a',
-                            950: '#0b1120',
-                        },
-                        lumyBlue: {
-                            500: '#2563eb',
-                            600: '#1d4ed8',
-                            700: '#1e40af',
-                        }
+                        navy: { 800: '#1e293b', 900: '#0f172a', 950: '#0b1120' },
+                        lumyBlue: { 500: '#2563eb', 600: '#1d4ed8', 700: '#1e40af' }
                     }
                 }
             }
@@ -67,7 +54,6 @@
                 </button>
             </div>
 
-            <!-- FORMULARIO: INICIAR SESIÓN -->
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
@@ -91,7 +77,6 @@
                 </button>
             </form>
 
-            <!-- FORMULARIO: REGISTRARSE -->
             <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nombre Completo</label>
@@ -120,7 +105,6 @@
                 </button>
             </form>
 
-            <!-- FORMULARIO: RECUPERAR -->
             <form id="forgot-form" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
                 <p class="text-xs text-slate-500 mb-2">Ingresa tu correo y te enviaremos las instrucciones para restablecer tu contraseña.</p>
                 <div>
@@ -142,13 +126,11 @@
         </div>
     </section>
 
-
     <!-- ========================================== -->
-    <!-- 2. PANTALLA PRINCIPAL / DASHBOARD         -->
+    <!-- 2. PANTALLA PRINCIPAL / DASHBOARD          -->
     <!-- ========================================== -->
     <div id="dashboardScreen" class="hidden min-h-screen flex-col bg-slate-950 w-full">
         
-        <!-- CABECERA PRINCIPAL CON BOTONES DE IMPRESIÓN POR PERÍODO -->
         <header class="bg-slate-900 border-b border-blue-500/30 shadow-lg sticky top-0 z-50">
             <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
                 <div class="flex items-center space-x-3">
@@ -157,11 +139,10 @@
                     </div>
                     <div>
                         <h1 class="text-lg font-bold tracking-wide text-blue-400 leading-none">Avícola Lumy</h1>
-                        <p class="text-xs text-slate-400 mt-0.5">Control & Registro de Cajas de Huevos</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Control & Registro de Cajas de Huevos (Tipo A y Jumbo)</p>
                     </div>
                 </div>
 
-                <!-- BOTONES DE IMPRESIÓN IGUALES AL MÓDULO DE GALPONES -->
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="inline-flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
                         <button onclick="printReport('day')" class="px-2.5 py-1.5 hover:bg-slate-800 font-semibold rounded-lg text-slate-200 flex items-center space-x-1 transition">
@@ -189,7 +170,6 @@
             </div>
         </header>
 
-        <!-- CONTENEDOR PRINCIPAL -->
         <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full space-y-6">
 
             <!-- TARJETAS DE RESUMEN DE STOCK Y CRÉDITOS -->
@@ -227,33 +207,54 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN DUAL: REGISTRO DE MOVIMIENTOS Y CRÉDITOS -->
+            <!-- SECCIÓN DUAL: REGISTRO DE MOVIMIENTOS Y CRÉDITOS (TIPO A Y JUMBO) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                <!-- FORMULARIO 1: MOVIMIENTO GENERAL DE CAJA -->
+                <!-- FORMULARIO 1: MOVIMIENTO GENERAL DE CAJA (TIPO A Y JUMBO) -->
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
                     <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2 border-b border-slate-800 pb-3">
                         <i class="fa-solid fa-boxes-stacked"></i>
-                        <span>Entrada de Registro / Venta Contado</span>
+                        <span>Entrada de Inventario / Venta Contado</span>
                     </h3>
                     <form onsubmit="handleTransaction(event)" class="space-y-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Tipo de Movimiento</label>
                             <select id="transType" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
-                                <option value="entry">📥 Entrada (Agregar Inventario de Cajas)</option>
-                                <option value="sale">💵 Venta de Contado (Salida de Cajas)</option>
+                                <option value="entry">📥 Entrada (Agregar Inventario)</option>
+                                <option value="sale">💵 Venta de Contado (Salida)</option>
                             </select>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Cantidad Cajas</label>
-                                <input type="number" id="transQty" min="1" required placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Precio / Caja ($)</label>
-                                <input type="number" step="0.01" id="transPrice" required placeholder="Ej: 45.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                        
+                        <!-- Cajas Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo A</label>
+                                    <input type="number" id="transQtyA" min="0" placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo A ($)</label>
+                                    <input type="number" step="0.01" id="transPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Cajas Tipo Jumbo -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo Jumbo</label>
+                                    <input type="number" id="transQtyJumbo" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo Jumbo ($)</label>
+                                    <input type="number" step="0.01" id="transPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center justify-center space-x-2 mt-2">
                             <i class="fa-solid fa-floppy-disk"></i>
                             <span>Guardar Registro</span>
@@ -261,7 +262,7 @@
                     </form>
                 </div>
 
-                <!-- FORMULARIO 2: REGISTRO DE VENTA A CRÉDITO (5 DÍAS) -->
+                <!-- FORMULARIO 2: REGISTRO DE VENTA A CRÉDITO (5 DÍAS - TIPO A Y JUMBO) -->
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
                     <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2 border-b border-slate-800 pb-3">
                         <i class="fa-solid fa-clock-rotate-left"></i>
@@ -272,16 +273,37 @@
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Nombre del Cliente</label>
                             <input type="text" id="creditClient" required placeholder="Ej: Distribuidora El Sol" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Cantidad Cajas</label>
-                                <input type="number" id="creditQty" min="1" required placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 mb-1">Precio / Caja ($)</label>
-                                <input type="number" step="0.01" id="creditPrice" required placeholder="Ej: 45.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+
+                        <!-- Crédito Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo A</label>
+                                    <input type="number" id="creditQtyA" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo A ($)</label>
+                                    <input type="number" step="0.01" id="creditPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Crédito Tipo Jumbo -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo Jumbo</label>
+                                    <input type="number" id="creditQtyJumbo" min="0" placeholder="Ej: 3" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo Jumbo ($)</label>
+                                    <input type="number" step="0.01" id="creditPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
                         <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-amber-600/30 transition flex items-center justify-center space-x-2 mt-2">
                             <i class="fa-solid fa-calendar-plus"></i>
                             <span>Registrar Crédito (5 Días)</span>
@@ -304,7 +326,7 @@
                         <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
                             <tr>
                                 <th class="p-3">Cliente</th>
-                                <th class="p-3">Cajas</th>
+                                <th class="p-3">Detalle Cajas</th>
                                 <th class="p-3">Monto Total</th>
                                 <th class="p-3">Vencimiento</th>
                                 <th class="p-3">Tiempo Restante</th>
@@ -323,7 +345,7 @@
                 <div class="p-4 bg-slate-950/60 border-b border-slate-800 flex justify-between items-center">
                     <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
                         <i class="fa-solid fa-receipt"></i>
-                        <span>Historial de Operaciones Generales</span>
+                        <span>Historial de Operaciones Generales (Tipo A y Jumbo)</span>
                     </h3>
                 </div>
                 <div class="overflow-x-auto">
@@ -332,9 +354,9 @@
                             <tr>
                                 <th class="p-3">Fecha y Hora</th>
                                 <th class="p-3">Tipo</th>
-                                <th class="p-3">Cajas</th>
-                                <th class="p-3">Precio/Caja</th>
-                                <th class="p-3">Total</th>
+                                <th class="p-3">Cajas Tipo A</th>
+                                <th class="p-3">Cajas Tipo Jumbo</th>
+                                <th class="p-3">Total Operación</th>
                                 <th class="p-3 text-center">Acción</th>
                             </tr>
                         </thead>
@@ -347,19 +369,16 @@
 
         </main>
 
-        <!-- PIE DE PÁGINA -->
         <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
             &copy; 2026 Avícola Lumy. Todos los derechos reservados.
         </footer>
 
     </div>
 
-
     <!-- ========================================== -->
-    <!-- 3. LÓGICA Y CABLEADO DE DATOS (JS)          -->
+    <!-- 3. LÓGICA Y CABLEADO DE DATOS (JS)         -->
     <!-- ========================================== -->
     <script>
-        // Configuración de Supabase
         const SUPABASE_URL = 'https://yufrelqaqyeslnnzzltir.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC';
         
@@ -373,11 +392,9 @@
             console.error('Error inicializando Supabase:', err);
         }
 
-        // Almacenes Locales para estado rápido e interfaz
         let localCredits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
         let globalTransactionsList = [];
 
-        // Cambiar entre Pestañas de Autenticación
         function switchAuthTab(tab) {
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
@@ -419,384 +436,4 @@
         }
 
         function handleForgotPassword(e) {
-            e.preventDefault();
-            alert('Instrucciones enviadas a tu correo electrónico.');
-            switchAuthTab('login');
-        }
-
-        function showDashboard() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('dashboardScreen').classList.remove('hidden');
-            document.getElementById('dashboardScreen').classList.add('flex');
-            
-            loadGlobalTransactions();
-            renderCredits();
-            startCountdownTimer();
-        }
-
-        function logout() {
-            document.getElementById('dashboardScreen').classList.add('hidden');
-            document.getElementById('dashboardScreen').classList.remove('flex');
-            document.getElementById('loginScreen').classList.remove('hidden');
-        }
-
-        // Operaciones Generales (Entradas / Ventas Contado)
-        async function handleTransaction(e) {
-            e.preventDefault();
-            const type = document.getElementById('transType').value;
-            const qty = parseFloat(document.getElementById('transQty').value) || 0;
-            const price = parseFloat(document.getElementById('transPrice').value) || 0;
-
-            const newRecord = {
-                id: Date.now(),
-                type: type,
-                qty: qty,
-                price: price,
-                total: qty * price,
-                date: new Date().toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' })
-            };
-
-            if (_supabase) {
-                const { error } = await _supabase.from('transacciones').insert([newRecord]);
-                if (error) console.error("Error al guardar en Supabase:", error.message);
-            }
-
-            globalTransactionsList.unshift(newRecord);
-            updateDashboardStats();
-            renderHistoryTable();
-
-            document.getElementById('transQty').value = '';
-            document.getElementById('transPrice').value = '';
-        }
-
-        // Módulo de Ventas a Crédito (5 Días)
-        function handleCreditSale(e) {
-            e.preventDefault();
-            const client = document.getElementById('creditClient').value.trim();
-            const qty = parseFloat(document.getElementById('creditQty').value) || 0;
-            const price = parseFloat(document.getElementById('creditPrice').value) || 0;
-
-            const now = new Date();
-            const dueDate = new Date(now.getTime() + (5 * 24 * 60 * 60 * 1000));
-
-            const creditEntry = {
-                id: Date.now(),
-                client: client,
-                qty: qty,
-                price: price,
-                total: qty * price,
-                createdAt: now.toISOString(),
-                dueDate: dueDate.toISOString(),
-                status: 'pending'
-            };
-
-            localCredits.unshift(creditEntry);
-            saveCredits();
-            renderCredits();
-
-            // Registrar también como venta
-            const saleRecord = {
-                id: Date.now() + 1,
-                type: 'sale',
-                qty: qty,
-                price: price,
-                total: qty * price,
-                date: new Date().toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' })
-            };
-
-            globalTransactionsList.unshift(saleRecord);
-            updateDashboardStats();
-            renderHistoryTable();
-
-            document.getElementById('creditClient').value = '';
-            document.getElementById('creditQty').value = '';
-            document.getElementById('creditPrice').value = '';
-        }
-
-        function saveCredits() {
-            localStorage.setItem('lumy_credits', JSON.stringify(localCredits));
-        }
-
-        function markCreditPaid(id) {
-            localCredits = localCredits.filter(c => c.id !== id);
-            saveCredits();
-            renderCredits();
-        }
-
-        function renderCredits() {
-            const tbody = document.getElementById('creditsTable');
-            tbody.innerHTML = '';
-
-            const pendingCredits = localCredits.filter(c => c.status === 'pending');
-            document.getElementById('statCreditsPending').textContent = pendingCredits.length;
-
-            if (pendingCredits.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No hay créditos activos en este momento.</td></tr>`;
-                return;
-            }
-
-            pendingCredits.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
-                const dueDateFormatted = new Date(c.dueDate).toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-                tr.innerHTML = `
-                    <td class="p-3 font-semibold text-slate-100">${c.client}</td>
-                    <td class="p-3 text-slate-300">${c.qty} cajas</td>
-                    <td class="p-3 font-bold text-amber-400">$${c.total.toFixed(2)}</td>
-                    <td class="p-3 text-slate-400">${dueDateFormatted}</td>
-                    <td class="p-3 font-mono font-bold" id="timer-${c.id}">Cargando...</td>
-                    <td class="p-3 text-center">
-                        <button onclick="markCreditPaid(${c.id})" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white px-2.5 py-1 rounded-lg border border-emerald-500/30 transition text-[11px] font-bold">
-                            Marcar Pagado
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            updateTimers();
-        }
-
-        function startCountdownTimer() {
-            setInterval(updateTimers, 1000);
-        }
-
-        function updateTimers() {
-            localCredits.forEach(c => {
-                const timerElem = document.getElementById(`timer-${c.id}`);
-                if (!timerElem) return;
-
-                const now = new Date().getTime();
-                const due = new Date(c.dueDate).getTime();
-                const diff = due - now;
-
-                if (diff <= 0) {
-                    timerElem.innerHTML = `<span class="text-red-500 animate-pulse">🔴 VENCIDO</span>`;
-                } else {
-                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                    let colorClass = "text-emerald-400";
-                    if (days < 1) colorClass = "text-red-400 animate-pulse";
-                    else if (days < 2) colorClass = "text-amber-400";
-
-                    timerElem.innerHTML = `<span class="${colorClass}">${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
-                }
-            });
-        }
-
-        // Cargar Historial General
-        async function loadGlobalTransactions() {
-            if (_supabase) {
-                const { data, error } = await _supabase.from('transacciones').select('*').order('id', { ascending: false });
-                if (!error && data) {
-                    globalTransactionsList = data;
-                }
-            }
-            updateDashboardStats();
-            renderHistoryTable();
-        }
-
-        function updateDashboardStats() {
-            let totalStock = 0;
-            let salesCount = 0;
-            let totalRevenue = 0;
-
-            globalTransactionsList.forEach(item => {
-                if (item.type === 'entry') {
-                    totalStock += Number(item.qty);
-                } else if (item.type === 'sale') {
-                    totalStock = Math.max(0, totalStock - Number(item.qty));
-                    salesCount++;
-                    totalRevenue += Number(item.total);
-                }
-            });
-
-            document.getElementById('statStock').textContent = totalStock;
-            document.getElementById('statSales').textContent = salesCount;
-            document.getElementById('statRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
-        }
-
-        function renderHistoryTable() {
-            const tbody = document.getElementById('historyTable');
-            tbody.innerHTML = '';
-
-            if (globalTransactionsList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No hay operaciones registradas.</td></tr>`;
-                return;
-            }
-
-            globalTransactionsList.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
-                const badge = item.type === 'entry' 
-                    ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' 
-                    : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">VENTA</span>';
-
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-400">${item.date || 'Hoy'}</td>
-                    <td class="p-3">${badge}</td>
-                    <td class="p-3 font-bold text-slate-200">${item.qty} cajas</td>
-                    <td class="p-3 text-slate-300">$${Number(item.price).toFixed(2)}</td>
-                    <td class="p-3 font-bold text-blue-400">$${Number(item.total).toFixed(2)}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="deleteTransaction(${item.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white px-2.5 py-1 rounded-lg transition text-[11px] font-bold">
-                            Borrar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        async function deleteTransaction(id) {
-            globalTransactionsList = globalTransactionsList.filter(t => t.id !== id);
-            if (_supabase) {
-                await _supabase.from('transacciones').delete().eq('id', id);
-            }
-            updateDashboardStats();
-            renderHistoryTable();
-        }
-
-
-        // ==========================================
-        // SISTEMA DE IMPRESIÓN PROFESIONAL (ESTILO GALPONES)
-        // ==========================================
-        function printReport(type) {
-            let titleText = "INFORME GENERAL DE VENTAS Y CAJAS DE HUEVOS";
-            let totalRevenuePeriod = 0;
-            let totalBoxesSold = 0;
-            let totalBoxesEntered = 0;
-
-            if (type === 'day') {
-                titleText = "INFORME DIARIO DE VENTAS Y CAJAS";
-            } else if (type === 'week') {
-                titleText = "INFORME SEMANAL DE VENTAS Y CAJAS";
-            } else if (type === 'month') {
-                titleText = "INFORME MENSUAL DE VENTAS Y CAJAS";
-            } else if (type === 'year') {
-                titleText = "INFORME ANUAL DE VENTAS Y CAJAS";
-            } else {
-                titleText = "INFORME HISTÓRICO COMPLETO DE VENTAS";
-            }
-
-            globalTransactionsList.forEach(item => {
-                if (item.type === 'sale') {
-                    totalRevenuePeriod += Number(item.total);
-                    totalBoxesSold += Number(item.qty);
-                } else if (item.type === 'entry') {
-                    totalBoxesEntered += Number(item.qty);
-                }
-            });
-
-            const currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-            let rowsHtml = '';
-            if (globalTransactionsList.length === 0) {
-                rowsHtml = `<tr><td colspan="4" style="border: 1px solid #cbd5e1; padding: 10px; text-align: center; color: #666;">Sin movimientos registrados.</td></tr>`;
-            } else {
-                globalTransactionsList.forEach(item => {
-                    const tipoLabel = item.type === 'entry' ? 'ENTRADA DE CAJAS' : 'VENTA DE CONTADO';
-                    rowsHtml += `
-                        <tr>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.date || 'Hoy'}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; font-weight: bold;">${tipoLabel}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qty} cajas</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: ${item.type === 'sale' ? '#16a34a' : '#2563eb'};">$${Number(item.total).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // Ventana dedicada para impresión con membrete y tablas limpias
-            const printWindow = window.open('', '_blank', 'width=800,height=600');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>${titleText}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; color: #1e293b; padding: 20px; margin: 0; }
-                        .header { text-align: center; border-bottom: 2px solid #1e40af; padding-bottom: 12px; margin-bottom: 20px; }
-                        h1 { font-size: 22px; font-weight: bold; color: #1e40af; margin: 0; }
-                        h2 { font-size: 13px; font-weight: bold; color: #334155; margin: 4px 0; text-transform: uppercase; }
-                        h3 { font-size: 12px; font-weight: bold; color: #d97706; margin: 2px 0; }
-                        p { font-size: 11px; color: #64748b; margin: 0; }
-                        .section-title { font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 6px; text-transform: uppercase; }
-                        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
-                        th { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-                        td { border: 1px solid #cbd5e1; padding: 8px; }
-                        .total-box { width: 100%; border-collapse: collapse; font-size: 13px; border: 2px solid #1e40af; margin-top: 15px; }
-                        .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>GRANJA AVÍCOLA LUMY</h1>
-                        <h2>SISTEMA DE CONTROL DE VENTAS Y CAJAS DE HUEVOS</h2>
-                        <h3>${titleText}</h3>
-                        <p>Fecha de emisión: ${currentDate}</p>
-                    </div>
-
-                    <div class="section-title">1. Resumen de Movimientos y Cajas</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Concepto</th>
-                                <th style="text-align: center;">Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total Cajas Ingresadas (Entradas)</td>
-                                <td style="text-align: center; font-weight: bold;">${totalBoxesEntered} Cajas</td>
-                            </tr>
-                            <tr style="background: #fafafa;">
-                                <td>Total Cajas Comercializadas (Ventas)</td>
-                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalBoxesSold} Cajas</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="section-title">2. Detalle de Historial de Ventas y Entradas</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Tipo de Operación</th>
-                                <th style="text-align: center;">Cantidad</th>
-                                <th style="text-align: right;">Total ($)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml}
-                        </tbody>
-                    </table>
-
-                    <table class="total-box">
-                        <tr style="background: #eff6ff;">
-                            <td style="padding: 10px; font-weight: bold; color: #1e40af;">TOTAL RECAUDADO EN VENTAS DEL PERÍODO:</td>
-                            <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 16px; color: #16a34a;">$${totalRevenuePeriod.toFixed(2)}</td>
-                        </tr>
-                    </table>
-
-                    <div class="footer">
-                        <p>Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Gestión de Ventas</p>
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 250);
-        }
-    </script>
-</body>
-</html>
+            e.preventDefault

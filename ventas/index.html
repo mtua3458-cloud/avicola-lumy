@@ -1,5 +1,5 @@
 <!-- ========================================== -->
-    <!-- 3. LÓGICA Y CONEXIÓN REAL A LA NUBE (SUPABASE) -->
+    <!-- 3. LÓGICA Y CONEXIÓN NUBE + LOCAL SEGURA -->
     <!-- ========================================== -->
     <script>
         const SUPABASE_URL = 'https://yufrelqaqyeslnnzzltir.supabase.co';
@@ -24,23 +24,23 @@
             const btnRegister = document.getElementById('tab-btn-register');
             const btnForgot = document.getElementById('tab-btn-forgot');
 
-            loginForm.classList.add('hidden');
-            registerForm.classList.add('hidden');
-            forgotForm.classList.add('hidden');
+            if(loginForm) loginForm.classList.add('hidden');
+            if(registerForm) registerForm.classList.add('hidden');
+            if(forgotForm) forgotForm.classList.add('hidden');
 
             [btnLogin, btnRegister, btnForgot].forEach(btn => {
-                btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
+                if(btn) btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
             });
 
-            if (tab === 'login') {
+            if (tab === 'login' && loginForm) {
                 loginForm.classList.remove('hidden');
-                btnLogin.className = "flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors font-bold";
-            } else if (tab === 'register') {
+                if(btnLogin) btnLogin.className = "flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors font-bold";
+            } else if (tab === 'register' && registerForm) {
                 registerForm.classList.remove('hidden');
-                btnRegister.className = "flex-1 py-2 text-center text-amber-600 border-b-2 border-amber-500 transition-colors font-bold";
-            } else if (tab === 'forgot') {
+                if(btnRegister) btnRegister.className = "flex-1 py-2 text-center text-amber-600 border-b-2 border-amber-500 transition-colors font-bold";
+            } else if (tab === 'forgot' && forgotForm) {
                 forgotForm.classList.remove('hidden');
-                btnForgot.className = "flex-1 py-2 text-center text-slate-800 border-b-2 border-slate-700 transition-colors font-bold";
+                if(btnForgot) btnForgot.className = "flex-1 py-2 text-center text-slate-800 border-b-2 border-slate-700 transition-colors font-bold";
             }
         }
 
@@ -74,7 +74,7 @@
                 dashboardScreen.classList.add('flex');
                 dashboardScreen.style.display = 'flex';
             }
-            loadCloudData();
+            loadDataSafely();
         }
 
         function logout() {
@@ -91,37 +91,43 @@
             }
         }
 
-        // --- CARGAR DATOS DESDE SUPABASE CLOUD ---
-        async function loadCloudData() {
-            if (!_supabase) {
-                console.warn("Supabase no está disponible.");
-                updateUI([], []);
-                return;
+        // --- CARGA SEGURA SIN RIESGO DE PANTALLA EN BLANCO ---
+        async function loadDataSafely() {
+            let transactions = [];
+            let credits = [];
+
+            // Intentar sincronizar con Supabase si las tablas existen
+            if (_supabase) {
+                try {
+                    const [transRes, credRes] = await Promise.all([
+                        _supabase.from('lumy_transactions').select('*').order('id', { ascending: false }),
+                        _supabase.from('lumy_credits').select('*').order('id', { ascending: false })
+                    ]);
+                    
+                    if (transRes.data && transRes.data.length > 0) transactions = transRes.data;
+                    if (credRes.data && credRes.data.length > 0) credits = credRes.data;
+                } catch (err) {
+                    console.warn("Aviso de sincronización en nube, usando respaldo local seguro.");
+                }
             }
 
-            try {
-                const [transRes, credRes] = await Promise.all([
-                    _supabase.from('lumy_transactions').select('*').order('id', { ascending: false }),
-                    _supabase.from('lumy_credits').select('*').order('id', { ascending: false })
-                ]);
-
-                let transactions = transRes.data || [];
-                let credits = credRes.data || [];
-
-                updateUI(transactions, credits);
-            } catch (err) {
-                console.error("Error al sincronizar con la nube:", err);
+            // Respaldo automático local para garantizar que NUNCA quede vacío
+            if (transactions.length === 0) {
+                transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
             }
+            if (credits.length === 0) {
+                credits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+            }
+
+            updateUI(transactions, credits);
         }
 
-        // --- GUARDAR TRANSACCIÓN EN LA NUBE ---
+        // --- GUARDAR TRANSACCIÓN ---
         async function handleTransaction(e) {
             e.preventDefault();
             const type = document.getElementById('transType').value;
-            
             const qtyA = parseInt(document.getElementById('transQtyA').value) || 0;
             const priceA = parseFloat(document.getElementById('transPriceA').value) || 0;
-            
             const qtyJumbo = parseInt(document.getElementById('transQtyJumbo').value) || 0;
             const priceJumbo = parseFloat(document.getElementById('transPriceJumbo').value) || 0;
 
@@ -131,7 +137,6 @@
             }
 
             const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
-            
             const newRecord = {
                 id: Date.now(),
                 date: new Date().toLocaleString(),
@@ -143,28 +148,31 @@
                 total: total
             };
 
+            // Guardar local
+            let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            localTrans.unshift(newRecord);
+            localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
+            // Intentar guardar en Supabase
             if (_supabase) {
-                const { error } = await _supabase.from('lumy_transactions').insert([newRecord]);
-                if (error) {
-                    console.error("Error guardando en Supabase:", error);
-                    alert("Error al guardar en la nube. Verifica tu conexión.");
-                    return;
+                try {
+                    await _supabase.from('lumy_transactions').insert([newRecord]);
+                } catch (err) {
+                    console.error("Error guardando en nube:", err);
                 }
             }
 
             e.target.reset();
-            loadCloudData();
-            alert('¡Operación guardada en la nube con éxito!');
+            loadDataSafely();
+            alert('¡Operación registrada con éxito!');
         }
 
-        // --- GUARDAR CRÉDITO EN LA NUBE ---
+        // --- GUARDAR CRÉDITO ---
         async function handleCreditSale(e) {
             e.preventDefault();
             const client = document.getElementById('creditClient').value;
-            
             const qtyA = parseInt(document.getElementById('creditQtyA').value) || 0;
             const priceA = parseFloat(document.getElementById('creditPriceA').value) || 0;
-            
             const qtyJumbo = parseInt(document.getElementById('creditQtyJumbo').value) || 0;
             const priceJumbo = parseFloat(document.getElementById('creditPriceJumbo').value) || 0;
 
@@ -189,57 +197,74 @@
                 status: 'pending'
             };
 
+            let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+            localCreds.unshift(newCredit);
+            localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
+
             if (_supabase) {
-                const { error } = await _supabase.from('lumy_credits').insert([newCredit]);
-                if (error) {
-                    console.error("Error guardando crédito en Supabase:", error);
-                    alert("Error al guardar el crédito en la nube.");
-                    return;
+                try {
+                    await _supabase.from('lumy_credits').insert([newCredit]);
+                } catch (err) {
+                    console.error("Error guardando crédito en nube:", err);
                 }
             }
 
             e.target.reset();
-            loadCloudData();
-            alert('¡Venta a crédito guardada en la nube! Plazo de 5 días.');
+            loadDataSafely();
+            alert('¡Venta a crédito registrada con éxito! Plazo de 5 días.');
         }
 
-        // --- ELIMINAR DE LA NUBE ---
         async function deleteTransaction(id) {
-            if (confirm('¿Deseas eliminar esta operación de la nube?')) {
+            if (confirm('¿Deseas eliminar esta operación?')) {
+                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+                localTrans = localTrans.filter(t => t.id !== id);
+                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
                 if (_supabase) {
-                    await _supabase.from('lumy_transactions').delete().eq('id', id);
+                    try {
+                        await _supabase.from('lumy_transactions').delete().eq('id', id);
+                    } catch (e) {}
                 }
-                loadCloudData();
+                loadDataSafely();
             }
         }
 
-        // --- COBRAR CRÉDITO EN LA NUBE ---
         async function payCredit(id) {
-            if (_supabase) {
-                const { data: creds } = await _supabase.from('lumy_credits').select('*').eq('id', id);
-                if (creds && creds.length > 0) {
-                    const credit = creds[0];
-                    
-                    await _supabase.from('lumy_credits').update({ status: 'paid' }).eq('id', id);
+            let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+            const credit = localCreds.find(c => c.id === id);
+            
+            if (credit) {
+                credit.status = 'paid';
+                localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
 
-                    const saleRecord = {
-                        id: Date.now(),
-                        date: new Date().toLocaleString(),
-                        type: 'sale',
-                        qtyA: credit.qtyA,
-                        priceA: credit.priceA,
-                        qtyJumbo: credit.qtyJumbo,
-                        priceJumbo: credit.priceJumbo,
-                        total: credit.total
-                    };
-                    await _supabase.from('lumy_transactions').insert([saleRecord]);
+                const saleRecord = {
+                    id: Date.now(),
+                    date: new Date().toLocaleString(),
+                    type: 'sale',
+                    qtyA: credit.qtyA,
+                    priceA: credit.priceA,
+                    qtyJumbo: credit.qtyJumbo,
+                    priceJumbo: credit.priceJumbo,
+                    total: credit.total
+                };
+
+                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+                localTrans.unshift(saleRecord);
+                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
+                if (_supabase) {
+                    try {
+                        await _supabase.from('lumy_credits').update({ status: 'paid' }).eq('id', id);
+                        await _supabase.from('lumy_transactions').insert([saleRecord]);
+                    } catch (e) {}
                 }
+
+                loadDataSafely();
+                alert('¡Crédito cobrado y registrado como venta!');
             }
-            loadCloudData();
-            alert('¡Crédito cobrado y registrado como venta en la nube!');
         }
 
-        // --- ACTUALIZAR INTERFAZ CON DATOS DE LA NUBE ---
+        // --- ACTUALIZAR INTERFAZ ---
         function updateUI(transactions = [], credits = []) {
             let totalStockA = 0;
             let totalStockJumbo = 0;
@@ -249,13 +274,13 @@
 
             transactions.forEach(t => {
                 if (t.type === 'entry') {
-                    totalStockA += t.qtyA;
-                    totalStockJumbo += t.qtyJumbo;
+                    totalStockA += (t.qtyA || 0);
+                    totalStockJumbo += (t.qtyJumbo || 0);
                 } else if (t.type === 'sale') {
-                    totalStockA -= t.qtyA;
-                    totalStockJumbo -= t.qtyJumbo;
-                    totalSalesCount += (t.qtyA + t.qtyJumbo);
-                    totalRevenueVal += t.total;
+                    totalStockA -= (t.qtyA || 0);
+                    totalStockJumbo -= (t.qtyJumbo || 0);
+                    totalSalesCount += ((t.qtyA || 0) + (t.qtyJumbo || 0));
+                    totalRevenueVal += (t.total || 0);
                 }
             });
 
@@ -265,17 +290,22 @@
                 }
             });
 
-            document.getElementById('statStock').innerText = `A: ${totalStockA} | J: ${totalStockJumbo}`;
-            document.getElementById('statSales').innerText = totalSalesCount;
-            document.getElementById('statRevenue').innerText = `$${totalRevenueVal.toFixed(2)}`;
-            document.getElementById('statCreditsPending').innerText = pendingCreditsCount;
+            const statStock = document.getElementById('statStock');
+            const statSales = document.getElementById('statSales');
+            const statRevenue = document.getElementById('statRevenue');
+            const statCreditsPending = document.getElementById('statCreditsPending');
 
-            // Renderizar Historial
+            if(statStock) statStock.innerText = `A: ${totalStockA} \vert{} J:${totalStockJumbo}`;
+            if(statSales) statSales.innerText = totalSalesCount;
+            if(statRevenue) statRevenue.innerText = `$${totalRevenueVal.toFixed(2)}`;
+            if(statCreditsPending) statCreditsPending.innerText = pendingCreditsCount;
+
+            // Historial
             const historyBody = document.getElementById('historyTable');
             if (historyBody) {
                 historyBody.innerHTML = '';
                 if (transactions.length === 0) {
-                    historyBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay operaciones en la nube.</td></tr>`;
+                    historyBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay operaciones registradas.</td></tr>`;
                 } else {
                     transactions.forEach(t => {
                         const badge = t.type === 'entry' 
@@ -284,11 +314,10 @@
 
                         historyBody.innerHTML += `
                             <tr class="hover:bg-slate-950/40 transition">
-                                <td class="p-3 text-slate-400">${t.date}</td>
+                                <td class="p-3 text-slate-400">${t.date || ''}</td>
                                 <td class="p-3">${badge}</td>
-                                <td class="p-3 font-semibold">${t.qtyA} un. ($${t.priceA.toFixed(2)})</td>
-                                <td class="p-3 font-semibold">${t.qtyJumbo} un. ($${t.priceJumbo.toFixed(2)})</td>
-                                <td class="p-3 font-bold text-blue-400">$${t.total.toFixed(2)}</td>
+                                <td class="p-3 font-semibold">${t.qtyA \vert{}\vert{} 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
+                                <td class="p-3 font-semibold">${t.qtyJumbo || 0} un. ($${(t.priceJumbo \vert{}\vert{} 0).toFixed(2)})</td> <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
                                 <td class="p-3 text-center">
                                     <button onclick="deleteTransaction(${t.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white px-2 py-1 rounded text-xs transition">
                                         <i class="fa-solid fa-trash"></i>
@@ -300,16 +329,16 @@
                 }
             }
 
-            // Renderizar Créditos
+            // Créditos
             const creditsBody = document.getElementById('creditsTable');
             if (creditsBody) {
                 creditsBody.innerHTML = '';
                 if (credits.length === 0) {
-                    creditsBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay créditos en la nube.</td></tr>`;
+                    creditsBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay créditos registrados.</td></tr>`;
                 } else {
                     const now = Date.now();
                     credits.forEach(c => {
-                        const timeLeft = c.dueDate - now;
+                        const timeLeft = (c.dueDate || now) - now;
                         let timeStr = '';
                         let statusBadge = '';
 
@@ -332,14 +361,12 @@
 
                         creditsBody.innerHTML += `
                             <tr class="hover:bg-slate-950/40 transition">
-                                <td class="p-3 font-bold text-slate-200">${c.client}</td>
-                                <td class="p-3">A: ${c.qtyA} ($${c.priceA}) | Jumbo: ${c.qtyJumbo} ($${c.priceJumbo})</td>
-                                <td class="p-3 font-bold text-amber-400">$${c.total.toFixed(2)}</td>
-                                <td class="p-3 text-slate-400">${new Date(c.dueDate).toLocaleDateString()}</td>
+                                <td class="p-3 font-bold text-slate-200">${c.client || ''}</td>
+                                <td class="p-3">A: ${c.qtyA \vert{}\vert{} 0} ($${c.priceA \vert{}\vert{} 0}) \vert{} Jumbo:${c.qtyJumbo || 0} ($${c.priceJumbo \vert{}\vert{} 0})</td> <td class="p-3 font-bold text-amber-400">$${(c.total || 0).toFixed(2)}</td>
+                                <td class="p-3 text-slate-400">${new Date(c.dueDate || now).toLocaleDateString()}</td>
                                 <td class="p-3 font-semibold text-blue-300">${timeStr}</td>
                                 <td class="p-3 text-center space-x-2">
-                                    ${statusBadge}
-                                    ${actionBtn}
+                                    ${statusBadge}${actionBtn}
                                 </td>
                             </tr>
                         `;
@@ -348,10 +375,15 @@
             }
         }
 
-        // IMPRESIÓN OFICIAL CON DATOS DE LA NUBE
+        // IMPRESIÓN OFICIAL
         async function printReport(type) {
-            if (!_supabase) return;
-            const { data: transactions = [] } = await _supabase.from('lumy_transactions').select('*');
+            let transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            if (_supabase) {
+                try {
+                    const res = await _supabase.from('lumy_transactions').select('*');
+                    if (res.data && res.data.length > 0) transactions = res.data;
+                } catch(e) {}
+            }
 
             let titleText = "INFORME HISTÓRICO COMPLETO DE VENTAS Y CAJAS";
             let totalRevenueVal = 0;
@@ -360,9 +392,9 @@
 
             transactions.forEach(t => {
                 if (t.type === 'sale') {
-                    totalRevenueVal += t.total;
-                    totalA += t.qtyA;
-                    totalJumbo += t.qtyJumbo;
+                    totalRevenueVal += (t.total || 0);
+                    totalA += (t.qtyA || 0);
+                    totalJumbo += (t.qtyJumbo || 0);
                 }
             });
 
@@ -370,16 +402,15 @@
 
             let rowsHtml = '';
             if (transactions.length === 0) {
-                rowsHtml = `<tr><td colspan="5" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; color: #64748b; font-style: italic;">Sin movimientos en la nube.</td></tr>`;
+                rowsHtml = `<tr><td colspan="5" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; color: #64748b; font-style: italic;">Sin movimientos registrados.</td></tr>`;
             } else {
                 transactions.forEach(item => {
                     rowsHtml += `
                         <tr>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.date}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.type.toUpperCase()}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyA} un. ($${item.priceA.toFixed(2)})</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyJumbo} un. ($${item.priceJumbo.toFixed(2)})</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #16a34a;">$${item.total.toFixed(2)}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.date || ''}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${(item.type || '').toUpperCase()}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyA \vert{}\vert{} 0} un. ($${(item.priceA || 0).toFixed(2)})</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyJumbo || 0} un. ($${(item.priceJumbo \vert{}\vert{} 0).toFixed(2)})</td> <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #16a34a;">$${(item.total || 0).toFixed(2)}</td>
                         </tr>
                     `;
                 });
@@ -399,81 +430,4 @@
                         h2 { font-size: 11px; font-weight: 800; color: #334155; margin: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; }
                         h3 { font-size: 11px; font-weight: 800; color: #d97706; margin: 2px 0; text-transform: uppercase; }
                         p { font-size: 10px; color: #64748b; margin: 0; font-weight: 500; }
-                        .section-title { font-size: 11px; font-weight: 800; color: #1e293b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
-                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
-                        th { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; font-weight: 700; }
-                        td { border: 1px solid #cbd5e1; padding: 6px 8px; }
-                        .total-box { width: 100%; border: 1.5px solid #2563eb; margin-top: 15px; border-collapse: collapse; }
-                        .total-box td { padding: 10px; font-weight: 800; font-size: 12px; }
-                        .footer { margin-top: 40px; text-align: center; font-size: 9px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>GRANJA AVÍCOLA LUMY</h1>
-                        <h2>SISTEMA DE CONTROL DE VENTAS Y CAJAS DE HUEVOS</h2>
-                        <h3>${titleText}</h3>
-                        <p>Fecha de emisión: ${currentDate}</p>
-                    </div>
-
-                    <div class="section-title">1. RESUMEN GENERAL DE CAJAS COMERCIALIZADAS</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Concepto / Tipo de Huevo</th>
-                                <th style="text-align: center;">Cantidad Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total Cajas Comercializadas (Tipo A)</td>
-                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalA} Cajas</td>
-                            </tr>
-                            <tr>
-                                <td>Total Cajas Comercializadas (Tipo Jumbo)</td>
-                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalJumbo} Cajas</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="section-title">2. DETALLE DE HISTORIAL DE VENTAS Y ENTRADAS</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th style="text-align: center;">Operación</th>
-                                <th style="text-align: center;">Cajas Tipo A</th>
-                                <th style="text-align: center;">Cajas Tipo Jumbo</th>
-                                <th style="text-align: right;">Total ($)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml}
-                        </tbody>
-                    </table>
-
-                    <table class="total-box">
-                        <tr style="background: #f8fafc;">
-                            <td style="color: #1e3a8a; border: none;">TOTAL RECAUDADO EN VENTAS DEL PERÍODO:</td>
-                            <td style="text-align: right; color: #16a34a; font-size: 14px; border: none;">$${totalRevenueVal.toFixed(2)}</td>
-                        </tr>
-                    </table>
-
-                    <div class="footer">
-                        Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Gestión de Ventas.
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-
-            setTimeout(() => {
-                printWindow.focus();
-                printWindow.print();
-            }, 300);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCloudData();
-        });
-    </script>
+                        .section-title { font-size: 11px;

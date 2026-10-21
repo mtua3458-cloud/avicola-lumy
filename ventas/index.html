@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Granja Avícola Lumy</title>
+    <title>Granja Avícola Lumy - Control de Ventas y Cajas</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased justify-between">
 
     <!-- ========================================== -->
-    <!-- 1. PANTALLA DE LOGIN -->
+    <!-- 1. PANTALLA DE AUTENTICACIÓN (LOGIN) -->
     <!-- ========================================== -->
     <section id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 w-full">
         <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-blue-100/20 text-slate-800">
@@ -21,7 +21,7 @@
                     <span class="text-3xl">🥚</span>
                 </div>
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Granja Avícola Lumy</h1>
-                <p class="text-xs font-semibold text-blue-600 mt-0.5">Sistema de Control</p>
+                <p class="text-xs font-semibold text-blue-600 mt-0.5">Módulo de Control de Ventas y Cajas</p>
             </div>
 
             <div class="flex border-b border-slate-200 mb-6 text-sm font-semibold">
@@ -45,23 +45,23 @@
             <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nombre Completo</label>
-                    <input type="text" id="regName" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                    <input type="text" id="regName" required placeholder="Ej: María Eugenia" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                    <input type="email" id="regEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                    <input type="email" id="regEmail" required placeholder="nuevo@lumy.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
-                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                    <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
                 </div>
                 <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm mt-2">Crear Cuenta</button>
             </form>
 
             <form id="forgot-form" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
-                <p class="text-xs text-slate-500 mb-2">Ingresa tu correo para recuperar el acceso.</p>
+                <p class="text-xs text-slate-500 mb-2">Ingresa tu correo registrado para recibir instrucciones.</p>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo</label>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
                     <input type="email" id="forgotEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
                 </div>
                 <button type="submit" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm mt-2">Enviar Instrucciones</button>
@@ -70,31 +70,114 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- 2. PANTALLA PRINCIPAL (DASHBOARD) -->
+    <!-- 2. PANTALLA PRINCIPAL (DASHBOARD)          -->
     <!-- ========================================== -->
     <div id="dashboardScreen" class="hidden flex-col min-h-screen bg-slate-950 w-full">
+        
         <header class="bg-slate-900 border-b border-blue-500/30 shadow-lg sticky top-0 z-50">
-            <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-                <h1 class="text-lg font-bold text-blue-400">Granja Avícola Lumy</h1>
-                <button onclick="logout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 text-xs px-3 py-2 rounded-xl transition font-semibold">Salir</button>
+            <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xl shadow-md flex items-center justify-center w-10 h-10">🥚</div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-wide text-blue-400 leading-none">Granja Avícola Lumy</h1>
+                        <p class="text-xs text-slate-400 mt-0.5">Control de Cajas de Huevos (Tipo A y Jumbo)</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="printReport()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-xl transition font-bold flex items-center gap-1 shadow">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Imprimir Reporte</span>
+                    </button>
+                    <button onclick="logout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white border border-red-500/30 text-xs px-3 py-2 rounded-xl transition font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-power-off"></i>
+                        <span>Salir</span>
+                    </button>
+                </div>
             </div>
         </header>
 
         <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full space-y-6">
-            <!-- TARJETAS DE ESTadísticas -->
+
+            <!-- TARJETAS DE RESUMEN -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                    <p class="text-xs font-semibold text-slate-400">Stock Actual</p>
-                    <h3 id="statStock" class="text-2xl font-black text-amber-400 mt-1">0</h3>
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Stock Actual (A | Jumbo)</p>
+                        <h3 id="statStock" class="text-2xl font-black text-amber-400 mt-1">A: 0 | J: 0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl">📦</div>
                 </div>
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                    <p class="text-xs font-semibold text-slate-400">Ventas Registradas</p>
-                    <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Ventas Registradas</p>
+                        <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl">💰</div>
                 </div>
-                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
-                    <p class="text-xs font-semibold text-slate-400">Total Recaudado</p>
-                    <h3 id="statRevenue" class="text-2xl font-black text-blue-400 mt-1">$0.00</h3>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Total Recaudado</p>
+                        <h3 id="statRevenue" class="text-2xl font-black text-blue-400 mt-1">$0.00</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl">📊</div>
                 </div>
+            </div>
+
+            <!-- FORMULARIO DE REGISTRO (ENTRADAS Y VENTAS TIPO A Y JUMBO) -->
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Registrar Entrada de Inventario o Venta</span>
+                </h3>
+                <form onsubmit="handleTransaction(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Tipo de Operación</label>
+                        <select id="transType" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="entry">📥 Entrada de Inventario (Cajas Nuevas)</option>
+                            <option value="sale">💵 Venta de Contado</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
+                                    <input type="number" id="transQtyA" min="0" placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
+                                    <input type="number" step="0.01" id="transPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipo Jumbo -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
+                                    <input type="number" id="transQtyJumbo" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
+                                    <input type="number" step="0.01" id="transPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Guardar Operación</span>
+                    </button>
+                </form>
             </div>
 
             <!-- TABLA DE HISTORIAL -->
@@ -106,10 +189,12 @@
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
                             <tr>
-                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Fecha y Hora</th>
                                 <th class="p-3">Tipo</th>
-                                <th class="p-3">Cantidad</th>
+                                <th class="p-3">Tipo A</th>
+                                <th class="p-3">Tipo Jumbo</th>
                                 <th class="p-3">Total</th>
+                                <th class="p-3 text-center">Acción</th>
                             </tr>
                         </thead>
                         <tbody id="historyTable" class="divide-y divide-slate-800/60 text-slate-300">
@@ -118,11 +203,12 @@
                     </table>
                 </div>
             </div>
+
         </main>
     </div>
 
     <!-- ========================================== -->
-    <!-- 3. LÓGICA Y CABLEADO (JS) CORREGIDA -->
+    <!-- 3. LÓGICA Y CONEXIÓN SEGURA (JS) -->
     <!-- ========================================== -->
     <script>
         const SUPABASE_URL = 'https://yufrelqaqyeslnnzzltir.supabase.co';
@@ -138,9 +224,6 @@
             console.error('Error inicializando Supabase:', err);
         }
 
-        let localCredits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
-        let globalTransactionsList = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
-
         function switchAuthTab(tab) {
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
@@ -148,7 +231,7 @@
 
             if(loginForm) loginForm.classList.add('hidden');
             if(registerForm) registerForm.classList.add('hidden');
-            if(forgotForm) forgotForm.classList.add('hidden');
+            if(forgotForm) registerForm.classList.add('hidden');
 
             if (tab === 'login' && loginForm) loginForm.classList.remove('hidden');
             if (tab === 'register' && registerForm) registerForm.classList.remove('hidden');
@@ -162,58 +245,222 @@
 
         function handleRegister(e) {
             e.preventDefault();
-            alert('¡Cuenta registrada con éxito! Ya puedes ingresar.');
+            alert('¡Cuenta registrada con éxito!');
             switchAuthTab('login');
         }
 
         function handleForgotPassword(e) {
             e.preventDefault();
-            alert('Se han enviado las instrucciones a tu correo electrónico.');
+            alert('Instrucciones enviadas.');
             switchAuthTab('login');
         }
 
         function showDashboard() {
             const loginScreen = document.getElementById('loginScreen');
             const dashboardScreen = document.getElementById('dashboardScreen');
-            
-            if (loginScreen) {
+            if(loginScreen) {
                 loginScreen.classList.add('hidden');
                 loginScreen.style.display = 'none';
             }
-            if (dashboardScreen) {
+            if(dashboardScreen) {
                 dashboardScreen.classList.remove('hidden');
                 dashboardScreen.classList.add('flex');
                 dashboardScreen.style.display = 'flex';
             }
-            updateUI();
+            loadDataSafely();
         }
 
         function logout() {
             const loginScreen = document.getElementById('loginScreen');
             const dashboardScreen = document.getElementById('dashboardScreen');
-            
-            if (dashboardScreen) {
+            if(dashboardScreen) {
                 dashboardScreen.classList.add('hidden');
                 dashboardScreen.style.display = 'none';
             }
-            if (loginScreen) {
+            if(loginScreen) {
                 loginScreen.classList.remove('hidden');
                 loginScreen.style.display = 'flex';
             }
         }
 
-        function updateUI() {
+        async function loadDataSafely() {
+            let transactions = [];
+            if (_supabase) {
+                try {
+                    const res = await _supabase.from('lumy_transactions').select('*').order('id', { ascending: false });
+                    if (res.data) transactions = res.data;
+                } catch (err) {}
+            }
+            if (transactions.length === 0) {
+                transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            }
+            updateUI(transactions);
+        }
+
+        async function handleTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('transType').value;
+            const qtyA = parseInt(document.getElementById('transQtyA').value) || 0;
+            const priceA = parseFloat(document.getElementById('transPriceA').value) || 0;
+            const qtyJumbo = parseInt(document.getElementById('transQtyJumbo').value) || 0;
+            const priceJumbo = parseFloat(document.getElementById('transPriceJumbo').value) || 0;
+
+            if (qtyA === 0 && qtyJumbo === 0) {
+                alert('Ingresa al menos una cantidad para Tipo A o Tipo Jumbo.');
+                return;
+            }
+
+            const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
+            const newRecord = {
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                type: type,
+                qtyA: qtyA,
+                priceA: priceA,
+                qtyJumbo: qtyJumbo,
+                priceJumbo: priceJumbo,
+                total: total
+            };
+
+            let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            localTrans.unshift(newRecord);
+            localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
+            if (_supabase) {
+                try {
+                    await _supabase.from('lumy_transactions').insert([newRecord]);
+                } catch (err) {}
+            }
+
+            e.target.reset();
+            loadDataSafely();
+            alert('¡Operación registrada con éxito!');
+        }
+
+        async function deleteTransaction(id) {
+            if (confirm('¿Deseas eliminar esta operación?')) {
+                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+                localTrans = localTrans.filter(t => t.id !== id);
+                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
+                if (_supabase) {
+                    try { await _supabase.from('lumy_transactions').delete().eq('id', id); } catch(e) {}
+                }
+                loadDataSafely();
+            }
+        }
+
+        function updateUI(transactions = []) {
+            let totalStockA = 0, totalStockJumbo = 0, totalSalesCount = 0, totalRevenueVal = 0;
+
+            transactions.forEach(t => {
+                if (t.type === 'entry') {
+                    totalStockA += (t.qtyA || 0);
+                    totalStockJumbo += (t.qtyJumbo || 0);
+                } else if (t.type === 'sale') {
+                    totalStockA -= (t.qtyA || 0);
+                    totalStockJumbo -= (t.qtyJumbo || 0);
+                    totalSalesCount += ((t.qtyA || 0) + (t.qtyJumbo || 0));
+                    totalRevenueVal += (t.total || 0);
+                }
+            });
+
+            document.getElementById('statStock').innerText = `A: ${totalStockA} | J: ${totalStockJumbo}`;
+            document.getElementById('statSales').innerText = totalSalesCount;
+            document.getElementById('statRevenue').innerText = `$${totalRevenueVal.toFixed(2)}`;
+
             const historyBody = document.getElementById('historyTable');
             if (historyBody) {
                 historyBody.innerHTML = '';
-                if (globalTransactionsList.length === 0) {
-                    historyBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">No hay operaciones registradas.</td></tr>`;
+                if (transactions.length === 0) {
+                    historyBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay operaciones registradas.</td></tr>`;
+                } else {
+                    transactions.forEach(t => {
+                        const badge = t.type === 'entry' 
+                            ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' 
+                            : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">VENTA</span>';
+
+                        historyBody.innerHTML += `
+                            <tr class="hover:bg-slate-950/40 transition">
+                                <td class="p-3 text-slate-400">${t.date || ''}</td>
+                                <td class="p-3">${badge}</td>
+                                <td class="p-3 font-semibold">${t.qtyA || 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
+                                <td class="p-3 font-semibold">${t.qtyJumbo || 0} un. ($${(t.priceJumbo || 0).toFixed(2)})</td>
+                                <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
+                                <td class="p-3 text-center">
+                                    <button onclick="deleteTransaction(${t.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white px-2 py-1 rounded text-xs transition">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
                 }
             }
         }
 
+        async function printReport() {
+            let transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            if (_supabase) {
+                try {
+                    const res = await _supabase.from('lumy_transactions').select('*');
+                    if (res.data && res.data.length > 0) transactions = res.data;
+                } catch(e) {}
+            }
+
+            let totalRevenueVal = 0, totalA = 0, totalJumbo = 0;
+            transactions.forEach(t => {
+                if (t.type === 'sale') {
+                    totalRevenueVal += (t.total || 0);
+                    totalA += (t.qtyA || 0);
+                    totalJumbo += (t.qtyJumbo || 0);
+                }
+            });
+
+            const currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            let rowsHtml = transactions.length === 0 
+                ? `<tr><td colspan="5" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">Sin movimientos.</td></tr>`
+                : transactions.map(item => `
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px;">${item.date || ''}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">${(item.type || '').toUpperCase()}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">${item.qtyA || 0} ($${(item.priceA || 0).toFixed(2)})</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">${item.qtyJumbo || 0} ($${(item.priceJumbo || 0).toFixed(2)})</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: right; font-weight: bold; color: #16a34a;">$${(item.total || 0).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
+            const printWindow = window.open('', '_blank', 'width=850,height=650');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8"><title>Informe Granja Avícola Lumy</title>
+                    <style>
+                        body { font-family: sans-serif; color: #1e293b; padding: 25px; background: #fff; }
+                        .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px; }
+                        h1 { font-size: 18px; color: #1e3a8a; margin: 0; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+                        th, td { border: 1px solid #cbd5e1; padding: 6px; }
+                        th { background: #f8fafc; text-align: left; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header"><h1>GRANJA AVÍCOLA LUMY</h1><p>Informe de Ventas y Cajas - ${currentDate}</p></div>
+                    <table>
+                        <thead><tr><th>Fecha</th><th style="text-align:center;">Tipo</th><th style="text-align:center;">Tipo A</th><th style="text-align:center;">Tipo Jumbo</th><th style="text-align:right;">Total</th></tr></thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                    <h3>Total Recaudado en Ventas: $${totalRevenueVal.toFixed(2)}</h3>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => { printWindow.focus(); printWindow.print(); }, 300);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            updateUI();
+            loadDataSafely();
         });
     </script>
 </body>

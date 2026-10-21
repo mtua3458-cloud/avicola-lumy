@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Granja Avícola Lumy - Control de Cajas y Créditos</title>
+    <title>Granja Avícola Lumy - Control de Inventario y Créditos</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -80,7 +80,7 @@
                     <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xl shadow-md flex items-center justify-center w-10 h-10">🥚</div>
                     <div>
                         <h1 class="text-lg font-bold tracking-wide text-blue-400 leading-none">Granja Avícola Lumy</h1>
-                        <p class="text-xs text-slate-400 mt-0.5">Control de Cajas de Huevos (Tipo A y Jumbo)</p>
+                        <p class="text-xs text-slate-400 mt-0.5">Control de Inventario y Créditos</p>
                     </div>
                 </div>
 
@@ -115,7 +115,7 @@
 
                 <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase">Ventas de Contado</p>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Ventas / Salidas</p>
                         <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
                     </div>
                     <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl">💰</div>
@@ -138,21 +138,21 @@
                 </div>
             </div>
 
-            <!-- DOS FORMULARIOS: OPERACIONES GENERALES Y CRÉDITOS 5 DÍAS -->
+            <!-- DOS FORMULARIOS SEPARADOS -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                <!-- FORMULARIO 1: ENTRADA / VENTA CONTADO -->
+                <!-- 1. FORMULARIO DE ENTRADA Y SALIDA DE INVENTARIO -->
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
                     <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2 border-b border-slate-800 pb-3">
                         <i class="fa-solid fa-boxes-stacked"></i>
-                        <span>Entrada de Inventario / Venta de Contado</span>
+                        <span>Registro de Inventario (Entrada / Salida)</span>
                     </h3>
                     <form onsubmit="handleTransaction(event)" class="space-y-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-400 mb-1">Tipo de Operación</label>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Acción de Inventario</label>
                             <select id="transType" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 outline-none">
-                                <option value="entry">📥 Entrada (Agregar Inventario)</option>
-                                <option value="sale">💵 Venta de Contado (Salida)</option>
+                                <option value="entry">📥 Registrar Entrada de Inventario</option>
+                                <option value="sale">📤 Registrar Salida de Inventario</option>
                             </select>
                         </div>
                         
@@ -161,11 +161,11 @@
                             <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo A</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
                                     <input type="number" id="transQtyA" min="0" placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo A ($)</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
                                     <input type="number" step="0.01" id="transPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                             </div>
@@ -176,11 +176,11 @@
                             <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo Jumbo</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
                                     <input type="number" id="transQtyJumbo" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo Jumbo ($)</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
                                     <input type="number" step="0.01" id="transPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                             </div>
@@ -198,16 +198,16 @@
                     </form>
                 </div>
 
-                <!-- FORMULARIO 2: VENTA A CRÉDITO (5 DÍAS) -->
+                <!-- 2. FORMULARIO DE REGISTRO DE VENTA CLIENTE (CRÉDITO 5 DÍAS) -->
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
                     <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2 border-b border-slate-800 pb-3">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                        <span>Nueva Venta a Crédito (Plazo 5 Días)</span>
+                        <i class="fa-solid fa-user-tag"></i>
+                        <span>Registro de Venta Cliente (Crédito 5 Días)</span>
                     </h3>
                     <form onsubmit="handleCreditSale(event)" class="space-y-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 mb-1">Nombre del Cliente</label>
-                            <input type="text" id="creditClient" required placeholder="Ej: Distribuidora El Sol" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                            <input type="text" id="creditClient" required placeholder="Ej: Distribuidora La Pastora" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                         </div>
 
                         <!-- Crédito Tipo A -->
@@ -215,11 +215,11 @@
                             <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo A</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
                                     <input type="number" id="creditQtyA" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo A ($)</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
                                     <input type="number" step="0.01" id="creditPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                             </div>
@@ -230,11 +230,11 @@
                             <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo Jumbo</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
                                     <input type="number" id="creditQtyJumbo" min="0" placeholder="Ej: 3" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo Jumbo ($)</label>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
                                     <input type="number" step="0.01" id="creditPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
                                 </div>
                             </div>
@@ -243,7 +243,7 @@
                         <div class="flex gap-2 pt-2">
                             <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
                                 <i class="fa-solid fa-calendar-plus"></i>
-                                <span>Registrar Crédito</span>
+                                <span>Guardar Crédito</span>
                             </button>
                             <button type="reset" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">
                                 Borrar
@@ -259,7 +259,7 @@
                 <div class="p-4 bg-slate-950/60 border-b border-slate-800">
                     <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
                         <i class="fa-solid fa-stopwatch"></i>
-                        <span>Créditos Pendientes (Conteo Regresivo 5 Días)</span>
+                        <span>Ventas a Crédito (Conteo Regresivo de 5 Días)</span>
                     </h3>
                 </div>
                 <div class="overflow-x-auto">
@@ -284,7 +284,7 @@
                 <div class="p-4 bg-slate-950/60 border-b border-slate-800">
                     <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
                         <i class="fa-solid fa-receipt"></i>
-                        <span>Historial de Operaciones Generales</span>
+                        <span>Historial de Inventario (Entradas y Salidas)</span>
                     </h3>
                 </div>
                 <div class="overflow-x-auto">
@@ -292,7 +292,7 @@
                         <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
                             <tr>
                                 <th class="p-3">Fecha y Hora</th>
-                                <th class="p-3">Tipo</th>
+                                <th class="p-3">Operación</th>
                                 <th class="p-3">Cajas Tipo A</th>
                                 <th class="p-3">Cajas Tipo Jumbo</th>
                                 <th class="p-3">Total</th>
@@ -398,7 +398,7 @@
 
             e.target.reset();
             loadDataSafely();
-            alert('¡Operación guardada con éxito!');
+            alert('¡Operación de inventario guardada con éxito!');
         }
 
         async function handleCreditSale(e) {
@@ -412,7 +412,7 @@
             if (qtyA === 0 && qtyJumbo === 0) { alert('Ingresa al menos una cantidad.'); return; }
 
             const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
-            const dueDate = Date.now() + (5 * 24 * 60 * 60 * 1000); // 5 días
+            const dueDate = Date.now() + (5 * 24 * 60 * 60 * 1000); // Plazo de 5 días
 
             const newCredit = { id: Date.now(), client, qtyA, priceA, qtyJumbo, priceJumbo, total, dueDate, status: 'pending' };
 
@@ -424,11 +424,11 @@
 
             e.target.reset();
             loadDataSafely();
-            alert('¡Crédito registrado con éxito!');
+            alert('¡Venta a crédito registrada con éxito!');
         }
 
         async function deleteTransaction(id) {
-            if (confirm('¿Deseas eliminar este registro?')) {
+            if (confirm('¿Deseas eliminar este registro de inventario?')) {
                 let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
                 localTrans = localTrans.filter(t => t.id !== id);
                 localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
@@ -466,7 +466,7 @@
                     } catch(e) {}
                 }
                 loadDataSafely();
-                alert('¡Crédito cobrado y registrado en ventas!');
+                alert('¡Crédito cobrado y registrado en salidas!');
             }
         }
 
@@ -491,11 +491,11 @@
 
             // Historial General
             const historyBody = document.getElementById('historyTable');
-            historyBody.innerHTML = transactions.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Sin operaciones.</td></tr>` :
+            historyBody.innerHTML = transactions.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Sin movimientos.</td></tr>` :
                 transactions.map(t => `
                     <tr class="hover:bg-slate-950/40 transition">
                         <td class="p-3 text-slate-400">${t.date || ''}</td>
-                        <td class="p-3">${t.type === 'entry' ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">VENTA</span>'}</td>
+                        <td class="p-3">${t.type === 'entry' ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">SALIDA</span>'}</td>
                         <td class="p-3">${t.qtyA || 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
                         <td class="p-3">${t.qtyJumbo || 0} un. ($${(t.priceJumbo || 0).toFixed(2)})</td>
                         <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
@@ -543,16 +543,12 @@
 
             const now = new Date();
             let filtered = transactions.filter(t => {
-                // Parsear fecha guardada en formato local string
                 const tDate = new Date(t.date);
                 if (filterType === 'day') return tDate.toDateString() === now.toDateString();
-                if (filterType === 'week') {
-                    const diff = (now - tDate) / (1000 * 60 * 60 * 24);
-                    return diff <= 7;
-                }
+                if (filterType === 'week') return (now - tDate) / (1000 * 60 * 60 * 24) <= 7;
                 if (filterType === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
                 if (filterType === 'year') return tDate.getFullYear() === now.getFullYear();
-                return true; // 'all'
+                return true;
             });
 
             let totalRev = 0;
@@ -587,7 +583,7 @@
                 <body>
                     <div class="header"><h1>GRANJA AVÍCOLA LUMY</h1><p>Informe de Operaciones (${filterType.toUpperCase()}) - ${now.toLocaleDateString()}</p></div>
                     <table>
-                        <thead><tr><th>Fecha</th><th style="text-align:center;">Tipo</th><th style="text-align:center;">Tipo A</th><th style="text-align:center;">Tipo Jumbo</th><th style="text-align:right;">Total</th></tr></thead>
+                        <thead><tr><th>Fecha</th><th style="text-align:center;">Operación</th><th style="text-align:center;">Tipo A</th><th style="text-align:center;">Tipo Jumbo</th><th style="text-align:right;">Total</th></tr></thead>
                         <tbody>${rows}</tbody>
                     </table>
                     <h3>Total Recaudado en el Periodo: $${totalRev.toFixed(2)}</h3>

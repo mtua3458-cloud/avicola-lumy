@@ -96,7 +96,6 @@
             let transactions = [];
             let credits = [];
 
-            // Intentar sincronizar con Supabase si las tablas existen
             if (_supabase) {
                 try {
                     const [transRes, credRes] = await Promise.all([
@@ -111,7 +110,6 @@
                 }
             }
 
-            // Respaldo automático local para garantizar que NUNCA quede vacío
             if (transactions.length === 0) {
                 transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
             }
@@ -148,12 +146,10 @@
                 total: total
             };
 
-            // Guardar local
             let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
             localTrans.unshift(newRecord);
             localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
 
-            // Intentar guardar en Supabase
             if (_supabase) {
                 try {
                     await _supabase.from('lumy_transactions').insert([newRecord]);
@@ -295,7 +291,7 @@
             const statRevenue = document.getElementById('statRevenue');
             const statCreditsPending = document.getElementById('statCreditsPending');
 
-            if(statStock) statStock.innerText = `A: ${totalStockA} \vert{} J:${totalStockJumbo}`;
+            if(statStock) statStock.innerText = `A: ${totalStockA} | J: ${totalStockJumbo}`;
             if(statSales) statSales.innerText = totalSalesCount;
             if(statRevenue) statRevenue.innerText = `$${totalRevenueVal.toFixed(2)}`;
             if(statCreditsPending) statCreditsPending.innerText = pendingCreditsCount;
@@ -316,8 +312,9 @@
                             <tr class="hover:bg-slate-950/40 transition">
                                 <td class="p-3 text-slate-400">${t.date || ''}</td>
                                 <td class="p-3">${badge}</td>
-                                <td class="p-3 font-semibold">${t.qtyA \vert{}\vert{} 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
-                                <td class="p-3 font-semibold">${t.qtyJumbo || 0} un. ($${(t.priceJumbo \vert{}\vert{} 0).toFixed(2)})</td> <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
+                                <td class="p-3 font-semibold">${t.qtyA || 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
+                                <td class="p-3 font-semibold">${t.qtyJumbo || 0} un. ($${(t.priceJumbo || 0).toFixed(2)})</td>
+                                <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
                                 <td class="p-3 text-center">
                                     <button onclick="deleteTransaction(${t.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white px-2 py-1 rounded text-xs transition">
                                         <i class="fa-solid fa-trash"></i>
@@ -362,11 +359,13 @@
                         creditsBody.innerHTML += `
                             <tr class="hover:bg-slate-950/40 transition">
                                 <td class="p-3 font-bold text-slate-200">${c.client || ''}</td>
-                                <td class="p-3">A: ${c.qtyA \vert{}\vert{} 0} ($${c.priceA \vert{}\vert{} 0}) \vert{} Jumbo:${c.qtyJumbo || 0} ($${c.priceJumbo \vert{}\vert{} 0})</td> <td class="p-3 font-bold text-amber-400">$${(c.total || 0).toFixed(2)}</td>
+                                <td class="p-3">A: ${c.qtyA || 0} ($${c.priceA || 0}) | Jumbo: ${c.qtyJumbo || 0} ($${c.priceJumbo || 0})</td>
+                                <td class="p-3 font-bold text-amber-400">$${(c.total || 0).toFixed(2)}</td>
                                 <td class="p-3 text-slate-400">${new Date(c.dueDate || now).toLocaleDateString()}</td>
                                 <td class="p-3 font-semibold text-blue-300">${timeStr}</td>
                                 <td class="p-3 text-center space-x-2">
-                                    ${statusBadge}${actionBtn}
+                                    ${statusBadge}
+                                    ${actionBtn}
                                 </td>
                             </tr>
                         `;
@@ -409,8 +408,9 @@
                         <tr>
                             <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.date || ''}</td>
                             <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${(item.type || '').toUpperCase()}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyA \vert{}\vert{} 0} un. ($${(item.priceA || 0).toFixed(2)})</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyJumbo || 0} un. ($${(item.priceJumbo \vert{}\vert{} 0).toFixed(2)})</td> <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #16a34a;">$${(item.total || 0).toFixed(2)}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyA || 0} un. ($${(item.priceA || 0).toFixed(2)})</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyJumbo || 0} un. ($${(item.priceJumbo || 0).toFixed(2)})</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #16a34a;">$${(item.total || 0).toFixed(2)}</td>
                         </tr>
                     `;
                 });
@@ -430,4 +430,81 @@
                         h2 { font-size: 11px; font-weight: 800; color: #334155; margin: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; }
                         h3 { font-size: 11px; font-weight: 800; color: #d97706; margin: 2px 0; text-transform: uppercase; }
                         p { font-size: 10px; color: #64748b; margin: 0; font-weight: 500; }
-                        .section-title { font-size: 11px;
+                        .section-title { font-size: 11px; font-weight: 800; color: #1e293b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+                        th { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; font-weight: 700; }
+                        td { border: 1px solid #cbd5e1; padding: 6px 8px; }
+                        .total-box { width: 100%; border: 1.5px solid #2563eb; margin-top: 15px; border-collapse: collapse; }
+                        .total-box td { padding: 10px; font-weight: 800; font-size: 12px; }
+                        .footer { margin-top: 40px; text-align: center; font-size: 9px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>GRANJA AVÍCOLA LUMY</h1>
+                        <h2>SISTEMA DE CONTROL DE VENTAS Y CAJAS DE HUEVOS</h2>
+                        <h3>${titleText}</h3>
+                        <p>Fecha de emisión: ${currentDate}</p>
+                    </div>
+
+                    <div class="section-title">1. RESUMEN GENERAL DE CAJAS COMERCIALIZADAS</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concepto / Tipo de Huevo</th>
+                                <th style="text-align: center;">Cantidad Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Cajas Comercializadas (Tipo A)</td>
+                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalA} Cajas</td>
+                            </tr>
+                            <tr>
+                                <td>Total Cajas Comercializadas (Tipo Jumbo)</td>
+                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalJumbo} Cajas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="section-title">2. DETALLE DE HISTORIAL DE VENTAS Y ENTRADAS</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th style="text-align: center;">Operación</th>
+                                <th style="text-align: center;">Cajas Tipo A</th>
+                                <th style="text-align: center;">Cajas Tipo Jumbo</th>
+                                <th style="text-align: right;">Total ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                    <table class="total-box">
+                        <tr style="background: #f8fafc;">
+                            <td style="color: #1e3a8a; border: none;">TOTAL RECAUDADO EN VENTAS DEL PERÍODO:</td>
+                            <td style="text-align: right; color: #16a34a; font-size: 14px; border: none;">$${totalRevenueVal.toFixed(2)}</td>
+                        </tr>
+                    </table>
+
+                    <div class="footer">
+                        Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Gestión de Ventas.
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+            }, 300);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDataSafely();
+        });
+    </script>

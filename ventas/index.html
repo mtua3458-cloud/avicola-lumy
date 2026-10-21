@@ -96,3 +96,693 @@
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nueva Contraseña</label>
                     <div class="relative">
                         <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="password" id="regPassword" required placeholder="••••••••" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/30 transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+                    <span>Crear Cuenta</span>
+                    <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+
+            <form id="forgot-form" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
+                <p class="text-xs text-slate-500 mb-2">Ingresa tu correo y te enviaremos las instrucciones para restablecer tu contraseña.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Registrado</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" id="forgotEmail" required placeholder="tu-correo@lumy.com" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm text-slate-800">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 text-sm mt-2">
+                    <span>Enviar Instrucciones</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-4 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-400">Avícola Lumy &copy; Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 2. PANTALLA PRINCIPAL / DASHBOARD          -->
+    <!-- ========================================== -->
+    <div id="dashboardScreen" class="hidden min-h-screen flex-col bg-slate-950 w-full">
+        
+        <header class="bg-slate-900 border-b border-blue-500/30 shadow-lg sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 p-2 rounded-xl text-white font-bold text-xl shadow-md flex items-center justify-center w-10 h-10">
+                        🥚
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-wide text-blue-400 leading-none">Avícola Lumy</h1>
+                        <p class="text-xs text-slate-400 mt-0.5">Control & Registro de Cajas de Huevos (Tipo A y Jumbo)</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="inline-flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+                        <button onclick="printReport('day')" class="px-2.5 py-1.5 hover:bg-slate-800 font-semibold rounded-lg text-slate-200 flex items-center space-x-1 transition">
+                            <i class="fa-solid fa-print text-blue-400"></i><span>Día</span>
+                        </button>
+                        <button onclick="printReport('week')" class="px-2.5 py-1.5 hover:bg-slate-800 font-semibold rounded-lg text-slate-200 flex items-center space-x-1 transition">
+                            <i class="fa-solid fa-print text-blue-400"></i><span>Semana</span>
+                        </button>
+                        <button onclick="printReport('month')" class="px-2.5 py-1.5 hover:bg-slate-800 font-semibold rounded-lg text-slate-200 flex items-center space-x-1 transition">
+                            <i class="fa-solid fa-print text-blue-400"></i><span>Mes</span>
+                        </button>
+                        <button onclick="printReport('year')" class="px-2.5 py-1.5 hover:bg-slate-800 font-semibold rounded-lg text-slate-200 flex items-center space-x-1 transition">
+                            <i class="fa-solid fa-print text-blue-400"></i><span>Año</span>
+                        </button>
+                        <button onclick="printReport('all')" class="px-2.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg flex items-center space-x-1 shadow transition">
+                            <i class="fa-solid fa-file-pdf"></i><span>Todo</span>
+                        </button>
+                    </div>
+
+                    <button id="logoutBtn" onclick="logout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 hover:text-white border border-red-500/30 text-xs px-3 py-2 rounded-xl transition font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-power-off"></i>
+                        <span>Salir</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full space-y-6">
+
+            <!-- TARJETAS DE RESUMEN DE STOCK Y CRÉDITOS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Cajas Disponibles</p>
+                        <h3 id="statStock" class="text-2xl font-black text-amber-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center text-xl">📦</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Ventas de Contado</p>
+                        <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl">💰</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Recaudado</p>
+                        <h3 id="statRevenue" class="text-2xl font-black text-blue-400 mt-1">$0.00</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl">📊</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between shadow-sm">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Créditos Activos</p>
+                        <h3 id="statCreditsPending" class="text-2xl font-black text-amber-500 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-xl">⏳</div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DUAL: REGISTRO DE MOVIMIENTOS Y CRÉDITOS (TIPO A Y JUMBO) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- FORMULARIO 1: MOVIMIENTO GENERAL DE CAJA (TIPO A Y JUMBO) -->
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                    <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Entrada de Inventario / Venta Contado</span>
+                    </h3>
+                    <form onsubmit="handleTransaction(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Tipo de Movimiento</label>
+                            <select id="transType" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="entry">📥 Entrada (Agregar Inventario)</option>
+                                <option value="sale">💵 Venta de Contado (Salida)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Cajas Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo A</label>
+                                    <input type="number" id="transQtyA" min="0" placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo A ($)</label>
+                                    <input type="number" step="0.01" id="transPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cajas Tipo Jumbo -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo Jumbo</label>
+                                    <input type="number" id="transQtyJumbo" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo Jumbo ($)</label>
+                                    <input type="number" step="0.01" id="transPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-blue-600/30 transition flex items-center justify-center space-x-2 mt-2">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Guardar Registro</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- FORMULARIO 2: REGISTRO DE VENTA A CRÉDITO (5 DÍAS - TIPO A Y JUMBO) -->
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Nueva Venta a Crédito (Plazo 5 Días)</span>
+                    </h3>
+                    <form onsubmit="handleCreditSale(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nombre del Cliente</label>
+                            <input type="text" id="creditClient" required placeholder="Ej: Distribuidora El Sol" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
+
+                        <!-- Crédito Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo A</label>
+                                    <input type="number" id="creditQtyA" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo A ($)</label>
+                                    <input type="number" step="0.01" id="creditPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Crédito Tipo Jumbo -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-amber-300">Cajas Tipo Jumbo</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad Tipo Jumbo</label>
+                                    <input type="number" id="creditQtyJumbo" min="0" placeholder="Ej: 3" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio Tipo Jumbo ($)</label>
+                                    <input type="number" step="0.01" id="creditPriceJumbo" min="0" placeholder="Ej: 48.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow-lg shadow-amber-600/30 transition flex items-center justify-center space-x-2 mt-2">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            <span>Registrar Crédito (5 Días)</span>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- SECCIÓN: TABLA DE VENTAS A CRÉDITO Y CONTEO REGRESIVO -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden space-y-2">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800 flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>Créditos Pendientes y Conteo Regresivo</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Cliente</th>
+                                <th class="p-3">Detalle Cajas</th>
+                                <th class="p-3">Monto Total</th>
+                                <th class="p-3">Vencimiento</th>
+                                <th class="p-3">Tiempo Restante</th>
+                                <th class="p-3 text-center">Estado / Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditsTable" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- Se completa dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABLA DE HISTORIAL DE OPERACIONES GENERALES -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800 flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Historial de Operaciones Generales (Tipo A y Jumbo)</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Fecha y Hora</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3">Cajas Tipo A</th>
+                                <th class="p-3">Cajas Tipo Jumbo</th>
+                                <th class="p-3">Total Operación</th>
+                                <th class="p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- Se completa dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
+            &copy; 2026 Avícola Lumy. Todos los derechos reservados.
+        </footer>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. LÓGICA Y CABLEADO DE DATOS (JS)         -->
+    <!-- ========================================== -->
+    <script>
+        const SUPABASE_URL = 'https://yufrelqaqyeslnnzzltir.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC';
+        
+        let _supabase = null;
+        try {
+            if (window.supabase) {
+                const { createClient } = supabase;
+                _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (err) {
+            console.error('Error inicializando Supabase:', err);
+        }
+
+        let localCredits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+        let globalTransactionsList = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-form');
+
+            const btnLogin = document.getElementById('tab-btn-login');
+            const btnRegister = document.getElementById('tab-btn-register');
+            const btnForgot = document.getElementById('tab-btn-forgot');
+
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            [btnLogin, btnRegister, btnForgot].forEach(btn => {
+                btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
+            });
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                btnLogin.className = "flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors font-bold";
+            } else if (tab === 'register') {
+                registerForm.classList.remove('hidden');
+                btnRegister.className = "flex-1 py-2 text-center text-amber-600 border-b-2 border-amber-500 transition-colors font-bold";
+            } else if (tab === 'forgot') {
+                forgotForm.classList.remove('hidden');
+                btnForgot.className = "flex-1 py-2 text-center text-slate-800 border-b-2 border-slate-700 transition-colors font-bold";
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            showDashboard();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('¡Cuenta registrada con éxito! Ya puedes ingresar.');
+            switchAuthTab('login');
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            alert('Se han enviado las instrucciones a tu correo electrónico.');
+            switchAuthTab('login');
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            document.getElementById('dashboardScreen').classList.add('flex');
+            updateUI();
+        }
+
+        function logout() {
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('flex');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function handleTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('transType').value;
+            
+            const qtyA = parseInt(document.getElementById('transQtyA').value) || 0;
+            const priceA = parseFloat(document.getElementById('transPriceA').value) || 0;
+            
+            const qtyJumbo = parseInt(document.getElementById('transQtyJumbo').value) || 0;
+            const priceJumbo = parseFloat(document.getElementById('transPriceJumbo').value) || 0;
+
+            if (qtyA === 0 && qtyJumbo === 0) {
+                alert('Por favor ingresa al menos una cantidad para Tipo A o Tipo Jumbo.');
+                return;
+            }
+
+            const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
+            
+            const transaction = {
+                id: Date.now(),
+                date: new Date().toLocaleString(),
+                type: type,
+                qtyA: qtyA,
+                priceA: priceA,
+                qtyJumbo: qtyJumbo,
+                priceJumbo: priceJumbo,
+                total: total
+            };
+
+            globalTransactionsList.unshift(transaction);
+            localStorage.setItem('lumy_transactions', JSON.stringify(globalTransactionsList));
+
+            e.target.reset();
+            updateUI();
+            alert('¡Operación registrada con éxito!');
+        }
+
+        function handleCreditSale(e) {
+            e.preventDefault();
+            const client = document.getElementById('creditClient').value;
+            
+            const qtyA = parseInt(document.getElementById('creditQtyA').value) || 0;
+            const priceA = parseFloat(document.getElementById('creditPriceA').value) || 0;
+            
+            const qtyJumbo = parseInt(document.getElementById('creditQtyJumbo').value) || 0;
+            const priceJumbo = parseFloat(document.getElementById('creditPriceJumbo').value) || 0;
+
+            if (qtyA === 0 && qtyJumbo === 0) {
+                alert('Por favor ingresa al menos una cantidad para Tipo A o Tipo Jumbo en el crédito.');
+                return;
+            }
+
+            const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 5);
+
+            const creditItem = {
+                id: Date.now(),
+                client: client,
+                qtyA: qtyA,
+                priceA: priceA,
+                qtyJumbo: qtyJumbo,
+                priceJumbo: priceJumbo,
+                total: total,
+                dueDate: dueDate.getTime(),
+                status: 'pending'
+            };
+
+            localCredits.unshift(creditItem);
+            localStorage.setItem('lumy_credits', JSON.stringify(localCredits));
+
+            e.target.reset();
+            updateUI();
+            alert('¡Venta a crédito registrada con éxito! Plazo de 5 días.');
+        }
+
+        function deleteTransaction(id) {
+            globalTransactionsList = globalTransactionsList.filter(t => t.id !== id);
+            localStorage.setItem('lumy_transactions', JSON.stringify(globalTransactionsList));
+            updateUI();
+        }
+
+        function payCredit(id) {
+            const credit = localCredits.find(c => c.id === id);
+            if (credit) {
+                credit.status = 'paid';
+                
+                globalTransactionsList.unshift({
+                    id: Date.now(),
+                    date: new Date().toLocaleString(),
+                    type: 'sale',
+                    qtyA: credit.qtyA,
+                    priceA: credit.priceA,
+                    qtyJumbo: credit.qtyJumbo,
+                    priceJumbo: credit.priceJumbo,
+                    total: credit.total
+                });
+                
+                localStorage.setItem('lumy_transactions', JSON.stringify(globalTransactionsList));
+                localStorage.setItem('lumy_credits', JSON.stringify(localCredits));
+                updateUI();
+                alert('¡Crédito marcado como pagado y sumado a las ventas!');
+            }
+        }
+
+        function updateUI() {
+            let totalStock = 0;
+            let totalSalesCount = 0;
+            let totalRevenueVal = 0;
+            let pendingCreditsCount = 0;
+
+            globalTransactionsList.forEach(t => {
+                const totalQty = t.qtyA + t.qtyJumbo;
+                if (t.type === 'entry') {
+                    totalStock += totalQty;
+                } else if (t.type === 'sale') {
+                    totalStock -= totalQty;
+                    totalSalesCount += totalQty;
+                    totalRevenueVal += t.total;
+                }
+            });
+
+            localCredits.forEach(c => {
+                if (c.status === 'pending') {
+                    pendingCreditsCount++;
+                }
+            });
+
+            document.getElementById('statStock').innerText = totalStock;
+            document.getElementById('statSales').innerText = totalSalesCount;
+            document.getElementById('statRevenue').innerText = `$${totalRevenueVal.toFixed(2)}`;
+            document.getElementById('statCreditsPending').innerText = pendingCreditsCount;
+
+            const historyBody = document.getElementById('historyTable');
+            historyBody.innerHTML = '';
+            if (globalTransactionsList.length === 0) {
+                historyBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay operaciones registradas.</td></tr>`;
+            } else {
+                globalTransactionsList.forEach(t => {
+                    const badge = t.type === 'entry' 
+                        ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' 
+                        : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">VENTA</span>';
+
+                    historyBody.innerHTML += `
+                        <tr class="hover:bg-slate-950/45 transition">
+                            <td class="p-3 text-slate-400">${t.date}</td>
+                            <td class="p-3">${badge}</td>
+                            <td class="p-3 font-semibold">A: ${t.qtyA} ($${t.priceA.toFixed(2)})</td>
+                            <td class="p-3 font-semibold">Jumbo: ${t.qtyJumbo} ($${t.priceJumbo.toFixed(2)})</td>
+                            <td class="p-3 font-bold text-blue-400">$${t.total.toFixed(2)}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="deleteTransaction(${t.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white px-2 py-1 rounded text-xs transition">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const creditsBody = document.getElementById('creditsTable');
+            creditsBody.innerHTML = '';
+            if (localCredits.length === 0) {
+                creditsBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay créditos registrados.</td></tr>`;
+            } else {
+                const now = Date.now();
+                localCredits.forEach(c => {
+                    const timeLeft = c.dueDate - now;
+                    let timeStr = '';
+                    let statusBadge = '';
+
+                    if (c.status === 'paid') {
+                        statusBadge = '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">PAGADO</span>';
+                        timeStr = 'Completado';
+                    } else if (timeLeft <= 0) {
+                        statusBadge = '<span class="bg-red-500/20 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold">VENCIDO</span>';
+                        timeStr = 'Plazo expirado';
+                    } else {
+                        statusBadge = '<span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>';
+                        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        timeStr = `${days} días, ${hours} hrs`;
+                    }
+
+                    const actionBtn = c.status === 'pending' 
+                        ? `<button onclick="payCredit(${c.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded text-xs font-bold transition">Cobrar / Pagar</button>`
+                        : '<span class="text-slate-500 text-xs">N/A</span>';
+
+                    creditsBody.innerHTML += `
+                        <tr class="hover:bg-slate-950/40 transition">
+                            <td class="p-3 font-bold text-slate-200">${c.client}</td>
+                            <td class="p-3">A: ${c.qtyA} ($${c.priceA}) | Jumbo: ${c.qtyJumbo} ($${c.priceJumbo})</td>
+                            <td class="p-3 font-bold text-amber-400">$${c.total.toFixed(2)}</td>
+                            <td class="p-3 text-slate-400">${new Date(c.dueDate).toLocaleDateString()}</td>
+                            <td class="p-3 font-semibold text-blue-300">${timeStr}</td>
+                            <td class="p-3 text-center space-x-2">
+                                ${statusBadge}
+                                ${actionBtn}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // IMPRESIÓN OFICIAL CON VENTANA INDEPENDIENTE
+        function printReport(type) {
+            let titleText = "INFORME HISTÓRICO COMPLETO DE VENTAS";
+            let totalRevenueVal = 0;
+            let totalA = 0;
+            let totalJumbo = 0;
+
+            globalTransactionsList.forEach(t => {
+                if (t.type === 'sale') {
+                    totalRevenueVal += t.total;
+                    totalA += t.qtyA;
+                    totalJumbo += t.qtyJumbo;
+                }
+            });
+
+            const currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            let rowsHtml = '';
+            if (globalTransactionsList.length === 0) {
+                rowsHtml = `<tr><td colspan="5" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; color: #64748b; font-style: italic;">Sin movimientos registrados.</td></tr>`;
+            } else {
+                globalTransactionsList.forEach(item => {
+                    rowsHtml += `
+                        <tr>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.date}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.type.toUpperCase()}</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyA} un. ($${item.priceA.toFixed(2)})</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyJumbo} un. ($${item.priceJumbo.toFixed(2)})</td>
+                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #16a34a;">$${item.total.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const printWindow = window.open('', '_blank', 'width=850,height=650');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${titleText}</title>
+                    <style>
+                        body { font-family: system-ui, -apple-system, sans-serif; color: #1e293b; padding: 25px; margin: 0; background: #fff; }
+                        .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px; }
+                        h1 { font-size: 20px; font-weight: 900; color: #1e3a8a; margin: 0; letter-spacing: 0.5px; }
+                        h2 { font-size: 11px; font-weight: 800; color: #334155; margin: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+                        h3 { font-size: 11px; font-weight: 800; color: #d97706; margin: 2px 0; text-transform: uppercase; }
+                        p { font-size: 10px; color: #64748b; margin: 0; font-weight: 500; }
+                        .section-title { font-size: 11px; font-weight: 800; color: #1e293b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+                        th { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; font-weight: 700; }
+                        td { border: 1px solid #cbd5e1; padding: 6px 8px; }
+                        .total-box { width: 100%; border: 1.5px solid #2563eb; margin-top: 15px; border-collapse: collapse; }
+                        .total-box td { padding: 10px; font-weight: 800; font-size: 12px; }
+                        .footer { margin-top: 40px; text-align: center; font-size: 9px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>GRANJA AVÍCOLA LUMY</h1>
+                        <h2>SISTEMA DE CONTROL DE VENTAS Y CAJAS DE HUEVOS</h2>
+                        <h3>${titleText}</h3>
+                        <p>Fecha de emisión: ${currentDate}</p>
+                    </div>
+
+                    <div class="section-title">1. RESUMEN GENERAL DE CAJAS COMERCIALIZADAS</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concepto / Tipo de Huevo</th>
+                                <th style="text-align: center;">Cantidad Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Cajas Comercializadas (Tipo A)</td>
+                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalA} Cajas</td>
+                            </tr>
+                            <tr>
+                                <td>Total Cajas Comercializadas (Tipo Jumbo)</td>
+                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalJumbo} Cajas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="section-title">2. DETALLE DE HISTORIAL DE VENTAS Y ENTRADAS</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th style="text-align: center;">Operación</th>
+                                <th style="text-align: center;">Cajas Tipo A</th>
+                                <th style="text-align: center;">Cajas Tipo Jumbo</th>
+                                <th style="text-align: right;">Total ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                    <table class="total-box">
+                        <tr style="background: #f8fafc;">
+                            <td style="color: #1e3a8a; border: none;">TOTAL RECAUDADO EN VENTAS DEL PERÍODO:</td>
+                            <td style="text-align: right; color: #16a34a; font-size: 14px; border: none;">$${totalRevenueVal.toFixed(2)}</td>
+                        </tr>
+                    </table>
+
+                    <div class="footer">
+                        Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Gestión de Ventas.
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            setTimeout(() => {
+                printWindow.focus();
+                printWindow.print();
+            }, 300);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+        });
+    </script>
+</body>
+</html>

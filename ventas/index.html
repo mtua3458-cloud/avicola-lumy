@@ -1,5 +1,128 @@
-<!-- ========================================== -->
-    <!-- 3. LÓGICA Y CONEXIÓN NUBE + LOCAL SEGURA -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granja Avícola Lumy</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased justify-between">
+
+    <!-- ========================================== -->
+    <!-- 1. PANTALLA DE LOGIN -->
+    <!-- ========================================== -->
+    <section id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 w-full">
+        <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 border border-blue-100/20 text-slate-800">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-tr from-blue-600 to-amber-500 text-white rounded-2xl shadow-lg mb-3">
+                    <span class="text-3xl">🥚</span>
+                </div>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Granja Avícola Lumy</h1>
+                <p class="text-xs font-semibold text-blue-600 mt-0.5">Sistema de Control</p>
+            </div>
+
+            <div class="flex border-b border-slate-200 mb-6 text-sm font-semibold">
+                <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors">Iniciar Sesión</button>
+                <button id="tab-btn-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors">Registrarse</button>
+                <button id="tab-btn-forgot" onclick="switchAuthTab('forgot')" class="flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors">Recuperar</button>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+                    <input type="email" id="username" required value="admin@lumy.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
+                    <input type="password" id="password" required value="Admin123" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm text-slate-800">
+                </div>
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm mt-2">Ingresar al Sistema</button>
+            </form>
+
+            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Nombre Completo</label>
+                    <input type="text" id="regName" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+                    <input type="email" id="regEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Contraseña</label>
+                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                </div>
+                <button type="submit" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm mt-2">Crear Cuenta</button>
+            </form>
+
+            <form id="forgot-form" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
+                <p class="text-xs text-slate-500 mb-2">Ingresa tu correo para recuperar el acceso.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Correo</label>
+                    <input type="email" id="forgotEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800">
+                </div>
+                <button type="submit" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm mt-2">Enviar Instrucciones</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 2. PANTALLA PRINCIPAL (DASHBOARD) -->
+    <!-- ========================================== -->
+    <div id="dashboardScreen" class="hidden flex-col min-h-screen bg-slate-950 w-full">
+        <header class="bg-slate-900 border-b border-blue-500/30 shadow-lg sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                <h1 class="text-lg font-bold text-blue-400">Granja Avícola Lumy</h1>
+                <button onclick="logout()" class="bg-red-500/20 hover:bg-red-600 text-red-200 text-xs px-3 py-2 rounded-xl transition font-semibold">Salir</button>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-6xl mx-auto px-4 py-6 w-full space-y-6">
+            <!-- TARJETAS DE ESTadísticas -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                    <p class="text-xs font-semibold text-slate-400">Stock Actual</p>
+                    <h3 id="statStock" class="text-2xl font-black text-amber-400 mt-1">0</h3>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                    <p class="text-xs font-semibold text-slate-400">Ventas Registradas</p>
+                    <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
+                </div>
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                    <p class="text-xs font-semibold text-slate-400">Total Recaudado</p>
+                    <h3 id="statRevenue" class="text-2xl font-black text-blue-400 mt-1">$0.00</h3>
+                </div>
+            </div>
+
+            <!-- TABLA DE HISTORIAL -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800">
+                    <h3 class="text-sm font-bold text-blue-400">Historial de Operaciones</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Tipo</th>
+                                <th class="p-3">Cantidad</th>
+                                <th class="p-3">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- Datos dinámicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. LÓGICA Y CABLEADO (JS) CORREGIDA -->
     <!-- ========================================== -->
     <script>
         const SUPABASE_URL = 'https://yufrelqaqyeslnnzzltir.supabase.co';
@@ -15,33 +138,21 @@
             console.error('Error inicializando Supabase:', err);
         }
 
+        let localCredits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+        let globalTransactionsList = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+
         function switchAuthTab(tab) {
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
             const forgotForm = document.getElementById('forgot-form');
 
-            const btnLogin = document.getElementById('tab-btn-login');
-            const btnRegister = document.getElementById('tab-btn-register');
-            const btnForgot = document.getElementById('tab-btn-forgot');
-
             if(loginForm) loginForm.classList.add('hidden');
             if(registerForm) registerForm.classList.add('hidden');
             if(forgotForm) forgotForm.classList.add('hidden');
 
-            [btnLogin, btnRegister, btnForgot].forEach(btn => {
-                if(btn) btn.className = "flex-1 py-2 text-center text-slate-400 hover:text-slate-600 transition-colors";
-            });
-
-            if (tab === 'login' && loginForm) {
-                loginForm.classList.remove('hidden');
-                if(btnLogin) btnLogin.className = "flex-1 py-2 text-center text-blue-700 border-b-2 border-blue-600 transition-colors font-bold";
-            } else if (tab === 'register' && registerForm) {
-                registerForm.classList.remove('hidden');
-                if(btnRegister) btnRegister.className = "flex-1 py-2 text-center text-amber-600 border-b-2 border-amber-500 transition-colors font-bold";
-            } else if (tab === 'forgot' && forgotForm) {
-                forgotForm.classList.remove('hidden');
-                if(btnForgot) btnForgot.className = "flex-1 py-2 text-center text-slate-800 border-b-2 border-slate-700 transition-colors font-bold";
-            }
+            if (tab === 'login' && loginForm) loginForm.classList.remove('hidden');
+            if (tab === 'register' && registerForm) registerForm.classList.remove('hidden');
+            if (tab === 'forgot' && forgotForm) forgotForm.classList.remove('hidden');
         }
 
         function handleLogin(e) {
@@ -74,7 +185,7 @@
                 dashboardScreen.classList.add('flex');
                 dashboardScreen.style.display = 'flex';
             }
-            loadDataSafely();
+            updateUI();
         }
 
         function logout() {
@@ -91,420 +202,19 @@
             }
         }
 
-        // --- CARGA SEGURA SIN RIESGO DE PANTALLA EN BLANCO ---
-        async function loadDataSafely() {
-            let transactions = [];
-            let credits = [];
-
-            if (_supabase) {
-                try {
-                    const [transRes, credRes] = await Promise.all([
-                        _supabase.from('lumy_transactions').select('*').order('id', { ascending: false }),
-                        _supabase.from('lumy_credits').select('*').order('id', { ascending: false })
-                    ]);
-                    
-                    if (transRes.data && transRes.data.length > 0) transactions = transRes.data;
-                    if (credRes.data && credRes.data.length > 0) credits = credRes.data;
-                } catch (err) {
-                    console.warn("Aviso de sincronización en nube, usando respaldo local seguro.");
-                }
-            }
-
-            if (transactions.length === 0) {
-                transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
-            }
-            if (credits.length === 0) {
-                credits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
-            }
-
-            updateUI(transactions, credits);
-        }
-
-        // --- GUARDAR TRANSACCIÓN ---
-        async function handleTransaction(e) {
-            e.preventDefault();
-            const type = document.getElementById('transType').value;
-            const qtyA = parseInt(document.getElementById('transQtyA').value) || 0;
-            const priceA = parseFloat(document.getElementById('transPriceA').value) || 0;
-            const qtyJumbo = parseInt(document.getElementById('transQtyJumbo').value) || 0;
-            const priceJumbo = parseFloat(document.getElementById('transPriceJumbo').value) || 0;
-
-            if (qtyA === 0 && qtyJumbo === 0) {
-                alert('Por favor ingresa al menos una cantidad para Tipo A o Tipo Jumbo.');
-                return;
-            }
-
-            const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
-            const newRecord = {
-                id: Date.now(),
-                date: new Date().toLocaleString(),
-                type: type,
-                qtyA: qtyA,
-                priceA: priceA,
-                qtyJumbo: qtyJumbo,
-                priceJumbo: priceJumbo,
-                total: total
-            };
-
-            let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
-            localTrans.unshift(newRecord);
-            localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
-
-            if (_supabase) {
-                try {
-                    await _supabase.from('lumy_transactions').insert([newRecord]);
-                } catch (err) {
-                    console.error("Error guardando en nube:", err);
-                }
-            }
-
-            e.target.reset();
-            loadDataSafely();
-            alert('¡Operación registrada con éxito!');
-        }
-
-        // --- GUARDAR CRÉDITO ---
-        async function handleCreditSale(e) {
-            e.preventDefault();
-            const client = document.getElementById('creditClient').value;
-            const qtyA = parseInt(document.getElementById('creditQtyA').value) || 0;
-            const priceA = parseFloat(document.getElementById('creditPriceA').value) || 0;
-            const qtyJumbo = parseInt(document.getElementById('creditQtyJumbo').value) || 0;
-            const priceJumbo = parseFloat(document.getElementById('creditPriceJumbo').value) || 0;
-
-            if (qtyA === 0 && qtyJumbo === 0) {
-                alert('Por favor ingresa al menos una cantidad para Tipo A o Tipo Jumbo en el crédito.');
-                return;
-            }
-
-            const total = (qtyA * priceA) + (qtyJumbo * priceJumbo);
-            const dueDate = new Date();
-            dueDate.setDate(dueDate.getDate() + 5);
-
-            const newCredit = {
-                id: Date.now(),
-                client: client,
-                qtyA: qtyA,
-                priceA: priceA,
-                qtyJumbo: qtyJumbo,
-                priceJumbo: priceJumbo,
-                total: total,
-                dueDate: dueDate.getTime(),
-                status: 'pending'
-            };
-
-            let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
-            localCreds.unshift(newCredit);
-            localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
-
-            if (_supabase) {
-                try {
-                    await _supabase.from('lumy_credits').insert([newCredit]);
-                } catch (err) {
-                    console.error("Error guardando crédito en nube:", err);
-                }
-            }
-
-            e.target.reset();
-            loadDataSafely();
-            alert('¡Venta a crédito registrada con éxito! Plazo de 5 días.');
-        }
-
-        async function deleteTransaction(id) {
-            if (confirm('¿Deseas eliminar esta operación?')) {
-                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
-                localTrans = localTrans.filter(t => t.id !== id);
-                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
-
-                if (_supabase) {
-                    try {
-                        await _supabase.from('lumy_transactions').delete().eq('id', id);
-                    } catch (e) {}
-                }
-                loadDataSafely();
-            }
-        }
-
-        async function payCredit(id) {
-            let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
-            const credit = localCreds.find(c => c.id === id);
-            
-            if (credit) {
-                credit.status = 'paid';
-                localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
-
-                const saleRecord = {
-                    id: Date.now(),
-                    date: new Date().toLocaleString(),
-                    type: 'sale',
-                    qtyA: credit.qtyA,
-                    priceA: credit.priceA,
-                    qtyJumbo: credit.qtyJumbo,
-                    priceJumbo: credit.priceJumbo,
-                    total: credit.total
-                };
-
-                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
-                localTrans.unshift(saleRecord);
-                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
-
-                if (_supabase) {
-                    try {
-                        await _supabase.from('lumy_credits').update({ status: 'paid' }).eq('id', id);
-                        await _supabase.from('lumy_transactions').insert([saleRecord]);
-                    } catch (e) {}
-                }
-
-                loadDataSafely();
-                alert('¡Crédito cobrado y registrado como venta!');
-            }
-        }
-
-        // --- ACTUALIZAR INTERFAZ ---
-        function updateUI(transactions = [], credits = []) {
-            let totalStockA = 0;
-            let totalStockJumbo = 0;
-            let totalSalesCount = 0;
-            let totalRevenueVal = 0;
-            let pendingCreditsCount = 0;
-
-            transactions.forEach(t => {
-                if (t.type === 'entry') {
-                    totalStockA += (t.qtyA || 0);
-                    totalStockJumbo += (t.qtyJumbo || 0);
-                } else if (t.type === 'sale') {
-                    totalStockA -= (t.qtyA || 0);
-                    totalStockJumbo -= (t.qtyJumbo || 0);
-                    totalSalesCount += ((t.qtyA || 0) + (t.qtyJumbo || 0));
-                    totalRevenueVal += (t.total || 0);
-                }
-            });
-
-            credits.forEach(c => {
-                if (c.status === 'pending') {
-                    pendingCreditsCount++;
-                }
-            });
-
-            const statStock = document.getElementById('statStock');
-            const statSales = document.getElementById('statSales');
-            const statRevenue = document.getElementById('statRevenue');
-            const statCreditsPending = document.getElementById('statCreditsPending');
-
-            if(statStock) statStock.innerText = `A: ${totalStockA} | J: ${totalStockJumbo}`;
-            if(statSales) statSales.innerText = totalSalesCount;
-            if(statRevenue) statRevenue.innerText = `$${totalRevenueVal.toFixed(2)}`;
-            if(statCreditsPending) statCreditsPending.innerText = pendingCreditsCount;
-
-            // Historial
+        function updateUI() {
             const historyBody = document.getElementById('historyTable');
             if (historyBody) {
                 historyBody.innerHTML = '';
-                if (transactions.length === 0) {
-                    historyBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay operaciones registradas.</td></tr>`;
-                } else {
-                    transactions.forEach(t => {
-                        const badge = t.type === 'entry' 
-                            ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' 
-                            : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">VENTA</span>';
-
-                        historyBody.innerHTML += `
-                            <tr class="hover:bg-slate-950/40 transition">
-                                <td class="p-3 text-slate-400">${t.date || ''}</td>
-                                <td class="p-3">${badge}</td>
-                                <td class="p-3 font-semibold">${t.qtyA || 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
-                                <td class="p-3 font-semibold">${t.qtyJumbo || 0} un. ($${(t.priceJumbo || 0).toFixed(2)})</td>
-                                <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
-                                <td class="p-3 text-center">
-                                    <button onclick="deleteTransaction(${t.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white px-2 py-1 rounded text-xs transition">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
+                if (globalTransactionsList.length === 0) {
+                    historyBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">No hay operaciones registradas.</td></tr>`;
                 }
             }
-
-            // Créditos
-            const creditsBody = document.getElementById('creditsTable');
-            if (creditsBody) {
-                creditsBody.innerHTML = '';
-                if (credits.length === 0) {
-                    creditsBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">No hay créditos registrados.</td></tr>`;
-                } else {
-                    const now = Date.now();
-                    credits.forEach(c => {
-                        const timeLeft = (c.dueDate || now) - now;
-                        let timeStr = '';
-                        let statusBadge = '';
-
-                        if (c.status === 'paid') {
-                            statusBadge = '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">PAGADO</span>';
-                            timeStr = 'Completado';
-                        } else if (timeLeft <= 0) {
-                            statusBadge = '<span class="bg-red-500/20 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold">VENCIDO</span>';
-                            timeStr = 'Plazo expirado';
-                        } else {
-                            statusBadge = '<span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>';
-                            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            timeStr = `${days} días, ${hours} hrs`;
-                        }
-
-                        const actionBtn = c.status === 'pending' 
-                            ? `<button onclick="payCredit(${c.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded text-xs font-bold transition">Cobrar / Pagar</button>`
-                            : '<span class="text-slate-500 text-xs">N/A</span>';
-
-                        creditsBody.innerHTML += `
-                            <tr class="hover:bg-slate-950/40 transition">
-                                <td class="p-3 font-bold text-slate-200">${c.client || ''}</td>
-                                <td class="p-3">A: ${c.qtyA || 0} ($${c.priceA || 0}) | Jumbo: ${c.qtyJumbo || 0} ($${c.priceJumbo || 0})</td>
-                                <td class="p-3 font-bold text-amber-400">$${(c.total || 0).toFixed(2)}</td>
-                                <td class="p-3 text-slate-400">${new Date(c.dueDate || now).toLocaleDateString()}</td>
-                                <td class="p-3 font-semibold text-blue-300">${timeStr}</td>
-                                <td class="p-3 text-center space-x-2">
-                                    ${statusBadge}
-                                    ${actionBtn}
-                                </td>
-                            </tr>
-                        `;
-                    });
-                }
-            }
-        }
-
-        // IMPRESIÓN OFICIAL
-        async function printReport(type) {
-            let transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
-            if (_supabase) {
-                try {
-                    const res = await _supabase.from('lumy_transactions').select('*');
-                    if (res.data && res.data.length > 0) transactions = res.data;
-                } catch(e) {}
-            }
-
-            let titleText = "INFORME HISTÓRICO COMPLETO DE VENTAS Y CAJAS";
-            let totalRevenueVal = 0;
-            let totalA = 0;
-            let totalJumbo = 0;
-
-            transactions.forEach(t => {
-                if (t.type === 'sale') {
-                    totalRevenueVal += (t.total || 0);
-                    totalA += (t.qtyA || 0);
-                    totalJumbo += (t.qtyJumbo || 0);
-                }
-            });
-
-            const currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-            let rowsHtml = '';
-            if (transactions.length === 0) {
-                rowsHtml = `<tr><td colspan="5" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center; color: #64748b; font-style: italic;">Sin movimientos registrados.</td></tr>`;
-            } else {
-                transactions.forEach(item => {
-                    rowsHtml += `
-                        <tr>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px;">${item.date || ''}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${(item.type || '').toUpperCase()}</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyA || 0} un. ($${(item.priceA || 0).toFixed(2)})</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center;">${item.qtyJumbo || 0} un. ($${(item.priceJumbo || 0).toFixed(2)})</td>
-                            <td style="border: 1px solid #cbd5e1; padding: 6px 8px; text-align: right; font-weight: bold; color: #16a34a;">$${(item.total || 0).toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            const printWindow = window.open('', '_blank', 'width=850,height=650');
-            printWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>${titleText}</title>
-                    <style>
-                        body { font-family: system-ui, -apple-system, sans-serif; color: #1e293b; padding: 25px; margin: 0; background: #fff; }
-                        .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px; }
-                        h1 { font-size: 20px; font-weight: 900; color: #1e3a8a; margin: 0; letter-spacing: 0.5px; }
-                        h2 { font-size: 11px; font-weight: 800; color: #334155; margin: 4px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-                        h3 { font-size: 11px; font-weight: 800; color: #d97706; margin: 2px 0; text-transform: uppercase; }
-                        p { font-size: 10px; color: #64748b; margin: 0; font-weight: 500; }
-                        .section-title { font-size: 11px; font-weight: 800; color: #1e293b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.3px; }
-                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
-                        th { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; font-weight: 700; }
-                        td { border: 1px solid #cbd5e1; padding: 6px 8px; }
-                        .total-box { width: 100%; border: 1.5px solid #2563eb; margin-top: 15px; border-collapse: collapse; }
-                        .total-box td { padding: 10px; font-weight: 800; font-size: 12px; }
-                        .footer { margin-top: 40px; text-align: center; font-size: 9px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h1>GRANJA AVÍCOLA LUMY</h1>
-                        <h2>SISTEMA DE CONTROL DE VENTAS Y CAJAS DE HUEVOS</h2>
-                        <h3>${titleText}</h3>
-                        <p>Fecha de emisión: ${currentDate}</p>
-                    </div>
-
-                    <div class="section-title">1. RESUMEN GENERAL DE CAJAS COMERCIALIZADAS</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Concepto / Tipo de Huevo</th>
-                                <th style="text-align: center;">Cantidad Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total Cajas Comercializadas (Tipo A)</td>
-                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalA} Cajas</td>
-                            </tr>
-                            <tr>
-                                <td>Total Cajas Comercializadas (Tipo Jumbo)</td>
-                                <td style="text-align: center; font-weight: bold; color: #16a34a;">${totalJumbo} Cajas</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <div class="section-title">2. DETALLE DE HISTORIAL DE VENTAS Y ENTRADAS</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th style="text-align: center;">Operación</th>
-                                <th style="text-align: center;">Cajas Tipo A</th>
-                                <th style="text-align: center;">Cajas Tipo Jumbo</th>
-                                <th style="text-align: right;">Total ($)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml}
-                        </tbody>
-                    </table>
-
-                    <table class="total-box">
-                        <tr style="background: #f8fafc;">
-                            <td style="color: #1e3a8a; border: none;">TOTAL RECAUDADO EN VENTAS DEL PERÍODO:</td>
-                            <td style="text-align: right; color: #16a34a; font-size: 14px; border: none;">$${totalRevenueVal.toFixed(2)}</td>
-                        </tr>
-                    </table>
-
-                    <div class="footer">
-                        Granja Avícola Lumy &copy; 2026 - Reporte generado automáticamente por el Sistema de Gestión de Ventas.
-                    </div>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-
-            setTimeout(() => {
-                printWindow.focus();
-                printWindow.print();
-            }, 300);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            loadDataSafely();
+            updateUI();
         });
     </script>
+</body>
+</html>

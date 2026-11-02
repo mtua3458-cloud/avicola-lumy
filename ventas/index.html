@@ -116,4 +116,489 @@
                 <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
                     <div>
                         <p class="text-xs font-semibold text-slate-400 uppercase">Ventas / Salidas</p>
-                        <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-
+                        <h3 id="statSales" class="text-2xl font-black text-emerald-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center text-xl">🛒</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Total Recaudado</p>
+                        <h3 id="statRevenue" class="text-2xl font-black text-blue-400 mt-1">$0.00</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center text-xl">📊</div>
+                </div>
+
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-400 uppercase">Créditos Activos</p>
+                        <h3 id="statCreditsPending" class="text-2xl font-black text-amber-500 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center text-xl">⏳</div>
+                </div>
+            </div>
+
+            <!-- DOS FORMULARIOS SEPARADOS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- 1. FORMULARIO DE ENTRADA Y SALIDA DE INVENTARIO (SOLO TIPO A + FECHA DE ENTRADA) -->
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                    <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Registro de Inventario (Entrada / Salida)</span>
+                    </h3>
+                    <form onsubmit="handleTransaction(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Acción de Inventario</label>
+                            <select id="transType" required class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 outline-none">
+                                <option value="entry">📥 Registrar Entrada de Inventario</option>
+                                <option value="sale">📤 Registrar Salida de Inventario</option>
+                            </select>
+                        </div>
+
+                        <!-- Fecha de Entrada -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Fecha de Operación / Entrada</label>
+                            <input type="date" id="transCustomDate" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100 outline-none">
+                        </div>
+                        
+                        <!-- Solo Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
+                                    <input type="number" id="transQtyA" min="0" placeholder="Ej: 10" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
+                                    <input type="number" step="0.01" id="transPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Guardar</span>
+                            </button>
+                            <button type="reset" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">
+                                Borrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 2. FORMULARIO DE REGISTRO DE VENTA CLIENTE (CRÉDITO 5 DÍAS) -->
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-md space-y-4">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Registro de Venta Cliente (Crédito 5 Días)</span>
+                    </h3>
+                    <form onsubmit="handleCreditSale(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 mb-1">Nombre del Cliente</label>
+                            <input type="text" id="creditClient" required placeholder="Ej: Distribuidora La Pastora" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                        </div>
+
+                        <!-- Crédito Tipo A -->
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-800 space-y-2">
+                            <p class="text-xs font-bold text-blue-300">Cajas Tipo A</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Cantidad</label>
+                                    <input type="number" id="creditQtyA" min="0" placeholder="Ej: 5" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-semibold text-slate-400 mb-1">Precio ($)</label>
+                                    <input type="number" step="0.01" id="creditPriceA" min="0" placeholder="Ej: 40.00" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs shadow transition flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-calendar-plus"></i>
+                                <span>Guardar Crédito</span>
+                            </button>
+                            <button type="reset" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">
+                                Borrar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- TABLA DE CRÉDITOS Y CONTEO REGRESIVO -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800">
+                    <h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>Ventas a Crédito (Conteo Regresivo de 5 Días)</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Cliente</th>
+                                <th class="p-3">Detalle Cajas</th>
+                                <th class="p-3">Total</th>
+                                <th class="p-3">Vencimiento</th>
+                                <th class="p-3">Tiempo Restante</th>
+                                <th class="p-3 text-center">Acciones (Cobrar / Borrar)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditsTable" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABLA DE HISTORIAL GENERAL -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl shadow-md overflow-hidden">
+                <div class="p-4 bg-slate-950/60 border-b border-slate-800">
+                    <h3 class="text-sm font-bold text-blue-400 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Historial de Inventario (Entradas y Salidas)</span>
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Operación</th>
+                                <th class="p-3">Cajas Tipo A</th>
+                                <th class="p-3">Total</th>
+                                <th class="p-3 text-center">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
+            &copy; 2026 Granja Avícola Lumy. Todos los derechos reservados.
+        </footer>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. LÓGICA Y CONEXIÓN SEGURA (JS) -->
+    <!-- ========================================== -->
+    <script>
+        const SUPABASE_URL = 'https://yufrelqaqyeslnnzzltir.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_cMEeoD8C86l2BEN19TwC-w_WuOBvFcC';
+        
+        let _supabase = null;
+        try {
+            if (window.supabase) {
+                const { createClient } = supabase;
+                _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (err) {}
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-form');
+
+            if(loginForm) loginForm.classList.add('hidden');
+            if(registerForm) registerForm.classList.add('hidden');
+            if(forgotForm) forgotForm.classList.add('hidden');
+
+            if (tab === 'login' && loginForm) loginForm.classList.remove('hidden');
+            if (tab === 'register' && registerForm) registerForm.classList.remove('hidden');
+            if (tab === 'forgot' && forgotForm) forgotForm.classList.remove('hidden');
+        }
+
+        function handleLogin(e) { e.preventDefault(); showDashboard(); }
+        function handleRegister(e) { e.preventDefault(); alert('¡Cuenta registrada con éxito!'); switchAuthTab('login'); }
+        function handleForgotPassword(e) { e.preventDefault(); alert('Instrucciones enviadas.'); switchAuthTab('login'); }
+
+        function showDashboard() {
+            const loginScreen = document.getElementById('loginScreen');
+            const dashboardScreen = document.getElementById('dashboardScreen');
+            if(loginScreen) { loginScreen.classList.add('hidden'); loginScreen.style.display = 'none'; }
+            if(dashboardScreen) { dashboardScreen.classList.remove('hidden'); dashboardScreen.classList.add('flex'); dashboardScreen.style.display = 'flex'; }
+            // Establecer fecha actual por defecto en el input de fecha
+            const dateInput = document.getElementById('transCustomDate');
+            if (dateInput && !dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+            loadDataSafely();
+        }
+
+        function logout() {
+            const dashboardScreen = document.getElementById('dashboardScreen');
+            const loginScreen = document.getElementById('loginScreen');
+            if(dashboardScreen) { dashboardScreen.classList.add('hidden'); dashboardScreen.style.display = 'none'; }
+            if(loginScreen) { loginScreen.classList.remove('hidden'); loginScreen.style.display = 'flex'; }
+        }
+
+        async function loadDataSafely() {
+            let transactions = [];
+            let credits = [];
+            if (_supabase) {
+                try {
+                    const [tRes, cRes] = await Promise.all([
+                        _supabase.from('lumy_transactions').select('*').order('id', { ascending: false }),
+                        _supabase.from('lumy_credits').select('*').order('id', { ascending: false })
+                    ]);
+                    if (tRes.data) transactions = tRes.data;
+                    if (cRes.data) credits = cRes.data;
+                } catch (err) {}
+            }
+            if (transactions.length === 0) transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            if (credits.length === 0) credits = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+            updateUI(transactions, credits);
+        }
+
+        async function handleTransaction(e) {
+            e.preventDefault();
+            const type = document.getElementById('transType').value;
+            const customDateInput = document.getElementById('transCustomDate').value;
+            const qtyA = parseInt(document.getElementById('transQtyA').value) || 0;
+            const priceA = parseFloat(document.getElementById('transPriceA').value) || 0;
+
+            if (qtyA === 0) { alert('Ingresa al menos una cantidad para Tipo A.'); return; }
+
+            // Formatear fecha seleccionada
+            let recordDate = new Date().toLocaleString();
+            if (customDateInput) {
+                const parts = customDateInput.split('-');
+                if (parts.length === 3) {
+                    recordDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+            }
+
+            const total = qtyA * priceA;
+            const newRecord = { id: Date.now(), date: recordDate, type, qtyA, priceA, total };
+
+            let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            localTrans.unshift(newRecord);
+            localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
+            if (_supabase) { try { await _supabase.from('lumy_transactions').insert([newRecord]); } catch (err) {} }
+
+            e.target.reset();
+            document.getElementById('transCustomDate').value = new Date().toISOString().split('T')[0];
+            loadDataSafely();
+            alert('¡Operación de inventario guardada con éxito!');
+        }
+
+        async function handleCreditSale(e) {
+            e.preventDefault();
+            const client = document.getElementById('creditClient').value;
+            const qtyA = parseInt(document.getElementById('creditQtyA').value) || 0;
+            const priceA = parseFloat(document.getElementById('creditPriceA').value) || 0;
+
+            if (qtyA === 0) { alert('Ingresa al menos una cantidad para Tipo A.'); return; }
+
+            const total = qtyA * priceA;
+            const dueDate = Date.now() + (5 * 24 * 60 * 60 * 1000); // Plazo de 5 días
+
+            const newCredit = { id: Date.now(), client, qtyA, priceA, total, dueDate, status: 'pending' };
+
+            let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+            localCreds.unshift(newCredit);
+            localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
+
+            if (_supabase) { try { await _supabase.from('lumy_credits').insert([newCredit]); } catch (err) {} }
+
+            e.target.reset();
+            loadDataSafely();
+            alert('¡Venta a crédito registrada con éxito!');
+        }
+
+        async function deleteTransaction(id) {
+            if (confirm('¿Deseas eliminar este registro de inventario?')) {
+                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+                localTrans = localTrans.filter(t => t.id !== id);
+                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+                if (_supabase) { try { await _supabase.from('lumy_transactions').delete().eq('id', id); } catch(e) {} }
+                loadDataSafely();
+            }
+        }
+
+        async function deleteCredit(id) {
+            if (confirm('¿Deseas eliminar este crédito?')) {
+                let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+                localCreds = localCreds.filter(c => c.id !== id);
+                localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
+                if (_supabase) { try { await _supabase.from('lumy_credits').delete().eq('id', id); } catch(e) {} }
+                loadDataSafely();
+            }
+        }
+
+        async function payCredit(id) {
+            let localCreds = JSON.parse(localStorage.getItem('lumy_credits') || '[]');
+            const credit = localCreds.find(c => c.id === id);
+            if (credit) {
+                credit.status = 'paid';
+                localStorage.setItem('lumy_credits', JSON.stringify(localCreds));
+
+                const saleRecord = { id: Date.now(), date: new Date().toLocaleString(), type: 'sale', qtyA: credit.qtyA, priceA: credit.priceA, total: credit.total };
+                let localTrans = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+                localTrans.unshift(saleRecord);
+                localStorage.setItem('lumy_transactions', JSON.stringify(localTrans));
+
+                if (_supabase) {
+                    try {
+                        await _supabase.from('lumy_credits').update({ status: 'paid' }).eq('id', id);
+                        await _supabase.from('lumy_transactions').insert([saleRecord]);
+                    } catch(e) {}
+                }
+                loadDataSafely();
+                alert('¡Crédito cobrado y registrado en salidas!');
+            }
+        }
+
+        function updateUI(transactions = [], credits = []) {
+            let totalStockA = 0, totalSalesCount = 0, totalRevenueVal = 0, pendingCreditsCount = 0;
+
+            transactions.forEach(t => {
+                if (t.type === 'entry') { totalStockA += (t.qtyA || 0); }
+                else if (t.type === 'sale') {
+                    totalStockA -= (t.qtyA || 0);
+                    totalSalesCount += (t.qtyA || 0);
+                    totalRevenueVal += (t.total || 0);
+                }
+            });
+
+            credits.forEach(c => { if (c.status === 'pending') pendingCreditsCount++; });
+
+            document.getElementById('statStock').innerText = totalStockA;
+            document.getElementById('statSales').innerText = totalSalesCount;
+            document.getElementById('statRevenue').innerText = `$${totalRevenueVal.toFixed(2)}`;
+            document.getElementById('statCreditsPending').innerText = pendingCreditsCount;
+
+            // Historial General
+            const historyBody = document.getElementById('historyTable');
+            historyBody.innerHTML = transactions.length === 0 ? `<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Sin movimientos.</td></tr>` :
+                transactions.map(t => `
+                    <tr class="hover:bg-slate-950/40 transition">
+                        <td class="p-3 text-slate-400">${t.date || ''}</td>
+                        <td class="p-3">${t.type === 'entry' ? '<span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] font-bold">ENTRADA</span>' : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">SALIDA</span>'}</td>
+                        <td class="p-3">${t.qtyA || 0} un. ($${(t.priceA || 0).toFixed(2)})</td>
+                        <td class="p-3 font-bold text-blue-400">$${(t.total || 0).toFixed(2)}</td>
+                        <td class="p-3 text-center"><button onclick="deleteTransaction(${t.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 px-2 py-1 rounded text-xs transition"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `).join('');
+
+            // Créditos
+            const creditsBody = document.getElementById('creditsTable');
+            creditsBody.innerHTML = credits.length === 0 ? `<tr><td colspan="6" class="p-4 text-center text-slate-500 italic">Sin créditos.</td></tr>` :
+                credits.map(c => {
+                    const timeLeft = (c.dueDate || Date.now()) - Date.now();
+                    let timeStr = '', statusBadge = '';
+                    if (c.status === 'paid') { statusBadge = '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold">PAGADO</span>'; timeStr = 'Completado'; }
+                    else if (timeLeft <= 0) { statusBadge = '<span class="bg-red-500/20 text-red-400 px-2 py-0.5 rounded text-[10px] font-bold">VENCIDO</span>'; timeStr = 'Expirado'; }
+                    else {
+                        statusBadge = '<span class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded text-[10px] font-bold">PENDIENTE</span>';
+                        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        timeStr = `${days}d, ${hours}h`;
+                    }
+                    const actionBtn = c.status === 'pending' ? `<button onclick="payCredit(${c.id})" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded text-xs font-bold">Cobrar</button>` : '';
+                    return `
+                        <tr class="hover:bg-slate-950/40 transition">
+                            <td class="p-3 font-bold text-slate-200">${c.client || ''}</td>
+                            <td class="p-3">A: ${c.qtyA || 0} ($${c.priceA || 0})</td>
+                            <td class="p-3 font-bold text-amber-400">$${(c.total || 0).toFixed(2)}</td>
+                            <td class="p-3 text-slate-400">${new Date(c.dueDate || Date.now()).toLocaleDateString()}</td>
+                            <td class="p-3 font-semibold text-blue-300">${timeStr}</td>
+                            <td class="p-3 text-center space-x-1">
+                                ${statusBadge}
+                                ${actionBtn}
+                                <button onclick="deleteCredit(${c.id})" class="bg-red-500/20 hover:bg-red-600 text-red-300 px-2 py-1 rounded text-xs"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+        }
+
+        async function printReport(filterType) {
+            let transactions = JSON.parse(localStorage.getItem('lumy_transactions') || '[]');
+            if (_supabase) {
+                try { const res = await _supabase.from('lumy_transactions').select('*'); if (res.data) transactions = res.data; } catch(e) {}
+            }
+
+            const now = new Date();
+            let filtered = transactions.filter(t => {
+                if (!t.date) return false;
+                const tDate = new Date(t.date);
+                if (isNaN(tDate)) return true;
+
+                if (filterType === 'day') return tDate.toDateString() === now.toDateString();
+                if (filterType === 'week') return Math.abs(now - tDate) / (1000 * 60 * 60 * 24) <= 7;
+                if (filterType === 'month') return tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+                if (filterType === 'year') return tDate.getFullYear() === now.getFullYear();
+                return true;
+            });
+
+            let totalRev = 0;
+            filtered.forEach(t => { if (t.type === 'sale') totalRev += (t.total || 0); });
+
+            const rows = filtered.length === 0 ? `<tr><td colspan="4" style="border: 1px solid #cbd5e1; padding: 8px; text-align: center;">Sin movimientos en este periodo.</td></tr>` :
+                filtered.map(i => `
+                    <tr>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px;">${i.date || ''}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">${(i.type || '').toUpperCase()}</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: center;">${i.qtyA || 0} ($${(i.priceA || 0).toFixed(2)})</td>
+                        <td style="border: 1px solid #cbd5e1; padding: 6px; text-align: right; font-weight: bold; color: #16a34a;">$${(i.total || 0).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
+            const win = window.open('', '_blank', 'width=850,height=650');
+            win.document.write(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8"><title>Informe Control de Ventas - Avícola Lumy</title>
+                    <style>
+                        body { font-family: sans-serif; color: #1e293b; padding: 25px; background: #fff; }
+                        .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 20px; }
+                        h1 { font-size: 18px; color: #1e3a8a; margin: 0; }
+                        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+                        th, td { border: 1px solid #cbd5e1; padding: 6px; }
+                        th { background: #f8fafc; text-align: left; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>GRANJA AVÍCOLA LUMY</h1>
+                        <p>Control de Ventas — Informe (${filterType.toUpperCase()}) — ${now.toLocaleDateString()}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th style="text-align:center;">Operación</th>
+                                <th style="text-align:center;">Tipo A</th>
+                                <th style="text-align:right;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    <h3>Total Recaudado en el Periodo: $${totalRev.toFixed(2)}</h3>
+                </body>
+                </html>
+            `);
+            win.document.close();
+            setTimeout(() => { win.focus(); win.print(); }, 300);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { 
+            const dateInput = document.getElementById('transCustomDate');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+            loadDataSafely(); 
+        });
+    </script>
+</body>
+</html>
